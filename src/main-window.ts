@@ -10,20 +10,8 @@ import './download-page.js';
 
 class Js_MainWindow extends Adw.ApplicationWindow {
   constructor(params={}) {
-    /** TODO: So registration --> widget construction. Then am I ensuring too late?
-     *  When is a component tree built from a template? Right after registration?
-     *  TODO: Look around repos for how they a. ensure type, and b. load blp
-     *  TODO: What happens when you import from a module? Will that whole file be run?
-     */
     super(params);
-    this.#ensureWidgets();
     this.#setWinActions();
-  }
-
-  #ensureWidgets() {
-    // TODO: Document $gtype
-    // GObject.type_ensure(Omnibar.$gtype);
-    // GObject.type_ensure(PreferencesWindow)
   }
 
   #setWinActions() {
@@ -31,7 +19,6 @@ class Js_MainWindow extends Adw.ApplicationWindow {
       {
         name: 'show-preferences',
         activate: this.#onShowPreferences.bind(this),
-        // accels: ['<Control>comma'],
         parameter_type: null,
         state: null,
         change_state: () => { return; },
@@ -48,7 +35,6 @@ class Js_MainWindow extends Adw.ApplicationWindow {
         activate: function(){
           return;
         }.bind(this),
-        // accels: ['F1'],
         parameter_type: null,
         state: null,
         change_state: () => { return; },
@@ -58,7 +44,6 @@ class Js_MainWindow extends Adw.ApplicationWindow {
         activate: function(){
           return;
         }.bind(this),
-        // accels: ['<Control>question'],
         parameter_type: null,
         state: null,
         change_state: () => { return; },
@@ -118,7 +103,6 @@ class Js_MainWindow extends Adw.ApplicationWindow {
   }
 }
 
-// TODO: Document Gjs_XXX
 export const MainWindow = GObject.registerClass({
   GTypeName: 'MainWindow',
   // @ts-ignore

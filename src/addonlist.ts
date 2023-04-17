@@ -48,7 +48,6 @@ const AddonlistItem = GObject.registerClass({
 
 const AddonlistRow = GObject.registerClass({
   GTypeName: 'AddonlistRow',
-  // TODO: What is nick, blurb, etc??
   Properties: {
     'list-item': GObject.ParamSpec.object(
       'list-item',
@@ -57,7 +56,6 @@ const AddonlistRow = GObject.registerClass({
       GObject.ParamFlags.READWRITE,
       AddonlistItem.$gtype),
   },
-  // TODO: What is the point of Implements if I can subclass from JS classes just fine?
   // @ts-ignore
   Template: 'resource:///com/github/kinten108101/SteamVpk/ui/addonlist-row.ui',
   InternalChildren: [
@@ -68,27 +66,6 @@ const AddonlistRow = GObject.registerClass({
 
   [props: string]: any;
   constructor(params={}){
-    /**
-     * internal child id: description-field
-     * JS class prop:
-     * - [x] this._description_field
-     * - [ ] this.['description-field']
-     * - [ ] this._descriptionField
-     * - [ ] this.descriptionField
-     * - [ ] this.description_field
-     *
-     * internal child id: description_field
-     * JS prop:
-     * - [x] this._description_field
-     *
-     * gobject prop: list-item
-     * JS class prop:
-     * - [ ] this._list_item
-     * - [x] this.['list-item']
-     * - [ ] this._listItem
-     * - [x] this.listItem
-     * - [x] this.list_item
-     */
     super(params);
     // TODO: Property binding is one-way
     const listitem: Js_AddonlistItem = this.list_item;
@@ -98,12 +75,10 @@ const AddonlistRow = GObject.registerClass({
     listitem.bind_property('description', descriptionField, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     const lastUpdateField: Gtk.Label = this._last_update_field;
     listitem.bind_property('last_update', lastUpdateField, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    // listitem.bind_property('icon', this, 'icon-name', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
   }
 });
 
 export class Js_AddonlistListBox extends Gtk.ListBox {
-  // What is this notation `static [identifier]``
 
   // @ts-ignore
   model: Gio.ListStore = undefined;
@@ -120,7 +95,6 @@ export class Js_AddonlistListBox extends Gtk.ListBox {
   }
 
   #listBoxRowFactory(entry: Js_AddonlistItem): Gtk.Widget {
-    // TODO: What is typeof Anonymous Class?? Shouldn't it return the defined class??
     log('Creating a list item widget...');
     return new AddonlistRow({
       'list-item': entry,

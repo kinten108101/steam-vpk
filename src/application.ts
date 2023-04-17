@@ -23,7 +23,6 @@ export const Application = GObject.registerClass({
   }
 
   #setAppActions() {
-    // TODO: Anonymous function vs arrow function, and which one can I bind `this`?
     const actionEntries: Gio.ActionEntry[] = [{
       name: 'quit',
       activate: (() =>{
