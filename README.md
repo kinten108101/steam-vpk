@@ -24,7 +24,7 @@ Install development dependencies:
 yarn install
 ```
 
-Generate type definition from GIR files of libaries (libadwaita, libpanel):
+Generate type definition from GIR files of libraries (libadwaita, libpanel):
 
 ```sh
 yarn run build:types
