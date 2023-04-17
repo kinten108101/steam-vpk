@@ -1,10 +1,18 @@
-<img style="vertical-align: middle;" src="data/icons/com.github.kinten108101.SteamVpk.svg" alt="Project's logo" width="120" height="120" align="left">
-
-# Steam VPK
-
+<div align="center">
+<img style="vertical-align: middle;" src="data/icons/com.github.kinten108101.SteamVpk.svg" alt="Project's logo" width="120" height="120" align="center" />
+<br />
+<h1>Steam VPK</h1>
 Add-on manager for Left 4 Dead 2
+<br />
+</div>
+<div align="center">
+<img style="vertical-align: middle;" src="data/mockups/app-v2-main-page.svg" alt="Preview" width="640" />
+<br/>
+<i>Steam VPK mock-up version</i>
+</div>
+<br />
 
-<img style="vertical-align: middle;" src="data/mockups/app-v2-main-page.svg" alt="Project's logo" width="496">
+This is work in progress. Feedback is appreciated!
 
 ## Installation
 
