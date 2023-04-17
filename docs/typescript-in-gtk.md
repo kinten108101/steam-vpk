@@ -8,7 +8,8 @@ For GObject properties, in JS class definition, declare their types as `any` usi
 
 ```ts
 class Js_exampleClass extends GObject.object {
-  [props: string]: any;
+  [props: string]: any; // index signature
+  // this.example_property is type any
   
   constructor(params={}) {
     super(params);
