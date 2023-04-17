@@ -1,0 +1,101 @@
+using Gtk 4.0;
+using Adw 1;
+/* How to recognize more namespaces? */
+using Panel 1;
+
+menu win-menu {
+  section {
+    item (_("Test command"), "app.test-command")
+  }
+
+  section {
+    item (_("Preference"), "win.show-preferences")
+    item (_("Keyboard Shortcuts"), "win.show-shortcuts")
+    item (_("Help"), "win.show-help")
+    item (_("About SteamVpk"), "win.show-about")
+  }
+}
+
+template MainWindow : Adw.ApplicationWindow {
+  resizable: true;
+  default-width: 869;
+  default-height: 700;
+  title: _("SteamVpk");
+
+  Gtk.GestureClick {
+    button: 8;
+  }
+
+  Gtk.Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      name: "hi";
+      centering-policy: loose;
+      title-widget:
+        Adw.ViewSwitcherTitle win-view-switcher-title {
+          title: bind MainWindow.title;
+          stack: win-view-stack;
+        };
+
+      [end]
+      Gtk.Box {
+        orientation: horizontal;
+
+        Gtk.ToggleButton {
+          can-focus: true;
+          icon-name: "system-search-symbolic";
+        }
+
+        Gtk.MenuButton {
+          icon-name: "open-menu-symbolic";
+          menu-model: win-menu;
+        }
+      }
+    }
+
+    Gtk.SearchBar secondary-bar {
+      search-mode-enabled: true;
+
+      Gtk.CenterBox {
+        orientation: horizontal;
+
+        [center]
+        .Omnibar {}
+
+        [end]
+        Adw.SplitButton run-button-with-options {
+            action-name: "win.profile-run";
+            icon-name: "stvpk-run-start-symbolic";
+        }
+      }
+    }
+
+    Adw.ToastOverlay {
+      vexpand: true;
+
+      Adw.ViewStack win-view-stack {
+        vexpand: true;
+
+        Adw.ViewStackPage {
+          name: "main-page";
+          title: _("Build");
+          icon-name: "puzzle-piece-symbolic";
+          child: .AddonlistPage {};
+        }
+
+        Adw.ViewStackPage {
+          name: "download-page";
+          title: _("Repository");
+          icon-name: "folder-download-symbolic";
+          child: .DownloadPage {};
+        }
+      }
+    }
+
+    Adw.ViewSwitcherBar {
+      stack: win-view-stack;
+      reveal: bind win-view-switcher-title.title-visible;
+    }
+  }
+}

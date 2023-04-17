@@ -1,0 +1,7 @@
+build/
+_build/
+install/
+.flatpak-builder/
+node_modules/
+steamvpk/
+@types/

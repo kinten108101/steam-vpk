@@ -1,0 +1,10 @@
+trailingComma: all
+overrides:
+  - files: com.github.kinten108101.SteamVpk
+    options:
+      parser: babel
+  - files:
+      - "*.xml.in"
+      - "*.doap"
+    options:
+      parser: xml

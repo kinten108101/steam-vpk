@@ -1,0 +1,42 @@
+app-id: com.github.kinten108101.SteamVpk
+runtime: org.gnome.Platform
+runtime-version: "43"
+sdk: org.gnome.Sdk
+command: com.github.kinten108101.SteamVpk
+
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/doc
+  - /share/man
+  - "*.a"
+  - "*.la"
+
+modules:
+  - name: blueprint
+    buildsystem: meson
+    builddir: true
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        tag: v0.6.0
+  - name: libpanel
+    buildsystem: meson
+    builddir: true
+    config-opts:
+      - -Ddocs=disabled
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libpanel.git
+        branch: main
+  - name: SteamVpk
+    buildsystem: meson
+    sources:
+      - type: dir
+        path: .

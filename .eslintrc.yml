@@ -1,0 +1,57 @@
+env:
+  es2022: true
+overrides:
+  - files:
+      - '*.ts'
+    parser: '@typescript-eslint/parser'
+    plugins:
+      - '@typescript-eslint'
+
+parser: '@babel/eslint-parser'
+parserOptions:
+  sourceType: module
+  requireConfigFile: false
+  ecmaVersion: latest
+  babelOptions:
+    plugins:
+      - '@babel/plugin-syntax-import-assertions'
+extends:
+  - eslint:recommended
+  - 'plugin:@typescript-eslint/recommended'
+  - plugin:import/errors
+  - plugin:import/warnings
+rules:
+  '@typescript-eslint/ban-ts-comment':
+    - warn
+  '@typescript-eslint/no-unused-vars':
+    - error
+  strict:
+    - error
+  indent:
+    - error
+    - 2
+  linebreak-style:
+    - error
+    - unix
+  quotes:
+    - error
+    - single
+  semi:
+    - error
+    - always
+  import/no-unresolved:
+    - warn
+    - ignore:
+        - gi://*
+        - cairo
+        - gettext
+        - system
+        - resource://*
+  eol-last:
+    - error
+    - always
+globals:
+  imports: readonly
+  pkg: readonly
+  log: readonly
+  logError: readonly

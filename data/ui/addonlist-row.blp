@@ -1,0 +1,121 @@
+using Gtk 4.0;
+using Adw 1;
+
+menu move-row-menu {
+  section {
+    item (_("Move up"), "row.move-up")
+    item (_("Move down"), "row.move-down")
+  }
+  section {
+    item (_("Configure..."), "row.config")
+  }
+}
+
+template AddonlistRow : Adw.ExpanderRow {
+  activatable: true;
+  title: "Unset AdwExpanderRow title";
+  subtitle: "Unset AdwExpanderRow subtitle";
+  icon-name: "list-drag-handle-symbolic";
+  width-request: 200;
+
+  [action]
+  Gtk.MenuButton {
+    valign: center;
+    menu-model: move-row-menu;
+    icon-name: "view-more-symbolic";
+    tooltip-text: "More options...";
+
+    styles ["flat"]
+  }
+
+  [action]
+  Gtk.Separator {
+    orientation: vertical;
+    margin-top: 12;
+    margin-bottom: 12;
+  }
+
+  [action]
+  Gtk.Switch addonlist-row-toggle {
+    valign: center;
+    halign: center;
+    action-name: "addonlist-row.set-state";
+  }
+
+  Gtk.Box {
+    orientation: vertical;
+    Gtk.Grid {
+      styles ["row-content"]
+
+      row-spacing: 15;
+      column-spacing: 15;
+
+      Gtk.Label {
+        styles ["dim-label"]
+        label: _("Description");
+
+        xalign: 0;
+        yalign: 0;
+        layout {
+          row: 0;
+          column: 0;
+        }
+      }
+
+      Gtk.ScrolledWindow {
+        // fill out all props min and max width and height to get it display right
+        // especially when the multiline label wraps text.
+        min-content-width: 400;
+        max-content-width: 400;
+        min-content-height: 200;
+        max-content-height: 400;
+
+        layout {
+          row: 0;
+          column: 1;
+        }
+
+        Gtk.Label description_field {
+          styles ["multiline"]
+          label: "Unset multiline description text";
+          use-markup: true;
+          wrap: true;
+          wrap-mode: word;
+          selectable: true;
+
+          halign: center;
+          valign: start;
+          // yalign: 0;
+
+        }
+      }
+
+      Gtk.Label {
+        styles ["dim-label"]
+        label: _("Last Update");
+
+        xalign: 0;
+        yalign: 0;
+        layout {
+          row: 1;
+          column: 0;
+        }
+      }
+
+      Gtk.Label last_update_field {
+        label: "Unset last update text";
+        wrap: true;
+        wrap-mode: word;
+        selectable: true;
+
+        xalign: 0;
+        // yalign: 0;
+        layout {
+          row: 1;
+          column: 1;
+        }
+      }
+
+    }
+  }
+}

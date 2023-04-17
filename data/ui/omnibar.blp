@@ -1,0 +1,33 @@
+using Gtk 4.0;
+using Panel 1;
+
+template Omnibar : Panel.OmniBar {
+  icon-name: 'build-alt-symbolic';
+  width-request: 386;
+  popover: .OmnibarPopover {};
+
+  [prefix]
+  Gtk.Box {
+    hexpand: false;
+    vexpand: false;
+    valign: center;
+    orientation: vertical;
+    styles ["pan"]
+
+    Gtk.Image {
+      icon-name: "pan-up-symbolic";
+      pixel-size: 12;
+    }
+
+    Gtk.Image {
+      icon-name: "pan-down-symbolic";
+      pixel-size: 12;
+    }
+  }
+
+  [prefix]
+  Gtk.Label {
+    label: "default";
+    margin-start: 4;
+  }
+}

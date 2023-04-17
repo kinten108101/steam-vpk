@@ -1,0 +1,26 @@
+using Gtk 4.0;
+using Adw 1;
+
+template PreferencesWindow : Adw.PreferencesWindow {
+  can-navigate-back: true;
+  modal: true;
+
+  Adw.PreferencesPage {
+    icon-name: "applications-system-symbolic";
+    title: _("General");
+
+    Adw.PreferencesGroup section_one {
+      title: _("Settings are fun");
+
+      Adw.ActionRow pref_darkmode {
+        title: _("Dark Mode");
+        subtitle: _("Use dark theme");
+
+        Gtk.Switch {
+          valign: center;
+          action-name: "settings.dark-theme";
+        }
+      }
+    }
+  }
+}
