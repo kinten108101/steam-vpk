@@ -7,7 +7,7 @@ menu move-row-menu {
     item (_("Move down"), "row.move-down")
   }
   section {
-    item (_("Configure..."), "row.config")
+    item (_("Configure"), "row.config")
   }
 }
 
@@ -23,7 +23,7 @@ template AddonlistRow : Adw.ExpanderRow {
     valign: center;
     menu-model: move-row-menu;
     icon-name: "view-more-symbolic";
-    tooltip-text: "More options...";
+    tooltip-text: "Options";
 
     styles ["flat"]
   }
