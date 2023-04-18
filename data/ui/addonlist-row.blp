@@ -63,8 +63,6 @@ template AddonlistRow : Adw.ExpanderRow {
       }
 
       Gtk.ScrolledWindow {
-        // fill out all props min and max width and height to get it display right
-        // especially when the multiline label wraps text.
         min-content-width: 400;
         max-content-width: 400;
         min-content-height: 200;
@@ -82,11 +80,8 @@ template AddonlistRow : Adw.ExpanderRow {
           wrap: true;
           wrap-mode: word;
           selectable: true;
-
           halign: center;
           valign: start;
-          // yalign: 0;
-
         }
       }
 
@@ -109,7 +104,6 @@ template AddonlistRow : Adw.ExpanderRow {
         selectable: true;
 
         xalign: 0;
-        // yalign: 0;
         layout {
           row: 1;
           column: 1;
