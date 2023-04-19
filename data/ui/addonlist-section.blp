@@ -1,0 +1,20 @@
+using Gtk 4.0;
+using Adw 1;
+
+template AddonlistSection : Gtk.Box {
+  orientation: vertical;
+  spacing: 10;
+
+  Gtk.Label section_label {
+    label: _("Addon-list Section Label");
+    xalign: 0;
+    styles ["heading"]
+  }
+
+  Gtk.ListBox section_list {
+    selection-mode: none;
+    valign: start;
+
+    styles ["boxed-list"]
+  }
+}
