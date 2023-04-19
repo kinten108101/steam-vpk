@@ -1,3 +1,18 @@
 .row-content {
   padding-left: 10px;
 }
+
+splitbutton.omnibar {
+  background: alpha(currentColor, 0.075);
+}
+
+splitbutton.omnibar > button {
+  margin-bottom: 0;
+  margin-top: 0;
+  padding-bottom: 0;
+  padding-top: 0;
+}
+
+.run-button > button {
+  color: #3584e4;
+}

@@ -16,5 +16,7 @@
 		<file alias="puzzle-piece-symbolic.svg">icons/scalable/actions/puzzle-piece-symbolic.svg</file>
 		<file alias="folder-download-symbolic.svg">icons/scalable/actions/folder-download-symbolic.svg</file>
 		<file alias="build-alt-symbolic.svg">icons/scalable/actions/build-alt-symbolic.svg</file>
+	  <file alias="play-large-symbolic.svg">icons/scalable/actions/play-large-symbolic.svg</file>
+	  <file alias="app.svg">icons/com.github.kinten108101.SteamVpk.svg</file>
 	</gresource>
 </gresources>

@@ -2,16 +2,23 @@ using Gtk 4.0;
 using Adw 1;
 using Panel 1;
 
-menu win-menu {
+menu win_menu {
   section {
-    item (_("Test command"), "app.test-command")
+    item (_("Placeholder command"), "app.placeholder-command")
   }
 
   section {
     item (_("Preference"), "win.show-preferences")
     item (_("Keyboard Shortcuts"), "win.show-shortcuts")
     item (_("Help"), "win.show-help")
-    item (_("About SteamVpk"), "win.show-about")
+    item (_("About Steam VPK"), "win.show-about")
+  }
+}
+
+menu run_menu {
+  section {
+    item (_("Run"), "app.placeholder-command")
+    item (_("Run with script..."), "app.placeholder-command")
   }
 }
 
@@ -19,7 +26,8 @@ template MainWindow : Adw.ApplicationWindow {
   resizable: true;
   default-width: 869;
   default-height: 700;
-  title: _("SteamVpk");
+  title: _("Steam VPK");
+  icon-name: "app";
 
   Gtk.GestureClick {
     button: 8;
@@ -29,7 +37,6 @@ template MainWindow : Adw.ApplicationWindow {
     orientation: vertical;
 
     Adw.HeaderBar {
-      name: "hi";
       centering-policy: loose;
       title-widget:
         Adw.ViewSwitcherTitle win-view-switcher-title {
@@ -48,24 +55,26 @@ template MainWindow : Adw.ApplicationWindow {
 
         Gtk.MenuButton {
           icon-name: "open-menu-symbolic";
-          menu-model: win-menu;
+          menu-model: win_menu;
         }
       }
     }
 
     Gtk.SearchBar secondary-bar {
       search-mode-enabled: true;
+      height-request: 5;
 
       Gtk.CenterBox {
-        orientation: horizontal;
 
         [center]
         .Omnibar {}
 
         [end]
         Adw.SplitButton run-button-with-options {
-            action-name: "win.profile-run";
-            icon-name: "stvpk-run-start-symbolic";
+            action-name: "app.placeholder-command";
+            icon-name: "play-large-symbolic";
+            menu-model: run_menu;
+            styles ["run-button"]
         }
       }
     }
