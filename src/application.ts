@@ -34,11 +34,22 @@ export const Application = GObject.registerClass({
       state: null,
       change_state: () => { return; },
     },
+    {
+      name: 'placeholder-command',
+      activate: () => {
+        log('Run placeholder command!');
+        return;
+      },
+      parameter_type: null,
+      state: null,
+      change_state: () => { return; },
+    },
     ];
     this.add_action_entries(actionEntries, null);
   }
 
   #setAppAccels() {
+    this.set_accels_for_action('app.placeholder-command', ['<Control>x']);
     this.set_accels_for_action('app.quit', ['<Control>q']);
     this.set_accels_for_action('win.show-preferences', ['<Control>comma']);
   }

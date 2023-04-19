@@ -59,12 +59,9 @@ class Js_MainWindow extends Adw.ApplicationWindow {
   }
 
   onShowAbout() {
-    const contributors = {
-      'kinten108101': 'Kinten Le <kinten108101@protonmail.com>',
-    };
     const main = {
-      application_icon: 'run-start-symbolic',
-      application_name: 'Steamed VPK',
+      application_icon: 'app',
+      application_name: 'Steam VPK',
       developer_name: 'Kinten Le',
       version: '0.0.1',
     };
@@ -73,23 +70,13 @@ class Js_MainWindow extends Adw.ApplicationWindow {
     };
     const credits = {
       developers: [
-        contributors['kinten108101'],
+        'Kinten Le <kinten108101@protonmail.com>',
       ],
-      designers: [
-        contributors['kinten108101'],
-      ],
-      documenters: [
-        contributors['kinten108101']
-      ],
-    };
-    const legal = {
-      copyright: '© 2023 Kinten Le',
     };
     const AboutWin = new Adw.AboutWindow({
       ...main,
       ...troubleshooting,
       ...credits,
-      ...legal,
       transient_for: this,
     });
     AboutWin.present();
