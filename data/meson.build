@@ -1,8 +1,8 @@
 blueprints = custom_target('blueprints',
   input: files(
-    'ui/addonlist-list-box.blp',
     'ui/addonlist-page.blp',
     'ui/addonlist-row.blp',
+    'ui/addonlist-section.blp',
     'ui/download-page.blp',
     'ui/main-window.blp',
     'ui/omnibar-popover.blp',

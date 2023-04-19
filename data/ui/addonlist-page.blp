@@ -14,7 +14,7 @@ template AddonlistPage : Gtk.Box {
       vexpand: true;
       hexpand: true;
       maximum-size: 300;
-      Gtk.Box {
+      Gtk.Box addonlist_page_content {
         styles ["content"]
         vexpand: true;
         hexpand: true;
@@ -23,20 +23,6 @@ template AddonlistPage : Gtk.Box {
         margin-end: 16;
         orientation: vertical;
         spacing: 10;
-
-        Gtk.Label {
-          label: _("Default add-ons");
-          xalign: 0;
-          styles ["heading"]
-        }
-
-        .AddonlistListBox default-addon-list-box {}
-
-        Gtk.Label {
-          label: _("Mixin's");
-          xalign: 0;
-          styles ["heading"]
-        }
       }
     }
   }
