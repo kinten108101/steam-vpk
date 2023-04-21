@@ -1,5 +1,6 @@
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
+import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 import './omnibar.js';
@@ -9,9 +10,15 @@ import './addonlist-page.js';
 import './download-page.js';
 
 class Js_MainWindow extends Adw.ApplicationWindow {
+  [x: string]: any;
   constructor(params={}) {
     super(params);
     this.#setWinActions();
+  }
+
+  onSearchToggleClicked(button: Gtk.ToggleButton) {
+    const stack: Gtk.Stack = this._title_widget_stack;
+    stack.visible_child_name = ( button.active ? 'SearchEntryStackPage' : 'ViewSwitcherStackPage');
   }
 
   #setWinActions() {
@@ -94,4 +101,7 @@ export const MainWindow = GObject.registerClass({
   GTypeName: 'MainWindow',
   // @ts-ignore
   Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
+  InternalChildren: [
+    'title_widget_stack',
+  ],
 }, Js_MainWindow);
