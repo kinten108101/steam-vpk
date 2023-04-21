@@ -38,11 +38,23 @@ template MainWindow : Adw.ApplicationWindow {
 
     Adw.HeaderBar {
       centering-policy: loose;
-      title-widget:
-        Adw.ViewSwitcherTitle win-view-switcher-title {
-          title: bind MainWindow.title;
-          stack: win-view-stack;
-        };
+      title-widget: Gtk.Stack title_widget_stack {
+        transition-type: crossfade;
+        Gtk.StackPage {
+          name: "ViewSwitcherStackPage";
+          child:Adw.ViewSwitcherTitle win-view-switcher-title {
+            title: bind MainWindow.title;
+            stack: win-view-stack;
+          };
+        }
+
+        Gtk.StackPage {
+          name: "SearchEntryStackPage";
+          child: Gtk.SearchEntry {
+            valign: center;
+          };
+        }
+      };
 
       [end]
       Gtk.Box {
@@ -51,6 +63,7 @@ template MainWindow : Adw.ApplicationWindow {
         Gtk.ToggleButton {
           can-focus: true;
           icon-name: "system-search-symbolic";
+          clicked => onSearchToggleClicked();
         }
 
         Gtk.MenuButton {
