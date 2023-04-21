@@ -1,5 +1,8 @@
 blueprints = custom_target('blueprints',
   input: files(
+    'ui/add-addon.blp',
+    'ui/add-addon-preview.blp',
+    'ui/add-addon-url.blp',
     'ui/addonlist-page.blp',
     'ui/addonlist-row.blp',
     'ui/addonlist-section.blp',

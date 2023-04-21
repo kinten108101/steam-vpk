@@ -7,8 +7,14 @@ import { PreferencesWindow } from './preferences-window.js';
 
 import './addonlist-page.js';
 import './download-page.js';
+import { AddAddonWindow, SelectAddonDialog } from './add-addon';
 
-class Js_MainWindow extends Adw.ApplicationWindow {
+export const MainWindow = GObject.registerClass({
+  GTypeName: 'MainWindow',
+  // @ts-ignore
+  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
+}, class Js_MainWindow extends Adw.ApplicationWindow {
+  [x: string]: any;
   constructor(params={}) {
     super(params);
     this.#setWinActions();
@@ -47,7 +53,32 @@ class Js_MainWindow extends Adw.ApplicationWindow {
         parameter_type: null,
         state: null,
         change_state: () => { return; },
-      }
+      },
+      {
+        name: 'add-addon.add_url',
+        activate: (() => {
+          const urlWindow = new AddAddonWindow({
+            transient_for: this,
+          });
+          urlWindow.show();
+        }).bind(this),
+        parameter_type: null,
+        state: null,
+        change_state: () => { return; },
+      },
+      {
+        name: 'add-addon.add_archive',
+        activate: (() => {
+          const fileDiag = new SelectAddonDialog({
+            transient_for: this,
+          });
+          // what about show method right in constructor?
+          return fileDiag.show();
+        }).bind(this),
+        parameter_type: null,
+        state: null,
+        change_state: () => { return; },
+      },
     ];
     this.add_action_entries(actionEntries, null);
   }
@@ -88,10 +119,4 @@ class Js_MainWindow extends Adw.ApplicationWindow {
     this.run_dispose();
     return true;
   }
-}
-
-export const MainWindow = GObject.registerClass({
-  GTypeName: 'MainWindow',
-  // @ts-ignore
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
-}, Js_MainWindow);
+});
