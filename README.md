@@ -6,9 +6,7 @@ Add-on manager for Left 4 Dead 2
 <br />
 </div>
 <div align="center">
-<img style="vertical-align: middle;" src="data/mockups/app-v2-main-page.svg" alt="Preview" width="640" />
-<br/>
-<i>Steam VPK mock-up version</i>
+<img style="vertical-align: middle;" src="data/mockups/app-v2-dark.png" alt="Preview" width="640" />
 </div>
 <br />
 
