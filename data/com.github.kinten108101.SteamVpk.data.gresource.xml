@@ -2,10 +2,13 @@
 <gresources>
 	<gresource prefix="/com/github/kinten108101/SteamVpk">
     <file>css/style.css</file>
+	  <file>ui/add-addon.ui</file>
+	  <file>ui/add-addon-preview.ui</file>
+	  <file>ui/add-addon-url.ui</file>
     <file>ui/addonlist-page.ui</file>
 	  <file>ui/addonlist-row.ui</file>
     <file>ui/addonlist-section.ui</file>
-    <file>ui/download-page.ui</file>
+	  <file>ui/download-page.ui</file>
     <file>ui/main-window.ui</file>
     <file>ui/omnibar-popover.ui</file>
     <file>ui/omnibar.ui</file>

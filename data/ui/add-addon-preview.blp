@@ -1,0 +1,81 @@
+using Gtk 4.0;
+using Adw 1;
+
+template DownloadPreviewPage : Gtk.Box {
+      orientation: vertical;
+      margin-start: 12;
+      margin-end: 12;
+      margin-bottom: 12;
+      spacing: 12;
+      visible: false;
+
+      Adw.PreferencesGroup {
+        vexpand: true;
+
+        Adw.EntryRow row_uuid {
+          sensitive: false;
+          title: _("File ID");
+        }
+
+        Adw.EntryRow row_display_id {
+          sensitive: false;
+          title: _("Display ID");
+        }
+
+        Adw.EntryRow row_name {
+          sensitive: false;
+          title: _("Name");
+        }
+
+        Adw.EntryRow row_creators {
+          sensitive: false;
+          title: _("Creators");
+        }
+
+        Adw.EntryRow row_categories {
+          sensitive: false;
+          title: _("Categories");
+        }
+
+        Adw.EntryRow row_description {
+          sensitive: false;
+          title: _("Description");
+        }
+
+        Adw.EntryRow row_last_update {
+          sensitive: false;
+          title: _("Last Update");
+        }
+      }
+
+      Adw.PreferencesGroup {
+        vexpand: true;
+        Adw.ActionRow {
+          title: _("Append to your load list");
+          subtitle: _("Once download is finished, this add-on will be appended.");
+
+          [suffix]
+          Gtk.Switch {
+            valign: center;
+            halign: center;
+            active: true;
+          }
+        }
+      }
+
+      Gtk.Box {
+        spacing: 12;
+        homogeneous: true;
+
+        Gtk.Button {
+          label: _("Cancel");
+          action-name: "window.close";
+        }
+
+        Gtk.Button download_button {
+          label: _("Download");
+          action-name: "add-addon.download";
+          styles ["suggested-action"]
+        }
+      }
+}

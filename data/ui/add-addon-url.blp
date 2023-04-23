@@ -1,0 +1,35 @@
+using Gtk 4.0;
+using Adw 1;
+
+template InsertUrlPage : Gtk.Box {
+      orientation: vertical;
+      margin-start: 12;
+      margin-end: 12;
+      margin-bottom: 12;
+      spacing: 12;
+
+      Adw.PreferencesGroup {
+        vexpand: true;
+
+        Adw.EntryRow url_row {
+          sensitive: bind validate_button.sensitive;
+          title: _("URL to Steam Workshop file");
+        }
+      }
+
+      Gtk.Box {
+        spacing: 12;
+        homogeneous: true;
+
+        Gtk.Button {
+          label: _("Cancel");
+          action-name: "window.close";
+        }
+
+        Gtk.Button validate_button {
+          label: _("Validate");
+          action-name: "add-addon.validate-url";
+          styles ["suggested-action"]
+        }
+      }
+}

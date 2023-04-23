@@ -2,6 +2,14 @@ using Gtk 4.0;
 using Adw 1;
 using Panel 1;
 
+menu add_menu {
+  section {
+    label: _("Add-on");
+    item (_("New from Steam Workshop..."), "win.add-addon.add_url")
+    item (_("New from local archive..."), "win.add-addon.add_archive")
+  }
+}
+
 menu win_menu {
   section {
     item (_("Placeholder command"), "app.placeholder-command")
@@ -43,6 +51,14 @@ template MainWindow : Adw.ApplicationWindow {
           title: bind MainWindow.title;
           stack: win-view-stack;
         };
+      [start]
+      Gtk.MenuButton {
+        label: _("Add");
+        icon-name: "list-add-symbolic";
+        always-show-arrow: true;
+        menu-model: add_menu;
+      }
+
 
       [end]
       Gtk.Box {
