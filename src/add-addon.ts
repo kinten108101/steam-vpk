@@ -6,7 +6,8 @@ import { IStorageItem, SampleStorageItem } from './storage-model';
 
 class InsertUrlPage extends Gtk.Box {
   // @ts-ignore
-  /** @type {Gtk.Button} */ _validate_button = this._validate_button;
+  private _validate_button !: Gtk.Button = this._validate_button;
+  // private _validate_button !: Gtk.Button;
 
   static {
     GObject.registerClass({
@@ -25,11 +26,10 @@ class InsertUrlPage extends Gtk.Box {
   }
 
   switchToLoadingState() {
-    const validate_button: Gtk.Button = this._validate_button;
     const spinner = new Gtk.Spinner;
-    spinner.set_parent(validate_button);
-    validate_button.sensitive = false;
-    validate_button.label = '';
+    spinner.set_parent(this._validate_button);
+    this._validate_button.sensitive = false;
+    this._validate_button.label = '';
     spinner.start();
   }
 }
@@ -81,7 +81,6 @@ export class DowloadPreviewPage extends Gtk.Box {
 export class AddAddonWindow extends Adw.Window {
   // @ts-ignore
   _view_stack!: Adw.ViewStack = this._view_stack;
-  //_view_stack!: Adw.ViewStack;
   // @ts-ignore
   private _insert_url_stack_page!: Adw.ViewStackPage = this._insert_url_stack_page;
   // @ts-ignore
