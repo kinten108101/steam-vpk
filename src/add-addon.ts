@@ -4,8 +4,22 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { IStorageItem, SampleStorageItem } from './storage-model';
 
-class Js_InsertUrlPage extends Gtk.Box {
-  [x: string]: any;
+class InsertUrlPage extends Gtk.Box {
+  // @ts-ignore
+  /** @type {Gtk.Button} */ _validate_button = this._validate_button;
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'InsertUrlPage',
+      // @ts-ignore
+      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-url.ui',
+      InternalChildren: [
+        'url_row',
+        'validate_button',
+      ],
+    }, this);
+  }
+
   constructor(props={}){
     super(props);
   }
@@ -20,46 +34,72 @@ class Js_InsertUrlPage extends Gtk.Box {
   }
 }
 
-GObject.registerClass({
-  GTypeName: 'InsertUrlPage',
-  // @ts-ignore
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-url.ui',
-  InternalChildren: [
-    'url_row',
-    'validate_button',
-  ],
-}, Js_InsertUrlPage);
 
-class Js_DowloadPreviewPage extends Gtk.Box {
-  [x: string]: any;
+export class DowloadPreviewPage extends Gtk.Box {
+  /*
+  private _row_uuid!: Adw.EntryRow;
+  private _row_display_id!: Adw.EntryRow;
+  private _row_name!: Adw.EntryRow;
+  private _row_creators!: Adw.EntryRow;
+  private _row_categories!: Adw.EntryRow;
+  private _row_description!: Adw.EntryRow;
+  private _row_last_update!: Adw.EntryRow;
+  */
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_uuid = this._row_uuid;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_display_id = this._row_display_id;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_creators = this._row_creators;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_categories = this._row_categories;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_description = this._row_description;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_last_update = this._row_last_update;
+  // @ts-ignore
+  /** @type {Adw.EntryRow} */ _row_name = this._row_name;
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'DownloadPreviewPage',
+      // @ts-ignore
+      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-preview.ui',
+      InternalChildren: [
+        'row_uuid',
+        'row_display_id',
+        'row_name',
+        'row_creators',
+        'row_categories',
+        'row_description',
+        'row_last_update',
+      ],
+    }, this);
+  }
 }
 
-GObject.registerClass({
-  GTypeName: 'DownloadPreviewPage',
+export class AddAddonWindow extends Adw.Window {
   // @ts-ignore
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-preview.ui',
-  InternalChildren: [
-    'row_uuid',
-    'row_display_id',
-    'row_name',
-    'row_creators',
-    'row_categories',
-    'row_description',
-    'row_last_update',
-  ],
-}, Js_DowloadPreviewPage);
+  _view_stack!: Adw.ViewStack = this._view_stack;
+  //_view_stack!: Adw.ViewStack;
+  // @ts-ignore
+  private _insert_url_stack_page!: Adw.ViewStackPage = this._insert_url_stack_page;
+  // @ts-ignore
+  private _download_preview_stack_page!: Adw.ViewStackPage = this._download_preview_stack_page;
 
-export const AddAddonWindow = GObject.registerClass({
-  GTypeName: 'AddAddonWindow',
-  // @ts-ignore
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon.ui',
-  InternalChildren: [
-    'view_stack',
-    'insert_url_stack_page',
-    'download_preview_stack_page',
-  ],
-}, class Js_AddAddonWindow extends Adw.Window {
-  [x: string]: any;
+  static {
+    GObject.registerClass({
+      GTypeName: 'AddAddonWindow',
+      // @ts-ignore
+      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon.ui',
+      InternalChildren: [
+        'view_stack',
+        'insert_url_stack_page',
+        'download_preview_stack_page',
+      ],
+    }, this);
+  }
+
   constructor(params={}){
     super(params);
     const actionGroup = new Gio.SimpleActionGroup;
@@ -67,7 +107,7 @@ export const AddAddonWindow = GObject.registerClass({
       {
         name: 'validate-url',
         activate: (() => {
-          const insert_url_page: Js_InsertUrlPage = this._insert_url_stack_page.get_child();
+          const insert_url_page: InsertUrlPage = <InsertUrlPage>this._insert_url_stack_page.get_child();
           insert_url_page.switchToLoadingState();
           setTimeout(this.switchToDownloadPreviewPage.bind(this), 2000, SampleStorageItem);
         }).bind(this),
@@ -90,32 +130,45 @@ export const AddAddonWindow = GObject.registerClass({
   }
 
   switchToDownloadPreviewPage(param: IStorageItem) {
-    const preview_page: Js_DowloadPreviewPage = this._download_preview_stack_page.get_child();
+    const preview_page: DowloadPreviewPage = <DowloadPreviewPage>this._download_preview_stack_page.get_child();
     preview_page.visible = true;
 
-    (<Adw.EntryRow>preview_page._row_uuid).text = param.uuid;
-    (<Adw.EntryRow>preview_page._row_display_id).text = param.display_id;
-    (<Adw.EntryRow>preview_page._row_name).text = param.name;
-    (<Adw.EntryRow>preview_page._row_creators).text = param.creators.reduce((acc, cur, idx) => {
-      if (idx === 0) return acc;
-      return acc + ', ' + cur;
-    }, param.creators[0]);
-    (<Adw.EntryRow>preview_page._row_categories).text = param.categories.reduce((acc, cur, idx) => {
-      if (idx === 0) return acc;
-      return acc + ', ' + cur;
-    }, param.categories[0]);
-    (<Adw.EntryRow>preview_page._row_description).text = param.description;
-    (<Adw.EntryRow>preview_page._row_last_update).text = param.last_update;
+    [
+      ['_row_uuid', 'uuid'],
+      ['_row_display_id', 'display_id'],
+      ['_row_name', 'name'],
+      ['_row_creators', 'creators'],
+      ['_row_categories', 'categories'],
+      ['_row_description', 'description'],
+      ['_row_last_update', 'last_update'],
+    ].forEach( ([gprop, paramprop]) => {
+      if (paramprop == 'creators' || paramprop == 'categories') {
+        // @ts-ignore
+        preview_page[gprop].set_text(
+          param[paramprop].reduce(
+            (acc, cur, idx) => {
+              if (idx === 0) return acc;
+              return acc + ', ' + cur;
+            }, param[paramprop][0])
+        );
+      }
+      // @ts-ignore
+      else preview_page[gprop].set_text(param[paramprop]);
+    });
 
-    const view_stack: Adw.ViewStack = this._view_stack;
-    view_stack.visible_child_name = 'downloadPreviewPage';
+    this._view_stack.set_visible_child_name('downloadPreviewPage');
     return;
   }
-});
+}
 
-export const SelectAddonDialog = GObject.registerClass({
-  GTypeName: 'SelectAddonDialog',
-}, class extends Gtk.FileChooserNative {
+export class SelectAddonDialog extends Gtk.FileChooserNative {
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'SelectAddonDialog',
+    }, this);
+  }
+
   constructor(params={}){
     const filter = new Gtk.FileFilter;
     filter.add_pattern('*.vpk');
@@ -140,4 +193,4 @@ export const SelectAddonDialog = GObject.registerClass({
       // file_chooser.destroy() ??
     }).bind(this));
   }
-});
+}
