@@ -4,8 +4,8 @@
 <h1>Steam VPK</h1>
 Add-on manager for Left 4 Dead 2
 <br /><br />
-
-[![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
+  
+[![Please Don't ship WIP](https://img.shields.io/badge/Please-Don't%20Ship%20WIP-yellow)](https://dont-ship.it/) [![Please do not theme this app](https://stopthemingmy.app/badge.svg)](https://stopthemingmy.app)
 
 </div>
 <div align="center">
