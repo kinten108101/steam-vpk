@@ -26,6 +26,7 @@ modules:
       - type: git
         url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
         tag: v0.6.0
+        commit: 9adcab2d225fd6435edc85c72a0b67e33880e00b
   - name: libpanel
     buildsystem: meson
     builddir: true
@@ -34,7 +35,8 @@ modules:
     sources:
       - type: git
         url: https://gitlab.gnome.org/GNOME/libpanel.git
-        branch: main
+        tag: 1.1.1
+        commit: a529350afeed3fc936f2d84d19b83948456bac58
   - name: SteamVpk
     buildsystem: meson
     sources:
