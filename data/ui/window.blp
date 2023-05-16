@@ -45,11 +45,11 @@ template $StvpkWindow : Adw.ApplicationWindow {
     orientation: vertical;
 
     Adw.HeaderBar {
-      centering-policy: loose;
+      centering-policy: strict;
       title-widget:
-        Adw.ViewSwitcherTitle win-view-switcher-title {
-          title: bind template.title;
+        Adw.ViewSwitcher {
           stack: win-view-stack;
+          policy: wide;
         };
 
       [start]
@@ -125,7 +125,8 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
     Adw.ViewSwitcherBar {
       stack: win-view-stack;
-      reveal: bind win-view-switcher-title.title-visible;
+      reveal: false;
+
     }
   }
 }
