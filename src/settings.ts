@@ -1,5 +1,6 @@
 import Gio from 'gi://Gio';
 import { SCHEMA_ID } from './const';
+import { Errors, StvpkError } from './errors';
 
 const LAST_PROFILE = 'last-profile';
 
@@ -25,6 +26,24 @@ export class SettingsManager {
     });
   }
 
+  get_last_profile(): string {
+    const ret = this._gsettings.get_string(LAST_PROFILE);
+    if (ret === null) {
+      throw new StvpkError({
+        code: Errors.SETTINGS_NOT_FOUND,
+      });
+    }
+    return ret;
+  }
+
+  set_last_profile(value: string): void {
+    const status = this._gsettings.set_string(LAST_PROFILE, value);
+    if (status === false) {
+      throw new StvpkError({
+        code: Errors.SETTINGS_CANNOT_WRITE,
+      });
+    }
+  }
 }
 
 

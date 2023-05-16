@@ -1,9 +1,16 @@
+import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
-import { Js_AddonlistItem, AddonlistItem } from './addonlist-model';
+import { AddonlistPageItem } from './addonlist-model';
+import { ActionEntry, StatefulActionEntry, make_compat_action_entries } from './actions';
+
+export interface SectionManifest {
+  title: string;
+  model: Gio.ListStore;
+}
 
 const AddonlistRow = GObject.registerClass({
   GTypeName: 'AddonlistRow',
@@ -13,23 +20,23 @@ const AddonlistRow = GObject.registerClass({
       'List Item',
       'AddonlistItem object',
       GObject.ParamFlags.READWRITE,
-      AddonlistItem.$gtype),
+      AddonlistPageItem.$gtype),
   },
   // @ts-ignore
   Template: 'resource:///com/github/kinten108101/SteamVpk/ui/addonlist-row.ui',
   InternalChildren: [
     'description_field',
     'last_update_field',
+    'toggle',
   ],
 }, class extends Adw.ExpanderRow {
-
-  [props: string]: any;
   constructor(params={}){
     super(params);
     // TODO: Property binding is one-way
-    const listitem: Js_AddonlistItem = this.list_item;
+    const listitem: AddonlistPageItem = this.list_item;
     listitem.bind_property('name', this, 'title', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     listitem.bind_property('id', this, 'subtitle', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
+    listitem.bind_property('enabled', this._toggle, 'active', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     const descriptionField: Gtk.Label = this._description_field;
     listitem.bind_property('description', descriptionField, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     const lastUpdateField: Gtk.Label = this._last_update_field;
@@ -48,7 +55,7 @@ export class Js_AddonlistSection extends Gtk.Box {
     section_list.bind_model(model, this.#rowFactory.bind(this));
   }
 
-  #rowFactory(entry: Js_AddonlistItem): Gtk.Widget {
+  #rowFactory(entry: AddonlistPageItem): Gtk.Widget {
     return new AddonlistRow({
       'list-item': entry,
     });

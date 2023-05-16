@@ -6,7 +6,7 @@ template AddonlistSection : Gtk.Box {
   spacing: 10;
 
   Gtk.Label section_label {
-    label: _("Addon-list Section Label");
+    label: bind AddonlistSection.title;
     xalign: 0;
     styles ["heading"]
   }

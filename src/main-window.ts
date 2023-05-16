@@ -1,4 +1,3 @@
-import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
@@ -10,13 +9,18 @@ import './download-page.js';
 import { AddAddonWindow, SelectAddonDialog } from './add-addon';
 import { ActionEntry, StatelessActionEntry, make_compat_action_entries } from './actions';
 import { set_accels_for_local_action } from './application';
+import { force_profile_self_reload } from './profile-manager';
 
-export const MainWindow = GObject.registerClass({
-  GTypeName: 'MainWindow',
-  // @ts-ignore
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
-}, class Js_MainWindow extends Adw.ApplicationWindow {
-  [x: string]: any;
+export class MainWindow extends Adw.ApplicationWindow {
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'MainWindow',
+      // @ts-ignore
+      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
+    }, this);
+  }
+
   constructor(params={}) {
     super(params);
     this.#setWinActions();
@@ -32,6 +36,13 @@ export const MainWindow = GObject.registerClass({
       {
         name: 'show-about',
         activate: this.onShowAbout.bind(this),
+      } as StatelessActionEntry,
+      {
+        name: 'reload-data',
+        activate: () => {
+          force_profile_self_reload();
+          return;
+        },
       } as StatelessActionEntry,
       {
         name: 'show-help',
@@ -107,4 +118,4 @@ export const MainWindow = GObject.registerClass({
     this.run_dispose();
     return true;
   }
-});
+}

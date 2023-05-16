@@ -13,6 +13,7 @@
     <file>ui/omnibar-popover.ui</file>
     <file>ui/omnibar.ui</file>
 		<file>ui/preferences-window.ui</file>
+	  <file>ui/new-profile.ui</file>
 	</gresource>
 	<gresource prefix="/com/github/kinten108101/SteamVpk/icons/scalable/actions">
 		<file alias="stvpk-run-start-symbolic.svg">icons/scalable/actions/run-start-symbolic.svg</file>
@@ -21,5 +22,6 @@
 		<file alias="build-alt-symbolic.svg">icons/scalable/actions/build-alt-symbolic.svg</file>
 	  <file alias="play-large-symbolic.svg">icons/scalable/actions/play-large-symbolic.svg</file>
 	  <file alias="app.svg">icons/com.github.kinten108101.SteamVpk.svg</file>
+	  <file alias="refresh-large-symbolic.svg">icons/scalable/actions/refresh-large-symbolic.svg</file>
 	</gresource>
 </gresources>

@@ -64,6 +64,11 @@ template MainWindow : Adw.ApplicationWindow {
       Gtk.Box {
         orientation: horizontal;
 
+        Gtk.Button {
+          icon-name: "refresh-large-symbolic";
+          action-name: "win.reload-data";
+        }
+
         Gtk.ToggleButton {
           can-focus: true;
           icon-name: "system-search-symbolic";
@@ -83,7 +88,9 @@ template MainWindow : Adw.ApplicationWindow {
       Gtk.CenterBox {
 
         [center]
-        .Omnibar {}
+        .Omnibar omnibar {
+          parent-window: MainWindow;
+        }
 
         [end]
         Adw.SplitButton run-button-with-options {
@@ -105,7 +112,7 @@ template MainWindow : Adw.ApplicationWindow {
           name: "main-page";
           title: _("Load List");
           icon-name: "puzzle-piece-symbolic";
-          child: .AddonlistPage {};
+          child: .AddonlistPage addonlist_page {};
         }
 
         Adw.ViewStackPage {
