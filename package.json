@@ -1,27 +1,19 @@
 {
-  "name": "com.github.kinten108101.SteamVpk",
-  "author": "kinten108101",
-  "private": true,
   "type": "module",
   "scripts": {
-    "run": "flatpak run com.github.kinten108101.SteamVpk",
-    "build:app": "flatpak run org.flatpak.Builder --force-clean --user --install build com.github.kinten108101.SteamVpk.yml",
-    "build:types": "yarn ts-for-gir generate Gtk-4.0 Adw-1 Panel-1 --generateAlias",
     "lint": "eslint src",
-    "legacy:dev": "yarn run lint && yarn run build && yarn run run",
-    "prepare": "husky install",
+    "build:types": "yarn ts-for-gir generate Gtk-4.0 Adw-1 Panel-1 --generateAlias",
+    "run": "flatpak run com.github.kinten108101.SteamVpk",
+    "build:app": "flatpak run org.flatpak.Builder --force-clean --user --install build com.github.kinten108101.SteamVpk.yml --disable-updates",
+    "build:app-online": "flatpak run org.flatpak.Builder --force-clean --user --install build com.github.kinten108101.SteamVpk.yml",
     "bundle": "yarn node esbuild.js",
-    "validate": "yarn validate:types && yarn validate:app",
-    "validate:types": "tsc --project tsconfig.types.json",
-    "validate:app": "tsc --noEmit",
-    "dev:full": "yarn run lint && yarn run validate && yarn run bundle && yarn run build:app && yarn run run",
-    "dev": "yarn run bundle && yarn run build:app && yarn run run"
+    "dev": "yarn run bundle && yarn run build:app && yarn run run",
+    "dev-update": "yarn run bundle && yarn run build:app-online && yarn run run"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/eslint-parser": "^7.21.3",
     "@babel/plugin-syntax-import-assertions": "^7.20.0",
-    "@prettier/plugin-xml": "^2.2.0",
     "@ts-for-gir/cli": "^3.0.0-beta.12",
     "@typescript-eslint/eslint-plugin": "^5.58.0",
     "@typescript-eslint/parser": "^5.58.0",
@@ -29,14 +21,6 @@
     "eslint": "^8.36.0",
     "eslint-plugin-gjs": "^1.0.4",
     "eslint-plugin-import": "^2.27.5",
-    "husky": "^8.0.3",
-    "lint-staged": "^13.2.1",
-    "prettier": "^2.8.7",
     "typescript": "^5.0.4"
-  },
-  "lint-staged": {
-    "*.ts": "eslint --cache --fix",
-    "*.{xml,css,md,yml,yaml,json}": "prettier --write"
-  },
-  "dependencies": {}
+  }
 }
