@@ -7,7 +7,10 @@ import Gtk from 'gi://Gtk';
 
 import { MainWindow } from './main-window.js';
 import { initSettingsManager } from './settings';
+<<<<<<< HEAD
 import { Errors, StvpkError } from './errors';
+=======
+>>>>>>> 070079f (settings manager: missing import)
 let _application_instance: Application | undefined;
 
 function get_application_instance(): Application {
