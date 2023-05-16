@@ -1,6 +1,8 @@
 type StvpkErrorCode = symbol;
 
 export const Errors = {
+  SINGLETON_INITIALIZED: Symbol('SINGLETON_INITIALIZED'),
+  SINGLETON_UNINITIALIZED: Symbol('SINGLETON_UNINITIALIZED'),
 };
 
 interface StvpkErrorCause {

@@ -6,6 +6,29 @@ import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 
 import { MainWindow } from './main-window.js';
+import { initSettingsManager } from './settings';
+import { Errors, StvpkError } from './errors';
+let _application_instance: Application | undefined;
+
+function get_application_instance(): Application {
+  if (!_application_instance) {
+    throw new StvpkError({
+      code: Errors.SINGLETON_UNINITIALIZED,
+      msg: 'Application has not been instantitated',
+    });
+  }
+  return _application_instance;
+}
+
+function save_application_instance(val: Application): void {
+  if (_application_instance !== undefined) {
+    throw new StvpkError({
+      code: Errors.SINGLETON_INITIALIZED,
+      msg: 'Application has already been instantiated',
+    });
+  }
+  _application_instance = val;
+}
 
 export const Application = GObject.registerClass({
   GTypeName: 'Application',
@@ -13,6 +36,7 @@ export const Application = GObject.registerClass({
   constructor(params={}) {
     super(params);
     GLib.set_application_name('SteamVpk');
+    save_application_instance(this);
     initSettingsManager();
   }
 
