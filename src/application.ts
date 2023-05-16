@@ -7,10 +7,9 @@ import Gtk from 'gi://Gtk';
 
 import { MainWindow } from './main-window.js';
 import { initSettingsManager } from './settings';
-<<<<<<< HEAD
+import { ActionEntry } from './actions';
 import { Errors, StvpkError } from './errors';
-=======
->>>>>>> 070079f (settings manager: missing import)
+
 let _application_instance: Application | undefined;
 
 function get_application_instance(): Application {
@@ -77,9 +76,8 @@ export const Application = GObject.registerClass({
   }
 
   #setAppAccels() {
-    this.set_accels_for_action('app.placeholder-command', ['<Control>x']);
-    this.set_accels_for_action('app.quit', ['<Control>q']);
-    this.set_accels_for_action('win.show-preferences', ['<Control>comma']);
+    set_accels_for_local_action('app.placeholder-command', ['<Control>x']);
+    set_accels_for_local_action('app.quit', ['<Control>q']);
   }
 
   #setStylesheet(){
@@ -101,3 +99,38 @@ export const Application = GObject.registerClass({
     main_window.present();
   }
 });
+
+/**
+ * @param actionList An array of ActionEntry
+ * @param prefix The prefix for the action group of the above actionList
+ */
+export function set_accels_for_local_action(actionList: ActionEntry[], prefix?: string): void;
+
+/**
+ * @param detailed_action_name Name of the action, including prefix
+ * @param accels The accelerators that bind to this action
+ */
+export function set_accels_for_local_action(detailed_action_name: string, accels: string[]): void;
+
+export function set_accels_for_local_action(arg1: any, arg2: any): void {
+  if (typeof arg1 === 'string' && Array.isArray(arg2)) {
+    const detailed_action_name: string = arg1;
+    const accels: string[] = arg2;
+    get_application_instance().set_accels_for_action(detailed_action_name, accels);
+    return;
+  }
+  else {
+    const actionList: ActionEntry[] = arg1;
+    const prefix: string | undefined = arg2;
+    actionList.forEach( actionEntry => {
+      if (!actionEntry.name || !actionEntry.accels) return;
+      const detailed_action_name: string = (
+        prefix
+          ? `${prefix}.${actionEntry.name}`
+          : actionEntry.name
+      );
+      get_application_instance().set_accels_for_action(detailed_action_name, actionEntry.accels);
+    });
+    return;
+  }
+}

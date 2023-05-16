@@ -8,6 +8,8 @@ import { PreferencesWindow } from './preferences-window.js';
 import './addonlist-page.js';
 import './download-page.js';
 import { AddAddonWindow, SelectAddonDialog } from './add-addon';
+import { ActionEntry, StatelessActionEntry, make_compat_action_entries } from './actions';
+import { set_accels_for_local_action } from './application';
 
 export const MainWindow = GObject.registerClass({
   GTypeName: 'MainWindow',
@@ -21,66 +23,52 @@ export const MainWindow = GObject.registerClass({
   }
 
   #setWinActions() {
-    const actionEntries: Gio.ActionEntry[] = [
+    const actionEntries: ActionEntry[] = [
       {
         name: 'show-preferences',
         activate: this.#onShowPreferences.bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+        accels: ['<Control>comma'],
+      } as StatelessActionEntry,
       {
         name: 'show-about',
         activate: this.onShowAbout.bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+      } as StatelessActionEntry,
       {
         name: 'show-help',
         activate: function(){
           return;
         }.bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+        accels: ['F1'],
+      } as StatelessActionEntry,
       {
         name: 'show-shortcuts',
-        activate: function(){
+        activate: () => {
           return;
-        }.bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+        },
+        accels: ['<Control>question']
+      } as StatelessActionEntry,
       {
         name: 'add-addon.add_url',
-        activate: (() => {
+        activate: () => {
           const urlWindow = new AddAddonWindow({
             transient_for: this,
           });
-          urlWindow.show();
-        }).bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+          urlWindow.set_visible(true);
+          return urlWindow;
+        },
+      } as StatelessActionEntry,
       {
         name: 'add-addon.add_archive',
-        activate: (() => {
+        activate: () => {
           const fileDiag = new SelectAddonDialog({
             transient_for: this,
           });
-          // what about show method right in constructor?
-          return fileDiag.show();
-        }).bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; },
-      },
+          fileDiag.show();
+        },
+      } as StatelessActionEntry,
     ];
-    this.add_action_entries(actionEntries, null);
+    this.add_action_entries(make_compat_action_entries(actionEntries), null);
+    set_accels_for_local_action(actionEntries, 'win');
   }
 
   #onShowPreferences() {
