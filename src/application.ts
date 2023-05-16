@@ -13,6 +13,7 @@ export const Application = GObject.registerClass({
   constructor(params={}) {
     super(params);
     GLib.set_application_name('SteamVpk');
+    initSettingsManager();
   }
 
   vfunc_startup() {

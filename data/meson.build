@@ -16,6 +16,11 @@ blueprints = custom_target('blueprints',
   command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
+install_data(
+  APPID + '.gschema.xml',
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
+)
+
 gnome.compile_resources(
 	APPID + '.data',
 	APPID + '.data.gresource.xml',
