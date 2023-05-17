@@ -1,11 +1,9 @@
-import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
 import { AddonlistPageItem } from './addonlist-model';
-import { ActionEntry, StatefulActionEntry, make_compat_action_entries } from './actions';
 
 export interface SectionManifest {
   title: string;
