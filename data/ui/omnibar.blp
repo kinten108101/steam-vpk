@@ -3,7 +3,6 @@ using Panel 1;
 
 menu omnibar_menu {
   section {
-    item (_("Run placeholder command"), "app.placeholder-command", "build-alt-symbolic")
     submenu active_profile_menu {
       label: _("Active Profile");
       item (_("New profile..."), "profile.new-profile")
@@ -12,10 +11,6 @@ menu omnibar_menu {
     }
     item (_("Import add-ons..."), "profile.import")
     item (_("Export add-ons..."), "profile.export")
-  }
-  section {
-    item (_("Build"), "profile.build")
-    item (_("Build and Run"), "profile.build-run")
   }
 }
 
