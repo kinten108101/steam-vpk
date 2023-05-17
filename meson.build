@@ -12,3 +12,7 @@ gnome = import('gnome')
 
 subdir('data')
 subdir('steamvpk')
+
+gnome.post_install(
+  glib_compile_schemas: true
+)
