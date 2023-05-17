@@ -29,5 +29,3 @@ export function get_profile_manifest_path(profile_id: string) {
 export const PROFILE_INDEX = `${PROFILE}/profiles.json`;
 export const DATA_INDEX = `${DATA}/addons.json`;
 
-export const STARTUP_PROFILE_INDEX = [];
-
