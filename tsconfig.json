@@ -1,7 +1,7 @@
 {
   "extends": "./tsconfig.alias.json",
   "compilerOptions": {
-    "lib": ["ESNext", "dom"],
+    "lib": ["ES6"],
     "types": [],
     "target": "ESNext",
     "module": "ESNext",
