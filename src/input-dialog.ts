@@ -18,34 +18,32 @@ export interface NewProfileDialogResponse {
 export class NewProfileDialog extends Adw.Window {
 
   /**
-   * @return Gtk.ResponseType
-   *
+   * @param {Gtk.Window} parent_window - a GtkWindow
+   * @return {Promise<NewProfileDialogResponse>} a response object with Gtk.ResponseType status
    */
   static async get_content_async(parent_window: Gtk.Window): Promise<NewProfileDialogResponse> {
     const dialog = new NewProfileDialog({
       transient_for: parent_window,
     });
     const res: NewProfileDialogResponse = await dialog.get_content_async()
-      .finally(() =>{
+      .finally(() => {
         dialog.destroy();
       });
     return res;
   }
 
-  // @ts-ignore
-  private _name_row!: Adw.EntryRow = this._name_row;
-  // @ts-ignore
-  private _id_row!: Adw.EntryRow = this._id_row;
-  // @ts-ignore
-  private _use_all_switch!: Gtk.Switch = this._use_all_switch;
 
-  private resolve: ((value: NewProfileDialogResponse) => void) | undefined = undefined;
-  private reject: ((reason?: any) => void) | undefined = undefined;
+  private _name_row!: Adw.EntryRow;
+
+  private _id_row!: Adw.EntryRow;
+
+  private _use_all_switch!: Gtk.Switch;
+
+  private resolve: ((value: NewProfileDialogResponse) => void) | undefined;
 
   static {
     GObject.registerClass({
       GTypeName: 'NewProfile',
-      // @ts-ignore
       Template: 'resource:///com/github/kinten108101/SteamVpk/ui/new-profile.ui',
       InternalChildren: [
         'name_row',
@@ -55,21 +53,20 @@ export class NewProfileDialog extends Adw.Window {
     }, this);
   }
 
-  constructor(params={}) {
+  constructor(params = {}) {
     super(params);
-
     this._name_row.connect('apply', () => {
       const name = this._name_row.text;
-      if (name === null) return;
+      if (name === null)
+        return;
       this._id_row.set_text(generate_id_from_name(name));
     });
     this.connect('close-request', this.on_cancel_clicked);
   }
 
   async get_content_async(): Promise<NewProfileDialogResponse> {
-    const res: NewProfileDialogResponse = await new Promise((resolve, reject) => {
+    const res: NewProfileDialogResponse = await new Promise(resolve => {
       this.resolve = resolve;
-      this.reject = reject;
       this.set_visible(true);
     });
     return res;
@@ -95,13 +92,13 @@ export class NewProfileDialog extends Adw.Window {
         profile_name,
         profile_id,
         use_all_available_addons,
-      }
+      },
     };
-    this.resolve?.call(this, response);
+    this.resolve?.(response);
   }
 
   on_cancel_clicked() {
-    this.resolve?.call(this, {
+    this.resolve?.({
       status: Gtk.ResponseType.CANCEL,
       content: null,
     } as NewProfileDialogResponse);

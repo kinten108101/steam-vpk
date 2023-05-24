@@ -2,16 +2,15 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { IStorageItem, SampleStorageItem } from './storage-model';
+
+import { ActionEntry, StatelessActionEntry, makeAction } from './actions.js';
 
 class InsertUrlPage extends Gtk.Box {
-  // @ts-ignore
-  /** @type {Gtk.Button} */ _validate_button = this._validate_button;
+  private _validate_button !: Gtk.Button;
 
   static {
     GObject.registerClass({
       GTypeName: 'InsertUrlPage',
-      // @ts-ignore
       Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-url.ui',
       InternalChildren: [
         'url_row',
@@ -20,52 +19,36 @@ class InsertUrlPage extends Gtk.Box {
     }, this);
   }
 
-  constructor(props={}){
-    super(props);
-  }
-
   switchToLoadingState() {
-    const validate_button: Gtk.Button = this._validate_button;
-    const spinner = new Gtk.Spinner;
-    spinner.set_parent(validate_button);
-    validate_button.sensitive = false;
-    validate_button.label = '';
+    const spinner = new Gtk.Spinner();
+    spinner.set_parent(this._validate_button);
+    this._validate_button.sensitive = false;
+    this._validate_button.label = '';
     spinner.start();
   }
 }
 
 
 export class DowloadPreviewPage extends Gtk.Box {
-  /*
-  private _row_uuid!: Adw.EntryRow;
-  private _row_display_id!: Adw.EntryRow;
-  private _row_name!: Adw.EntryRow;
-  private _row_creators!: Adw.EntryRow;
-  private _row_categories!: Adw.EntryRow;
-  private _row_description!: Adw.EntryRow;
-  private _row_last_update!: Adw.EntryRow;
-  */
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_uuid = this._row_uuid;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_display_id = this._row_display_id;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_creators = this._row_creators;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_categories = this._row_categories;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_description = this._row_description;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_last_update = this._row_last_update;
-  // @ts-ignore
-  /** @type {Adw.EntryRow} */ _row_name = this._row_name;
+  public row_uuid!: Adw.EntryRow;
+
+  public row_display_id!: Adw.EntryRow;
+
+  public row_name!: Adw.EntryRow;
+
+  public row_creators!: Adw.EntryRow;
+
+  public row_categories!: Adw.EntryRow;
+
+  public row_description!: Adw.EntryRow;
+
+  public row_last_update!: Adw.EntryRow;
 
   static {
     GObject.registerClass({
       GTypeName: 'DownloadPreviewPage',
-      // @ts-ignore
       Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-preview.ui',
-      InternalChildren: [
+      Children: [
         'row_uuid',
         'row_display_id',
         'row_name',
@@ -79,18 +62,15 @@ export class DowloadPreviewPage extends Gtk.Box {
 }
 
 export class AddAddonWindow extends Adw.Window {
-  // @ts-ignore
-  _view_stack!: Adw.ViewStack = this._view_stack;
-  //_view_stack!: Adw.ViewStack;
-  // @ts-ignore
-  private _insert_url_stack_page!: Adw.ViewStackPage = this._insert_url_stack_page;
-  // @ts-ignore
-  private _download_preview_stack_page!: Adw.ViewStackPage = this._download_preview_stack_page;
+  private _view_stack!: Adw.ViewStack;
+
+  private _insert_url_stack_page!: Adw.ViewStackPage;
+
+  private _download_preview_stack_page!: Adw.ViewStackPage;
 
   static {
     GObject.registerClass({
       GTypeName: 'AddAddonWindow',
-      // @ts-ignore
       Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon.ui',
       InternalChildren: [
         'view_stack',
@@ -100,64 +80,63 @@ export class AddAddonWindow extends Adw.Window {
     }, this);
   }
 
-  constructor(params={}){
+  constructor(params = {}) {
     super(params);
-    const actionGroup = new Gio.SimpleActionGroup;
-    const actionEntries: Gio.ActionEntry[] = [
+    const actionGroup = new Gio.SimpleActionGroup();
+
+    const actionList: ActionEntry[] = [
       {
         name: 'validate-url',
-        activate: (() => {
-          const insert_url_page: InsertUrlPage = <InsertUrlPage>this._insert_url_stack_page.get_child();
-          insert_url_page.switchToLoadingState();
+        activate: () => {
+          const insertUrlPage: InsertUrlPage = <InsertUrlPage><unknown> this._insert_url_stack_page.get_child();
+          insertUrlPage.switchToLoadingState();
           setTimeout(this.switchToDownloadPreviewPage.bind(this), 2000, SampleStorageItem);
-        }).bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; }
-      },
+        },
+      } as StatelessActionEntry,
       {
         name: 'download',
-        activate: (() => {
+        activate: () => {
           this.close();
-        }).bind(this),
-        parameter_type: null,
-        state: null,
-        change_state: () => { return; }
-      },
+        },
+      } as StatelessActionEntry,
     ];
-    actionGroup.add_action_entries(actionEntries, null);
+    actionList.forEach(item => {
+      const action = makeAction(item);
+      actionGroup.insert(action);
+    });
+
     this.insert_action_group('add-addon', actionGroup);
   }
 
-  switchToDownloadPreviewPage(param: IStorageItem) {
-    const preview_page: DowloadPreviewPage = <DowloadPreviewPage>this._download_preview_stack_page.get_child();
-    preview_page.visible = true;
+  switchToDownloadPreviewPage(target: IStorageItem): void {
+    const previewPage: DowloadPreviewPage = <DowloadPreviewPage><unknown> this._download_preview_stack_page.get_child();
+    previewPage.set_visible(true);
 
-    [
-      ['_row_uuid', 'uuid'],
-      ['_row_display_id', 'display_id'],
-      ['_row_name', 'name'],
-      ['_row_creators', 'creators'],
-      ['_row_categories', 'categories'],
-      ['_row_description', 'description'],
-      ['_row_last_update', 'last_update'],
-    ].forEach( ([gprop, paramprop]) => {
-      if (paramprop == 'creators' || paramprop == 'categories') {
-        // @ts-ignore
-        preview_page[gprop].set_text(
-          param[paramprop].reduce(
-            (acc, cur, idx) => {
-              if (idx === 0) return acc;
-              return acc + ', ' + cur;
-            }, param[paramprop][0])
-        );
-      }
-      // @ts-ignore
-      else preview_page[gprop].set_text(param[paramprop]);
-    });
+    previewPage.row_uuid.set_text(target.uuid);
+    previewPage.row_display_id.set_text(target.display_id);
+    previewPage.row_name.set_text(target.name);
+    if (target.creators !== undefined) {
+      previewPage.row_creators.set_text(
+        target.creators.reduce((acc: string, cur: string, idx: number) => {
+          if (idx === 0)
+            return acc;
+          return `${acc}, ${cur}`;
+        }, <string>target.creators[0]),
+      );
+    }
+    if (target.categories !== undefined) {
+      previewPage.row_categories.set_text(
+        target.categories.reduce((acc: string, cur: string, idx: number) => {
+          if (idx === 0)
+            return acc;
+          return `${acc}, ${cur}`;
+        }, <string>target.categories[0]),
+      );
+    }
+    previewPage.row_description.set_text(target.description);
+    previewPage.row_last_update.set_text(target.last_update);
 
     this._view_stack.set_visible_child_name('downloadPreviewPage');
-    return;
   }
 }
 
@@ -169,8 +148,8 @@ export class SelectAddonDialog extends Gtk.FileChooserNative {
     }, this);
   }
 
-  constructor(params={}){
-    const filter = new Gtk.FileFilter;
+  constructor(params = {}) {
+    const filter = new Gtk.FileFilter();
     filter.add_pattern('*.vpk');
     super({
       ...params,
@@ -180,17 +159,73 @@ export class SelectAddonDialog extends Gtk.FileChooserNative {
       filter,
     });
     // the callback below didn't need to bind this. How did that happen?
-    this.connect('response', ((file_chooser: Gtk.FileChooserNative, response: number) => {
-      if (response !== Gtk.ResponseType.ACCEPT) return;
+    this.connect('response', (fileChooser: Gtk.FileChooserNative, response: number) => {
+      if (response !== Gtk.ResponseType.ACCEPT)
+        return;
       // TODO: process file here
-      const file: Gio.File | null = file_chooser.get_file();
-      if (!file) return;
+      const file: Gio.File | null = fileChooser.get_file();
+      if (!file)
+        return;
       const addAddonWindow = new AddAddonWindow({
         transient_for: this.transient_for,
       });
       addAddonWindow.show();
       addAddonWindow.switchToDownloadPreviewPage(SampleStorageItem);
       // file_chooser.destroy() ??
-    }).bind(this));
+    });
   }
 }
+
+export interface IStorageItem {
+  uuid: string,
+  display_id: string,
+  icon?: string,
+  name: string,
+  creators: string[],
+  categories: string[],
+  description: string,
+  last_update: string,
+  file: string,
+}
+
+export class Js_StorageItem extends GObject.Object {}
+
+export const StorageItem = GObject.registerClass({
+  GTypeName: 'StorageItem',
+  Properties: {
+
+  },
+}, Js_StorageItem);
+
+export const SampleStorageItem: IStorageItem = {
+  uuid: '2964411676',
+  display_id: '',
+  name: 'Counter-Strike 2: P90',
+  creators: ['ihcorochris'],
+  categories: [
+    'Sounds',
+    'UI',
+    'Models',
+    'SMG',
+  ],
+  description:
+`The most futuristic gun on the planet!
+
+The FN P90 TR (Triple Rail) appears in the game with rail-mounted iron sights. It is the only submachine gun not to award extra money for kills. The weapon is frequently linked with lower-skilled players due to its high armor penetration value, high capacity, respectable damage, mild recoil, and quick rate of fire; its only major drawbacks are the aforementioned low kill award, an outrageous price, and a long reload.
+
+Magazine isn't animated for the same reason as the Steyr AUG and FAMAS. The charging handle on the other hand, moves in thirdperson.
+
+Replaces the Uzi on Twilight Sparkle's ported Global Offensive animations.
+
+FEATURES:
+Global Offensive Sounds and Animations
+Custom HUD Icon
+Skin Support
+Another gun that doesn't have the mag animated.
+
+CREDITS
+Valve - Model, Textures, Sounds, and Animations
+Twilight Sparkle - Animations`,
+  last_update: '19 Apr @ 7:20pm',
+  file: '~/.cache/a912bdf2e0',
+};

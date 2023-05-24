@@ -2,14 +2,12 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
 
-import { AddonlistSection, Js_AddonlistSection } from './addonlist-widget';
-
-import { get_data_item_list, get_loader_item_list, register_for_data_reload } from './addon-manager';
-import { DataItem, LoaderItem } from './model';
-import { AddonlistPageItem } from './addonlist-model';
+import { AddonlistPageItem, AddonlistSection, Js_AddonlistSection } from './addonlist-widgets.js';
+import { get_data_item_list, get_loader_item_list, register_for_data_reload } from './addon-manager.js';
+import { DataItem, LoaderItem } from './addon-schema.js';
 
 export class AddonlistPage extends Gtk.Box {
-  private _addonlist_page_content !: Gtk.Box = this._addonlist_page_content;
+  private _addonlist_page_content !: Gtk.Box;
 
   private default_store: Gio.ListStore = new Gio.ListStore(AddonlistPageItem.$gtype);
   private mixin_store: Gio.ListStore = new Gio.ListStore(AddonlistPageItem.$gtype);

@@ -6,10 +6,9 @@ export interface ProfileManifest {
 }
 
 export class Profile extends GObject.Object {
-  // @ts-ignore
-  public name !: string = this.name;
-  // @ts-ignore
-  public id !: string = this.id;
+  public name !: string;
+
+  public id !: string;
 
   static {
     GObject.registerClass({

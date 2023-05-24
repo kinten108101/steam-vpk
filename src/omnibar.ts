@@ -4,37 +4,33 @@ import GObject from 'gi://GObject';
 import Panel from 'gi://Panel';
 import Gtk from 'gi://Gtk';
 
-import { Profile } from './profile-model';
-import { create_new_profile, delete_profile_data, force_profile_self_reload, get_current_profile, get_current_profile_name, register_for_profile_change, remove_profile_from_index, retrieve_profile_list, update_current_profile } from './profile-manager';
-import { ActionEntry, StatefulActionEntry, StatelessActionEntry, make_compat_action_entries } from './actions';
-import { set_accels_for_local_action } from './application';
-import { MainWindow } from './main-window';
-import { load_file_content_into_string, write_and_replace_file_async } from './utils';
-import { RestoreItemManifest } from './restore-model';
-import { register_for_data_reload } from './addon-manager';
-import { LoaderItemManifest, LoadingManifest, RestoreManifest } from './addon-model';
-import { NewProfileDialog, NewProfileDialogResponse } from './input-dialog';
-import { get_loader_item_list } from './addon-manager';
-import { id_table_get_steam_id, id_table_get_stvpk_id } from './id-table';
-import { get_loading_manifest_path } from './const';
-import { Errors, StvpkError } from './errors';
+import { Profile } from './profile-schema.js';
+import { create_new_profile, delete_profile_data, force_profile_self_reload, get_current_profile, get_current_profile_name, register_for_profile_change, remove_profile_from_index, retrieve_profile_list, update_current_profile } from './profile-manager.js';
+import { ActionEntry, StatefulActionEntry, StatelessActionEntry, makeAction } from './actions.js';
+import { set_accels_for_local_action } from './application.js';
+import { MainWindow } from './main-window.js';
+import { load_file_content_into_string, write_and_replace_file_async } from './utils.js';
+import { register_for_data_reload } from './addon-manager.js';
+import { LoaderItemManifest, LoadingManifest, RestoreItemManifest, RestoreManifest } from './addon-schema.js';
+import { NewProfileDialog, NewProfileDialogResponse } from './input-dialog.js';
+import { get_loader_item_list } from './addon-manager.js';
+import { id_table_get_steam_id, id_table_get_stvpk_id } from './id-table.js';
+import { get_loading_manifest_path } from './const.js';
+import { Errors, StvpkError } from './errors.js';
 
 GObject.registerClass({
   GTypeName: 'OmnibarPopover',
-  // @ts-ignore
   Template: 'resource:///com/github/kinten108101/SteamVpk/ui/omnibar-popover.ui',
 }, class extends Gtk.Popover {});
 
 export class Omnibar extends Panel.OmniBar {
-  // @ts-ignore
-  private _active_profile_menu!: Gio.Menu = this._active_profile_menu;
-  // @ts-ignore
-  private parent_window!: MainWindow = this.parent_window;
-  // @ts-ignore
-  private _bar_label!: Gtk.Label = this._bar_label;
+  private _active_profile_menu!: Gio.Menu;
 
-  private _model: Gio.ListStore | undefined = undefined;
-  private _last_profile: string | null = null;
+  private parent_window!: MainWindow;
+
+  private _bar_label!: Gtk.Label;
+
+  private _model: Gio.ListStore | undefined;
 
   static {
     GObject.registerClass({
@@ -51,11 +47,11 @@ export class Omnibar extends Panel.OmniBar {
       ],
       Signals: {
         'profile-selection-changed': {},
-      }
+      },
     }, this);
   }
 
-  constructor(params={}) {
+  constructor(params = {}) {
     super(params);
     this.#setupActions();
     this.bind_profile_list_model_to_menu();
@@ -69,20 +65,12 @@ export class Omnibar extends Panel.OmniBar {
   }
 
   #setupActions() {
-    // TODO: typescript linting doesn't work properly with StatelessActionEntry and StatefulActionEntry
     const actionList: ActionEntry[] = [
-      this.#getProfileMuxAction(),
       this.#getNewProfileAction(),
-      {
-        name: 'manage',
-        activate: () => {
-          return;
-        },
-      } as StatelessActionEntry,
       {
         name: 'delete-profile',
         activate: async () => {
-          //show a warning
+          // TODO: Use AdwMessageDialog
           const warning = new Gtk.AlertDialog({
             buttons: ['Cancel', 'Proceed'],
             cancel_button: 0,
@@ -102,9 +90,9 @@ export class Omnibar extends Panel.OmniBar {
               }
             });
           });
-          if (button !== 1) return;
+          if (button !== 1)
+            return;
 
-          // remove from list
           const target = get_current_profile();
           remove_profile_from_index(target);
 
@@ -113,8 +101,6 @@ export class Omnibar extends Panel.OmniBar {
 
           // trigger reload for profile menu
           update_current_profile(target);
-
-          return;
         },
       } as StatelessActionEntry,
       this.#getImportProfileAction(),
@@ -122,10 +108,16 @@ export class Omnibar extends Panel.OmniBar {
     ];
 
     const prefix = 'profile';
-    const actionGroup = new Gio.SimpleActionGroup;
-    const entries = make_compat_action_entries(actionList);
-    actionGroup.add_action_entries(entries, null);
-    this.insert_action_group(prefix, actionGroup);
+    const actionGroup = new Gio.SimpleActionGroup();
+    actionList.forEach(item => {
+      const action = makeAction(item);
+      actionGroup.add_action(action);
+    });
+
+    actionGroup.add_action(this.#getProfileMuxAction());
+
+    const baseWidget: Gtk.Widget = <Gtk.Widget><unknown> this;
+    baseWidget.insert_action_group(prefix, actionGroup);
     set_accels_for_local_action(actionList, prefix);
   }
 
@@ -145,9 +137,11 @@ export class Omnibar extends Panel.OmniBar {
           action: Gtk.FileChooserAction.SAVE,
         });
         fileDiag.connect('response', (file_diag_: Gtk.FileChooserNative, response: number) => {
-          if (response != Gtk.ResponseType.ACCEPT) return;
+          if (response !== Gtk.ResponseType.ACCEPT)
+            return;
           const file = file_diag_.get_file();
-          if (!file) return;
+          if (!file)
+            return;
 
           const out_path = file.get_path();
           if (out_path === null) {
@@ -170,10 +164,11 @@ export class Omnibar extends Panel.OmniBar {
               if (error instanceof StvpkError && error.code === Errors.ADDON_NOT_DOWNLOADED) {
                 StvpkError.log(error);
                 return;
+              } else {
+                throw error;
               }
-              else throw error;
             }
-            const enabled: boolean = x.enabled;
+            const { enabled } = x;
             out_buffer.list.push({
               steam_id,
               enabled,
@@ -182,9 +177,7 @@ export class Omnibar extends Panel.OmniBar {
           write_and_replace_file_async(out_path, JSON.stringify(out_buffer));
         });
         fileDiag.show();
-        return;
       },
-      change_state: () => { return; }
     } as StatelessActionEntry;
   }
 
@@ -204,28 +197,33 @@ export class Omnibar extends Panel.OmniBar {
             return filter;
           })(),
         });
-        fileDiag.connect('response', async (file_diag: Gtk.FileChooserNative, response: number)=> {
-          if (response !== Gtk.ResponseType.ACCEPT) return;
+        fileDiag.connect('response', async (file_diag: Gtk.FileChooserNative, response: number) => {
+          if (response !== Gtk.ResponseType.ACCEPT)
+            return;
           const file = file_diag.get_file();
-          if (!file) throw new Error('File cannot be parsed by Gio, to be handled by dev later!');
+          if (!file) {
+            throw new StvpkError({
+              code: Errors.UNSPECIFIED,
+            });
+          }
           const stream = load_file_content_into_string(file);
           const restore_list: RestoreItemManifest[] = JSON.parse(stream)['list'];
 
           const restore_list_processed: {restore_manifest: RestoreItemManifest, id: string}[] = [];
 
           restore_list.forEach(item => {
-            let id: string | undefined = undefined;
+            let id: string | undefined;
             try {
               id = id_table_get_stvpk_id(item.steam_id);
             } catch (error) {
-              if (error instanceof StvpkError && error.code === Errors.ADDON_NOT_USED) {
+              if (error instanceof StvpkError && error.code === Errors.ADDON_NOT_USED)
                 StvpkError.log(error);
-                // download_missing_add_on(id);
-              }
-              else throw error;
+              else
+                throw error;
             }
-            if (id === undefined) return;
-            restore_list_processed.push({restore_manifest: item, id: id});
+            if (id === undefined)
+              return;
+            restore_list_processed.push({ restore_manifest: item, id });
           });
 
           const warning = new Gtk.AlertDialog({
@@ -248,13 +246,14 @@ export class Omnibar extends Panel.OmniBar {
             });
           });
 
-          if (button !== 1) return;
+          if (button !== 1)
+            return;
           const load_list: LoaderItemManifest[] = restore_list_processed.map(item => {
-            const {restore_manifest, id} = item;
-            const {enabled} = restore_manifest;
+            const { restore_manifest, id } = item;
+            const { enabled } = restore_manifest;
             return {
-              id: id,
-              enabled: enabled,
+              id,
+              enabled,
               in_randomizer: false,
             } as LoaderItemManifest;
           });
@@ -267,12 +266,12 @@ export class Omnibar extends Panel.OmniBar {
           force_profile_self_reload();
         });
         fileDiag.show();
-      }
+      },
     } as StatelessActionEntry;
   }
 
-  #getProfileMuxAction(): StatefulActionEntry {
-    let current_action: Gio.SimpleAction | undefined = undefined;
+  #getProfileMuxAction(): Gio.SimpleAction {
+    let current_action: Gio.SimpleAction | undefined;
     register_for_data_reload(() => {
       if (current_action === undefined) {
         log('Skipping setting active profile menu radio...');
@@ -282,21 +281,28 @@ export class Omnibar extends Panel.OmniBar {
       current_action.set_state(val);
     });
 
-    return {
+    const actionEntry: StatefulActionEntry = {
       name: 'set-current',
-      activate: (action, param) => {
+      activate: (action, param: GLib.Variant) => {
         action.change_state(param);
       },
-      parameter_type: 's',
-      startup: () => {
-        return '""';
+      parameterType: 's',
+      state: '""',
+      changeState: (action, param: GLib.Variant) => {
+        current_action = <Gio.SimpleAction> action;
+        const newval = param.unpack();
+        if (typeof newval !== 'string') {
+          log('Oh no!');
+          throw new StvpkError({
+            code: Errors.UNEXPECTED_TYPE,
+            message: `Wrong GVariant value type received at profile.set-current. Expected string, but got ${typeof newval}`,
+          });
+        }
+        update_current_profile(newval);
       },
-      change_state: (action, param) => {
-        current_action = action;
-        update_current_profile(param.unpack());
-        return;
-      },
-    } as StatefulActionEntry;
+    };
+    current_action = makeAction(actionEntry);
+    return current_action;
   }
 
   #getNewProfileAction() {
@@ -305,16 +311,16 @@ export class Omnibar extends Panel.OmniBar {
       activate: async () => {
         // open a window to insert the name of this profile
         const res: NewProfileDialogResponse = await NewProfileDialog.get_content_async(this.parent_window);
-        if (res.status === Gtk.ResponseType.CANCEL) return;
+        if (res.status === Gtk.ResponseType.CANCEL)
+          return;
         if (res.content === null) {
           throw new StvpkError({
             code: Errors.UNEXPECTED_TYPE,
           });
         }
-        const {profile_name, profile_id, use_all_available_addons} = res.content;
+        const { profile_name, profile_id, use_all_available_addons } = res.content;
         create_new_profile(profile_name, profile_id, use_all_available_addons);
         update_current_profile(profile_id);
-        return;
       },
     } as StatelessActionEntry;
   }
@@ -324,14 +330,15 @@ export class Omnibar extends Panel.OmniBar {
 
     this._model.connect('items-changed',
       (model: Gio.ListStore, pos: number, removed: number, added: number) => {
-        for (let i = removed - 1; i >= 0; i--) {
+        for (let i = removed - 1; i >= 0; i--)
           this._active_profile_menu.remove(pos + i);
-        }
         for (let i = 0; i < added; i++) {
           const profileItem: GObject.Object | null = model.get_item(pos + i);
-          if (!(profileItem instanceof Profile)) continue;
-          if (profileItem === null) continue;
-          const menuItem = new Gio.MenuItem;
+          if (!(profileItem instanceof Profile))
+            continue;
+          if (profileItem === null)
+            continue;
+          const menuItem = new Gio.MenuItem();
 
           // TODO: This does not work: menuItem.bind_property('label', profileItem, 'name', GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE);
           menuItem.set_label(profileItem.name);
@@ -348,10 +355,10 @@ export class Omnibar extends Panel.OmniBar {
     if (this._model === undefined) {
       throw new StvpkError({
         code: Errors.DEPENDENCY_UNINITIALIZED,
-        msg: 'Model for profile list has not been initialized',
+        message: 'Model for profile list has not been initialized',
       });
     }
     this._model.remove_all();
-    this._model.splice(0,0,items);
+    this._model.splice(0, 0, items);
   }
 }

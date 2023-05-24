@@ -1,32 +1,52 @@
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
+import { Errors, StvpkError } from './errors.js';
 
-type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;
-type RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;
-
-export type ActionEntry = (StatelessActionEntry | StatefulActionEntry);
-
-export type StatelessActionEntry = Omit<PartialBy<Gio.ActionEntry, 'parameter_type'>, 'state' | 'change_state'> & {
+export type ActionEntry = (StatelessActionEntry | StatefulActionEntry) & {
   accels?: string[];
 };
 
-export type StatefulActionEntry = Omit<RequiredBy<PartialBy<Gio.ActionEntry, 'parameter_type'>, 'change_state'>, 'state'> & {
-  startup: () => string;
-  accels?: string[];
+export type StatelessActionEntry = {
+  name: string,
+  activate: (action: Gio.Action, param: GLib.Variant) => void,
 };
 
-export const make_compat_action_entries = (actionList: ActionEntry[]): Gio.ActionEntry[] => {
-  return actionList.map((actionEntry) => {
-    if (!('startup' in actionEntry)) {
-      return actionEntry as Gio.ActionEntry;
+export type StatefulActionEntry = {
+  name: string,
+  activate: (action: Gio.Action, param: GLib.Variant) => void,
+  parameterType: string,
+  state: unknown;
+  changeState: (action: Gio.Action, param: GLib.Variant) => void,
+};
+
+export function makeAction(entry: ActionEntry): Gio.SimpleAction {
+  if ('parameterType' in entry && 'state' in entry && 'changeState' in entry) {
+    const { name, activate, parameterType, state, changeState } = entry;
+    const parameterType_ = GLib.VariantType.new(parameterType);
+    const state_: GLib.Variant = new GLib.Variant(parameterType, state);
+    if (state_.get_type_string() !== parameterType) {
+      log('Action GVariant parameter type did not match!');
+      throw new StvpkError({
+        code: Errors.UNEXPECTED_TYPE,
+        message: 'Action GVariant parameter type did not match!',
+      });
     }
-    else {
-      const compat_entry: Gio.ActionEntry = {} as Gio.ActionEntry;
-      compat_entry.name = actionEntry.name;
-      compat_entry.activate = actionEntry.activate;
-      compat_entry.parameter_type = actionEntry.parameter_type || null;
-      compat_entry.state = actionEntry.startup();
-      compat_entry.change_state = actionEntry.change_state;
-      return compat_entry;
-    }
+    const action = new Gio.SimpleAction({
+      enabled: true,
+      name,
+      state: state_,
+      parameterType: parameterType_,
+    });
+    action.connect('activate', activate);
+    action.connect('change-state', changeState);
+    // TODO: How does state work? Why is state type readonly? State vs parameter?
+    return action;
+  }
+
+  const { name, activate } = entry;
+  const action = new Gio.SimpleAction({
+    name,
   });
-};
+  action.connect('activate', activate);
+  return action;
+}

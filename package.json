@@ -1,26 +1,17 @@
 {
-  "type": "module",
   "scripts": {
-    "lint": "eslint src",
-    "build:types": "yarn ts-for-gir generate Gtk-4.0 Adw-1 Panel-1 --generateAlias",
     "run": "flatpak run com.github.kinten108101.SteamVpk",
-    "build:app": "flatpak run org.flatpak.Builder --force-clean --user --install build com.github.kinten108101.SteamVpk.yml --disable-updates",
-    "build:app-online": "flatpak run org.flatpak.Builder --force-clean --user --install build com.github.kinten108101.SteamVpk.yml",
-    "bundle": "yarn node esbuild.js",
-    "dev": "yarn run bundle && yarn run build:app && yarn run run",
-    "dev-update": "yarn run bundle && yarn run build:app-online && yarn run run"
+    "build": "flatpak run org.flatpak.Builder --force-clean --user --install build build-aux/com.github.kinten108101.SteamVpk.yml --disable-updates",
+    "generate-types": "gi-ts generate --withDocs build-aux/docs.json",
+    "config": "gt-ts config",
+    "typecheck": "tsc --noEmit",
+    "stylecheck": "eslint ./src"
   },
   "devDependencies": {
-    "@babel/core": "^7.21.4",
-    "@babel/eslint-parser": "^7.21.3",
-    "@babel/plugin-syntax-import-assertions": "^7.20.0",
-    "@ts-for-gir/cli": "^3.0.0-beta.12",
-    "@typescript-eslint/eslint-plugin": "^5.58.0",
-    "@typescript-eslint/parser": "^5.58.0",
-    "esbuild": "^0.17.16",
-    "eslint": "^8.36.0",
-    "eslint-plugin-gjs": "^1.0.4",
-    "eslint-plugin-import": "^2.27.5",
-    "typescript": "^5.0.4"
+    "eslint": "^8.41.0",
+    "ts-for-gir": "^1.0.1",
+    "typescript": "^5.0.4",
+    "@gi.ts/cli": "^1.5.10",
+    "@gi.ts/lib": "^1.5.13"
   }
 }

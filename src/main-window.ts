@@ -3,25 +3,23 @@ import Adw from 'gi://Adw';
 
 import './omnibar.js';
 import { PreferencesWindow } from './preferences-window.js';
-
 import './addonlist-page.js';
 import './download-page.js';
-import { AddAddonWindow, SelectAddonDialog } from './add-addon';
-import { ActionEntry, StatelessActionEntry, make_compat_action_entries } from './actions';
-import { set_accels_for_local_action } from './application';
-import { force_profile_self_reload } from './profile-manager';
+import { AddAddonWindow, SelectAddonDialog } from './add-addon.js';
+import { ActionEntry, StatelessActionEntry, makeAction } from './actions.js';
+import { set_accels_for_local_action } from './application.js';
+import { force_profile_self_reload } from './profile-manager.js';
 
 export class MainWindow extends Adw.ApplicationWindow {
 
   static {
     GObject.registerClass({
       GTypeName: 'MainWindow',
-      // @ts-ignore
       Template: 'resource:///com/github/kinten108101/SteamVpk/ui/main-window.ui',
     }, this);
   }
 
-  constructor(params={}) {
+  constructor(params = {}) {
     super(params);
     this.#setWinActions();
   }
@@ -41,22 +39,7 @@ export class MainWindow extends Adw.ApplicationWindow {
         name: 'reload-data',
         activate: () => {
           force_profile_self_reload();
-          return;
         },
-      } as StatelessActionEntry,
-      {
-        name: 'show-help',
-        activate: function(){
-          return;
-        }.bind(this),
-        accels: ['F1'],
-      } as StatelessActionEntry,
-      {
-        name: 'show-shortcuts',
-        activate: () => {
-          return;
-        },
-        accels: ['<Control>question']
       } as StatelessActionEntry,
       {
         name: 'add-addon.add_url',
@@ -78,7 +61,10 @@ export class MainWindow extends Adw.ApplicationWindow {
         },
       } as StatelessActionEntry,
     ];
-    this.add_action_entries(make_compat_action_entries(actionEntries), null);
+    actionEntries.forEach(item => {
+      const action = makeAction(item);
+      this.add_action(action);
+    });
     set_accels_for_local_action(actionEntries, 'win');
   }
 

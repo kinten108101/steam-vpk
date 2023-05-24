@@ -1,5 +1,4 @@
 import GObject from 'gi://GObject';
-import { RestoreItemManifest } from './restore-model';
 
 export interface DataIndexEntry {
   id: string;
@@ -19,17 +18,21 @@ export interface LoadingManifest {
   addonlist: LoaderItemManifest[];
 }
 
+export interface RestoreItemManifest {
+  steam_id: string,
+  enabled: boolean,
+}
+
 export interface RestoreManifest {
   list: RestoreItemManifest[];
 }
 
 export class LoaderItem extends GObject.Object {
-  // @ts-ignore
-  public id: string = this.id;
-  // @ts-ignore
-  public enabled: boolean = this.enabled;
-  // @ts-ignore
-  public in_randomizer: boolean = this.in_randomizer;
+  public id!: string;
+
+  public enabled!: boolean;
+
+  public in_randomizer!: boolean;
 
   static {
     GObject.registerClass({
@@ -37,7 +40,7 @@ export class LoaderItem extends GObject.Object {
         'id': GObject.ParamSpec.string(
           'id', 'id',
           'id',
-          GObject.ParamFlags.READWRITE, null),
+          GObject.ParamFlags.READWRITE, 'Unknown ID'),
         'enabled': GObject.ParamSpec.boolean(
           'enabled', 'enabled',
           'enabled',
@@ -46,7 +49,7 @@ export class LoaderItem extends GObject.Object {
           'in_randomizer', 'in_randomizer',
           'in_randomizer',
           GObject.ParamFlags.READWRITE, false),
-      }
+      },
     }, this);
   }
 }
@@ -82,11 +85,11 @@ export class DataItem extends GObject.Object {
         'id': GObject.ParamSpec.string(
           'id', 'id',
           'id',
-          GObject.ParamFlags.READWRITE, null),
+          GObject.ParamFlags.READWRITE, 'Unknown ID'),
         'steam_id': GObject.ParamSpec.string(
           'steam_id', 'steam_id',
           'steam_id',
-          GObject.ParamFlags.READWRITE, null),
+          GObject.ParamFlags.READWRITE, 'Unknown Steam ID'),
         'description': GObject.ParamSpec.string(
           'description', 'description',
           'description',

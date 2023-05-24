@@ -1,6 +1,4 @@
-import { IAddonlistItem } from './addonlist-model.js';
-
-export const sample_addons: IAddonlistItem[] = [{
+export const sample_addons = [{
   name: 'INS:S Louis',
   id: 'insslouis@mav',
   description:
@@ -120,5 +118,4 @@ Original part to Garry'mod by Viper click ↓`,
 喜欢的也是可以点个赞和收藏`,
   last_update: '8 Sep, 2022 @ 7:30pm',
   in_randomizer: false,
-},
-];
+}];

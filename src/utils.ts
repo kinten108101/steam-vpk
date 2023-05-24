@@ -13,7 +13,7 @@ export async function list_files_async(dir: Gio.File) {
       Gio.FileQueryInfoFlags.NONE,
       GLib.PRIORITY_DEFAULT,
       null,
-      (file_, result) => {
+      (_file_, result) => {
         try {
           resolve(dir.enumerate_children_finish(result));
         } catch (e) {
@@ -35,7 +35,7 @@ export function list_files(path: string): Gio.File[] {
   const enumerator = dir.enumerate_children(
     'standard::name,standard::type',
     Gio.FileQueryInfoFlags.NONE,
-    null
+    null,
   );
   const files: Gio.File[] = [];
   let info: Gio.FileInfo | null;
@@ -48,8 +48,8 @@ export function list_files(path: string): Gio.File[] {
 }
 
 export async function load_file_content_into_string_async(file: Gio.File): Promise<string> {
-  const [, content, ]: [boolean, Uint8Array, string | null] = await new Promise((resolve, reject) => {
-    file.load_contents_async(null, (file_, result) => {
+  const [, content]: [boolean, Uint8Array, string | null] = await new Promise((resolve, reject) => {
+    file.load_contents_async(null, (_file_, result) => {
       try {
         resolve(file.load_contents_finish(result));
       } catch (e) {
@@ -62,18 +62,21 @@ export async function load_file_content_into_string_async(file: Gio.File): Promi
 }
 
 export function load_file_content_into_string(file: Gio.File): string {
-  const [, content, ] = file.load_contents(null);
+  const [, content] = file.load_contents(null);
   const decoder = new TextDecoder('utf-8');
   return decoder.decode(content);
 }
 
 export function is_a_in_b(a: string, b: string[]) {
   let mismatch = 0;
-  b.forEach( (item) => {
-    if (item !== a) mismatch++;
-    if (mismatch === b.length) return false;
+  let isFound = true;
+  b.forEach((item): void => {
+    if (item !== a)
+      mismatch++;
+    if (mismatch === b.length)
+      isFound = false;
   });
-  return true;
+  return isFound;
 }
 
 export function parse_json(path: string) {
@@ -85,7 +88,7 @@ export function parse_json(path: string) {
 export async function write_and_replace_file_async(path: string, content: string) {
   const file = Gio.File.new_for_path(path);
   const ofs: Gio.FileOutputStream | null = await new Promise((resolve, reject) => {
-    file.replace_async(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, GLib.PRIORITY_DEFAULT, null, (file_, result) => {
+    file.replace_async(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, GLib.PRIORITY_DEFAULT, null, (_file_, result) => {
       try {
         resolve(file.replace_finish(result));
       } catch (e) {
@@ -93,17 +96,17 @@ export async function write_and_replace_file_async(path: string, content: string
       }
     });
   });
-  if (ofs === null) return;
+  if (ofs === null)
+    return;
   const bytes_written: number = await new Promise((resolve, reject) => {
     ofs.write_bytes_async(
       new GLib.Bytes(Uint8Array.from(Array.from(content).map(letter => letter.charCodeAt(0)))),
       GLib.PRIORITY_DEFAULT,
       null,
-      (ofs_, result) => {
+      (_ofs_, result) => {
         try {
           resolve(ofs.write_bytes_finish(result));
         } catch (e) {
-          logError('Error at writing load list file, trace below:');
           reject(e);
         }
       });
@@ -115,14 +118,15 @@ export async function write_and_replace_file_async(path: string, content: string
 export function write_and_replace_file(path: string, content: string) {
   const file = Gio.File.new_for_path(path);
   const ofs: Gio.FileOutputStream = file.replace(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-  if (ofs === null) return;
+  if (ofs === null)
+    return;
   const bytes_written = ofs.write_bytes(
     new GLib.Bytes(
       Uint8Array.from(
         Array.from(content).map(
-          letter => letter.charCodeAt(0)
-        )
-      )
+          letter => letter.charCodeAt(0),
+        ),
+      ),
     ), null);
   ofs.close(null);
   return bytes_written;
@@ -134,19 +138,20 @@ export function create_file(path: string, content: string) {
   try {
     ofs = file.create(Gio.FileCreateFlags.NONE, null);
   } catch (error) {
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS)){
+    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS)) {
       log('Handled file exists in file creation');
       return 0;
     }
   }
-  if (ofs === null) return;
+  if (ofs === null)
+    return;
   const bytes_written = ofs.write_bytes(
     new GLib.Bytes(
       Uint8Array.from(
         Array.from(content).map(
-          letter => letter.charCodeAt(0)
-        )
-      )
+          letter => letter.charCodeAt(0),
+        ),
+      ),
     ), null);
   ofs.close(null);
   return bytes_written;
@@ -174,15 +179,14 @@ export function create_directory(path: string) {
   try {
     dir.make_directory(null);
   } catch (error) {
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS)) {
+    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS))
       log('HANDLED ERROR: Directory exists');
-    }
   }
   return dir;
 }
 
-export function retry(fn: (...args: any[]) => any, ...args: any[]) {
-  return fn(args);
+export function retry(fn: (...args: any[]) => any, ...argss: any[]) {
+  return fn(argss);
 }
 
 export function delete_file(path: string): void {
@@ -191,9 +195,7 @@ export function delete_file(path: string): void {
     file.delete(null);
   } catch (error) {
     log('Caught error in delete_file');
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
-      return;
+    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND))
       log('Handled trivial error file not found');
-    }
   }
 }

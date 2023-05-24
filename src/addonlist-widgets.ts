@@ -3,7 +3,36 @@ import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
-import { AddonlistPageItem } from './addonlist-model';
+export interface IAddonlistPageItem {
+  name: string;
+  id: string;
+  enabled: boolean;
+  description: string;
+  last_update: string;
+  in_randomizer?: boolean;
+}
+
+export class AddonlistPageItem extends GObject.Object {
+  public name!: string;
+  public id!: string;
+  public enabled!: boolean;
+  public description!: string;
+  public last_update!: string;
+  public in_randomizer!: boolean;
+  static {
+    GObject.registerClass({
+      GTypeName: 'AddonlistPageItem',
+      Properties: {
+        'name': GObject.ParamSpec.string('name', 'name', 'name', GObject.ParamFlags.READWRITE, ''),
+        'id': GObject.ParamSpec.string('id', 'id', 'id', GObject.ParamFlags.READWRITE, ''),
+        'enabled': GObject.ParamSpec.boolean('enabled', 'enabled', 'enabled', GObject.ParamFlags.READWRITE, true),
+        'description': GObject.ParamSpec.string('description', 'description', 'description', GObject.ParamFlags.READWRITE, ''),
+        'last_update': GObject.ParamSpec.string('last_update', 'last_update', 'last_update', GObject.ParamFlags.READWRITE, ''),
+        'in_randomizer': GObject.ParamSpec.boolean('in_randomizer', 'in_randomizer', 'in_randomizer', GObject.ParamFlags.READWRITE, false),
+      }
+    }, this);
+  }
+}
 
 export interface SectionManifest {
   title: string;
@@ -28,6 +57,14 @@ const AddonlistRow = GObject.registerClass({
     'toggle',
   ],
 }, class extends Adw.ExpanderRow {
+  public list_item!: AddonlistPageItem;
+
+  private _toggle!: Gtk.Switch;
+
+  private _description_field!: Gtk.Label;
+
+  private _last_update_field!: Gtk.Label;
+
   constructor(params={}){
     super(params);
     // TODO: Property binding is one-way
@@ -53,7 +90,7 @@ export class Js_AddonlistSection extends Gtk.Box {
     section_list.bind_model(model, this.#rowFactory.bind(this));
   }
 
-  #rowFactory(entry: AddonlistPageItem): Gtk.Widget {
+  #rowFactory(entry: GObject.Object): Gtk.Widget {
     return new AddonlistRow({
       'list-item': entry,
     });
@@ -70,7 +107,7 @@ export const AddonlistSection = GObject.registerClass({
       'Title',
       'Title of this section',
       GObject.ParamFlags.READWRITE,
-      null,
+      'Unknown title',
     ),
     'model': GObject.ParamSpec.object(
       'model',

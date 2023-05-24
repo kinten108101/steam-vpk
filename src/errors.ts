@@ -25,34 +25,35 @@ interface StvpkErrorCause {
 
 export interface StvpkErrorConstructor {
   code: StvpkErrorCode;
-  msg?: string;
-  val?: unknown;
+  message?: string;
+  value?: unknown;
 }
 
 // TODO: Prototype instead of class?
 export class StvpkError extends Error {
+
   static log(error: StvpkError) {
     const key = Symbol.keyFor(error.code);
-    if (key === undefined) throw new TypeError('StvpkErrorCode was not properly constructed');
+    if (key === undefined)
+      throw new TypeError('StvpkErrorCode was not properly constructed');
     log(`Handled: ${key}: ${error.message}`);
   }
 
   constructor(params: StvpkErrorConstructor = {
     code: Errors.UNSPECIFIED,
   }) {
-    const {code, msg, val} = params;
-    super(msg, {
-      cause: {
-        code,
-        val,
-      } as StvpkErrorCause,
-    });
+    const { code, message, value } = params;
+    super(message);
+    this.cause = {
+      code,
+      value,
+    } as StvpkErrorCause;
   }
 
   get code(): StvpkErrorCode {
-    if (this.cause === null || this.cause === undefined) {
+    if (this.cause === null || this.cause === undefined)
       throw new TypeError('StvpkError was not properly constructed');
-    }
-    return (<StvpkErrorCause>this.cause).code;
+    const cause = this.cause as StvpkErrorCause;
+    return cause.code;
   }
 }

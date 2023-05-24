@@ -1,36 +1,38 @@
 import GObject from 'gi://GObject';
 
-import { SettingsManager, getSettingsManager } from './settings';
-import { list_files, parse_json } from './utils';
-import { DataItem, DataItemManifest, LoaderItem, LoaderItemManifest } from './addon-model';
-import { register_for_profile_change } from './profile-manager';
-import { id_table_append, id_table_clear} from './id-table';
-import { DATA, get_loading_manifest_path } from './const';
-import { Errors, StvpkError } from './errors';
+import { list_files, parse_json } from './utils.js';
+import { DataItem, DataItemManifest, LoaderItem, LoaderItemManifest } from './addon-schema.js';
+import { register_for_profile_change } from './profile-manager.js';
+import { id_table_append, id_table_clear } from './id-table.js';
+import { DATA, get_loading_manifest_path } from './const.js';
+import { Errors, StvpkError } from './errors.js';
 
-let _currentAddonManager: AddonManager | undefined = undefined;
+let _currentAddonManager: AddonManager | undefined;
 
 function getCurrentAddonManager() {
   if (_currentAddonManager === undefined) {
-    throw new Error('You have not initialized Addon Manager!');
+    throw new StvpkError({
+      code: Errors.SINGLETON_UNINITIALIZED,
+      message: 'You have not initialized Addon Manager!',
+    });
   }
   return _currentAddonManager;
 }
 
 export function initAddonManager(): void {
   if (_currentAddonManager !== undefined) {
-    throw new Error('Addon Manager cannot be reset!');
+    throw new StvpkError({
+      code: Errors.SINGLETON_INITIALIZED,
+      message: 'Addon Manager cannot be reset!',
+    });
   }
-  _currentAddonManager = new AddonManager;
+  _currentAddonManager = new AddonManager();
 }
 
 class AddonManager extends GObject.Object {
-  private _settings!: SettingsManager;
-
   private _data_item_list: DataItem[] = [];
-  private _loader_item_list: LoaderItem[] = [];
 
-  private _loadlist_id: string[] = [];
+  private _loader_item_list: LoaderItem[] = [];
 
   static {
     // TODO: Replace properties with children
@@ -42,9 +44,8 @@ class AddonManager extends GObject.Object {
     }, this);
   }
 
-  constructor(param={}) {
+  constructor(param = {}) {
     super(param);
-    this._settings = getSettingsManager();
 
     register_for_profile_change(reload_data_for_current_profile);
   }
@@ -80,28 +81,6 @@ function reload_data_for_current_profile(_: unknown, current_profile: string | n
 }
 
 function reload_data_items(): DataItem[] {
-  /*
-  const data_index: DataIndexEntry[] = parse_json(DATA_INDEX);
-  // TODO: Emergency exit?
-  const buffer: DataItem[] = [];
-  id_table_clear();
-  data_index.forEach((x) => {
-    const manifest: DataItemManifest = parse_json(get_data_entry_manifest(x.id));
-    const {name, id, steam_id, description, last_update} = manifest;
-    // TODO: Check if id's match
-    id_table_append(steam_id, id);
-    const item = new DataItem({
-      name,
-      id,
-      steam_id,
-      description,
-      last_update,
-    });
-    buffer.push(item);
-  });
-  return buffer;
-
-    */
   const dirs = list_files(DATA);
 
   const buffer: DataItem[] = [];
@@ -111,11 +90,11 @@ function reload_data_items(): DataItem[] {
     try {
       const path = `${dir.get_path()}/metadata.json`;
       const manifest: DataItemManifest = parse_json(path);
-      const {name, id, steam_id, description, last_update} = manifest;
+      const { name, id, steam_id, description, last_update } = manifest;
       if (id !== dir.get_basename()) {
         throw new StvpkError({
           code: Errors.INCONSISTENT_FOLDER_NAME,
-          val: id,
+          value: id,
         });
       }
       const item = new DataItem({
@@ -128,10 +107,8 @@ function reload_data_items(): DataItem[] {
       buffer.push(item);
       id_table_append(steam_id, id);
     } catch (error) {
-      if (error instanceof StvpkError && error.code === Errors.INCONSISTENT_FOLDER_NAME) {
+      if (error instanceof StvpkError && error.code === Errors.INCONSISTENT_FOLDER_NAME)
         StvpkError.log(error);
-        return;
-      }
     }
   });
   return buffer;
@@ -144,7 +121,7 @@ function reload_loader_items(current_profile: string): LoaderItem[] {
 
   load_list.forEach(manifest => {
     try {
-      const {id, enabled, in_randomizer} = manifest;
+      const { id, enabled, in_randomizer } = manifest;
       if (id !== manifest.id) {
         throw new StvpkError({
           code: Errors.INCONSISTENT_FOLDER_NAME,
@@ -157,10 +134,10 @@ function reload_loader_items(current_profile: string): LoaderItem[] {
       });
       buffer.push(item);
     } catch (error) {
-      if (error instanceof StvpkError && error.code === Errors.INCONSISTENT_FOLDER_NAME) {
+      if (error instanceof StvpkError && error.code === Errors.INCONSISTENT_FOLDER_NAME)
         StvpkError.log(error);
-        return;
-      }
+        // What happens when an error is caught
+        // return;
     }
   });
 

@@ -1,0 +1,14 @@
+{
+    "options": {
+        "inferGenerics": true,
+        "promisify": false,
+        "propertyCase": "both",
+        "versionedOutput": false,
+        "versionedImports": false
+    },
+    "libraries": {
+        "Panel": [
+            "1"
+        ]
+    }
+}

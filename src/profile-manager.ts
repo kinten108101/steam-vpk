@@ -2,41 +2,43 @@ import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 
-import { Errors, StvpkError } from './errors';
-import { Profile, ProfileManifest } from './profile-model';
-import { create_directory, create_file, delete_file, load_file_content_into_string, parse_json, retry, write_and_replace_file } from './utils';
-import { SettingsManager, getSettingsManager } from './settings';
-import { PROFILE_INDEX, get_loading_manifest_path, get_profile_folder_path, get_profile_manifest_path } from './const';
-import { get_empty_load_list_template, get_full_load_list_template } from './addon-manager';
-import { profileIndexEntry } from './addon-model';
+import { Errors, StvpkError } from './errors.js';
+import { create_directory, create_file, delete_file, load_file_content_into_string, parse_json, retry, write_and_replace_file } from './utils.js';
+import { SettingsManager, getSettingsManager } from './settings.js';
+import { PROFILE_INDEX, get_loading_manifest_path, get_profile_folder_path, get_profile_manifest_path } from './const.js';
+import { get_empty_load_list_template, get_full_load_list_template } from './addon-manager.js';
+import { profileIndexEntry } from './addon-schema.js';
+import { Profile, ProfileManifest } from './profile-schema.js';
 
 const PROFILE_CHANGED = 'profile-changed';
 
-let _currentProfileManager: ProfileManager | undefined = undefined;
+let _currentProfileManager: ProfileManager | undefined;
 
-function get_current_profile_manager() {
+function get_current_profile_manager(): ProfileManager {
   if (_currentProfileManager === undefined) {
     throw new StvpkError({
       code: Errors.SINGLETON_UNINITIALIZED,
-      msg: 'You have not initialized Profile Manager!',
+      message: 'You have not initialized Profile Manager!',
     });
   }
   return _currentProfileManager;
 }
 
-export function init_profile_manager() {
+export function init_profile_manager(): void {
   if (_currentProfileManager) {
     throw new StvpkError({
       code: Errors.SINGLETON_UNINITIALIZED,
-      msg: 'Profile Manager cannot be reset!',
+      message: 'Profile Manager cannot be reset!',
     });
   }
-  return _currentProfileManager = new ProfileManager;
+  _currentProfileManager = new ProfileManager();
 }
 
 class ProfileManager extends GObject.Object {
   private _settings: SettingsManager;
+
   private _profile_store: Profile[] = [];
+
   private _current_profile_id: string | undefined = undefined;
 
   static {
@@ -45,11 +47,11 @@ class ProfileManager extends GObject.Object {
         'profile-changed': {
           param_types: [GObject.TYPE_STRING],
         },
-      }
+      },
     }, this);
   }
 
-  constructor(param={}) {
+  constructor(param = {}) {
     super(param);
     this._settings = getSettingsManager();
   }
@@ -62,7 +64,7 @@ class ProfileManager extends GObject.Object {
   }
 
   store_as_session() {
-    const last_profile = <string>this._current_profile_id;
+    const last_profile = <string> this._current_profile_id;
     this._settings.set_last_profile(last_profile);
     log(`Profile saved as last session! Profile ID is ${last_profile}`);
   }
@@ -72,20 +74,21 @@ class ProfileManager extends GObject.Object {
   }
 
   #update_profile_list(): void {
-    let buffer: string | undefined = undefined;
+    let buffer: string | undefined;
     try {
       buffer = load_file_content_into_string(Gio.File.new_for_path(PROFILE_INDEX));
     } catch (error) {
       if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
         write_and_replace_file(PROFILE_INDEX, '[]');
         return retry(this.#update_profile_list.bind(this));
+      } else {
+        throw error;
       }
-      else throw error;
     }
     const profile_index: profileIndexEntry[] = JSON.parse(buffer);
     const new_profile_store: Profile[] = [];
     profile_index.forEach(x => {
-      const {id, name}: ProfileManifest = parse_json(get_profile_manifest_path(x.id));
+      const { id, name }: ProfileManifest = parse_json(get_profile_manifest_path(x.id));
       const item = new Profile({
         id,
         name,
@@ -110,32 +113,43 @@ class ProfileManager extends GObject.Object {
     if (typeof val !== 'string') {
       throw new StvpkError({
         code: Errors.UNEXPECTED_TYPE,
-        val: val,
-        msg: 'Profile ID is not a string type!',
+        value: val,
+        message: 'Profile ID is not a string type!',
       });
     }
     const profile_id_list: string[] = this.#get_profile_id_list();
     if (!profile_id_list.includes(val)) {
       throw new StvpkError({
         code: Errors.INCLUSION_CHECK_FAILED,
-        msg: 'ID is not available as an option!',
+        message: 'ID is not available as an option!',
       });
     }
     this._current_profile_id = val;
   }
 
+  /**
+   * @throws Errors.DEPENDENCY_UNINITIALIZED
+   * @returns {string} Current profile as ID
+   */
   #get_current_profile(): string {
     if (!this._current_profile_id) {
       throw new StvpkError({
         code: Errors.DEPENDENCY_UNINITIALIZED,
-        msg: 'Current profile has not been set up',
+        message: 'Current profile has not been set up',
       });
     }
     return this._current_profile_id;
   }
 
-  #get_default(id_list: string[]) {
-    return id_list[0];
+  #get_default(id_list: string[]): string {
+    const [val] = id_list;
+    if (val === undefined) {
+      throw new StvpkError({
+        code: Errors.NO_USABLE_PROFILE,
+        message: 'No fallback profile option worked!',
+      });
+    }
+    return val;
   }
 
   save_profile_store_to_index_file() {
@@ -163,7 +177,8 @@ class ProfileManager extends GObject.Object {
     };
     create_file(get_profile_manifest_path(profile_id), JSON.stringify(profile_file_content));
     let load_list_file_content = get_empty_load_list_template();
-    if (use_all_available_addons) load_list_file_content = get_full_load_list_template();
+    if (use_all_available_addons)
+      load_list_file_content = get_full_load_list_template();
     create_file(get_loading_manifest_path(profile_id), JSON.stringify(load_list_file_content));
     this.append_to_profile_store(new Profile({
       name: profile_name,
@@ -180,7 +195,8 @@ class ProfileManager extends GObject.Object {
     // What if profile_id is not string?
     const profile_index: profileIndexEntry[] = [];
     this._profile_store.forEach(item => {
-      if (item.id === profile_id) return;
+      if (item.id === profile_id)
+        return;
       const newval = {
         id: item.id,
       } as profileIndexEntry;
@@ -199,12 +215,15 @@ class ProfileManager extends GObject.Object {
     delete_file(dir);
   }
 
-  get_current_profile() {
-    let last_profile: string | undefined = undefined;
+  get_current_profile() : string {
+    let last_profile: string | undefined;
     try {
       last_profile = this.#get_current_profile();
     } catch (error) {
-      last_profile = this.#get_default(this.#get_profile_id_list());
+      if (error instanceof StvpkError && error.code === Errors.DEPENDENCY_UNINITIALIZED)
+        last_profile = this.#get_default(this.#get_profile_id_list());
+      else
+        throw error;
     }
     return last_profile;
   }
@@ -238,8 +257,9 @@ class ProfileManager extends GObject.Object {
         const profile_id_list = this.#get_profile_id_list();
         const newval = String(this.#get_default(profile_id_list));
         return retry(this.update_current_profile.bind(this), newval);
+      } else {
+        throw error;
       }
-      else throw error;
     }
     return current_profile;
   }

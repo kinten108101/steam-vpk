@@ -3,9 +3,9 @@ import GLib from 'gi://GLib';
 export const APP_ID = 'com.github.kinten108101.SteamVpk';
 export const SCHEMA_ID = APP_ID;
 const CONFIG = GLib.get_user_config_dir();
-const PROFILE = CONFIG + '/profiles';
+const PROFILE = `${CONFIG}/profiles`;
 // TODO: Why is there Null in XDG_HOME?
-export const DATA = GLib.get_home_dir() + '/.local/share/SteamVPK/addons';
+export const DATA = `${GLib.get_home_dir()}/.local/share/SteamVPK/addons`;
 
 export function get_data_entry_manifest(stvpk_id: string) {
   const manifest = 'metadata.json';

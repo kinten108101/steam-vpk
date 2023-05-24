@@ -1,4 +1,4 @@
-import { Errors, StvpkError } from "./errors";
+import { Errors, StvpkError } from './errors.js';
 
 interface IdTableSteam2Stvpk {
   // Use symbol?

@@ -1,15 +1,40 @@
 {
-  "extends": "./tsconfig.alias.json",
   "compilerOptions": {
-    "lib": ["ESNext", "dom"],
-    "types": [],
-    "target": "ESNext",
-    "module": "ESNext",
+    "lib": [
+      "ES2017",
+      "ES2021", /* Template does not have this but this is available in GJS now. */
+      "ES2022" /* Template does not have this but this is available in GJS now. */
+    ],
+    "pretty": false, /* Template does not have this but oh come on */
+    "target": "ES2018",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "paths": {
+      "*": ["*", "types/*", "gi-types/*"]
+    },
+    "allowJs": true, /* Allow javascript files to be compiled. */
+    "checkJs": true, /* Report errors in .js files. */
+    "outDir": "_tsc_out",
     "strict": true,
-    "noImplicitAny": true,
-    "strictNullChecks": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true
+    /* Additional Checks */
+    "noUnusedLocals": true,                 /* Report errors on unused locals. */
+    "noUnusedParameters": true,             /* Report errors on unused parameters. */
+    "noImplicitReturns": true,              /* Report error when not all code paths in function return a value. */
+    "noFallthroughCasesInSwitch": true,     /* Report errors for fallthrough cases in switch statement. */
+    "noUncheckedIndexedAccess": true,       /* Include 'undefined' in index signature results */
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
+    "experimentalDecorators": true,
+    "typeRoots": [
+      "gi-types"
+    ], /* List of folders to include type definitions from. */
+    "skipLibCheck": true,                      /* Skip type checking of declaration files. */
+    "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
   },
-  "include": ["src/**/*"]
+  "include": [
+    "gi-types/gi.d.ts",
+    "types/ambient.d.ts",
+    "src/**/*.ts"
+  ]
 }

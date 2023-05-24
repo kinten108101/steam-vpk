@@ -10,9 +10,8 @@ imports.package.init({
 });
 
 const loop = new GLib.MainLoop(null, false);
-// @ts-ignore
 import('resource:///com/github/kinten108101/SteamVpk/js/main.js')
-  .then((main) => {
+  .then(main => {
     GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
       loop.quit();
       imports.package.run(main);

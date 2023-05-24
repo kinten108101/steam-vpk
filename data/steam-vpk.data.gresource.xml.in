@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+	<gresource prefix="/com/github/kinten108101/SteamVpk">
+		<file>css/style.css</file>
+		@UI_FILES@
+	</gresource>
+	<gresource prefix="/com/github/kinten108101/SteamVpk/icons/scalable/actions">
+		@ICON_FILES@
+	</gresource>
+</gresources>
