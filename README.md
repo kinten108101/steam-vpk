@@ -12,7 +12,7 @@ Add-on manager for Left 4 Dead 2
 
 ### Install with GNOME Builder
 
-GNOME Builder is the environment used for developing this application. It can use Flatpak manifests to create a consistent building and running environment cross-distro. Thus, it is highly recommended you use it.
+GNOME Builder is the environment used for developing this application. It can Flatpak manifests to create a consistent building and running environment cross-distro.
 
 1. Download [GNOME Builder](https://flathub.org/apps/details/org.gnome.Builder).
 2. In Builder, click the "Clone Repository" button at the bottom, using `https://github.com/kinten108101/steam-vpk.git` as the URL.
@@ -21,7 +21,7 @@ GNOME Builder is the environment used for developing this application. It can us
 
 ### Install with Flatpak Builder
 
-`flatpak-builder` is a wrapper around the `flatpak build` command that automates the building of applications and their dependencies. It uses Flatpak manifests to download and pack needed dependencies with compiled program into a single Flatpak image that can be later distributed or installed on your system. We recommend this method if you have problems with GNOME Builder.
+`flatpak-builder` is a tool that downloads dependencies then pack them with the program into a single Flatpak image.
 
 Make sure you have Flatpak and Flatpak Builder installed on your computer. Also make sure you've downloaded the runtimes.
 
