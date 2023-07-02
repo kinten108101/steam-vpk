@@ -1,8 +1,8 @@
 {
   "type": "module",
   "scripts": {
-    "run": "flatpak run com.github.kinten108101.SteamVpk",
-    "build": "flatpak run org.flatpak.Builder --force-clean --user --install build build-aux/com.github.kinten108101.SteamVpk.yml --disable-updates",
+    "run": "flatpak run com.github.kinten108101.AddonBox",
+    "build": "flatpak run org.flatpak.Builder --force-clean --user --install build build-aux/com.github.kinten108101.AddonBox.yml --disable-updates",
     "typecheck": "tsc"
   },
   "dependencies": {

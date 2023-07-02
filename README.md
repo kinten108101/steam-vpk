@@ -15,7 +15,7 @@ Add-on manager for Left 4 Dead 2
 GNOME Builder is the environment used for developing this application. It can Flatpak manifests to create a consistent building and running environment cross-distro.
 
 1. Download [GNOME Builder](https://flathub.org/apps/details/org.gnome.Builder).
-2. In Builder, click the "Clone Repository" button at the bottom, using `https://github.com/kinten108101/steam-vpk.git` as the URL.
+2. In Builder, click the "Clone Repository" button at the bottom, using `https://github.com/kinten108101/addon-box.git` as the URL.
 3. Click on the popdown button next to build button. Verify that "manifest.json" is the Active Configuration.
 3. Click the build button at the top once the project is loaded.
 
