@@ -49,17 +49,18 @@ flatpak-builder --force-clean --user --install build build-aux/com.github.kinten
 
 Dependencies:
 
-- Meson build system (>=0.63.0) `meson`
-- Yarn package manager (>=1.22.19) `yarn`
-- Blueprint compiler (0.6.0) `blueprint-compiler` (https://gitlab.gnome.org/jwestman/blueprint-compiler)
-- GJS compiler (>=1.76.0) `gjs` 
-- GTK 4 (>=4.10.3) `gtk` 
-- Adwaita (>=1.3.2) `libadwaita` 
-- Panel (1.1.1) `libpanel` (https://gitlab.gnome.org/GNOME/libpanel)
+- meson ^0.63.0
+- gtk4 ^4.10.3
+- libpanel ^1.1.0 (https://gitlab.gnome.org/GNOME/libpanel)
+- libadwaita ^1.3.3
+- gjs ^1.76.0
+- blueprint-compiler ^0.8.0 (https://gitlab.gnome.org/jwestman/blueprint-compiler)
+- yarn ^1.22.19
 
-Clone the repository as above. Then run these commands:
+Clone the repository as above. Then run these commands at this directory:
 
 ```shell
+yarn install
 meson configure _build
 sudo meson install -C _build
 ```
