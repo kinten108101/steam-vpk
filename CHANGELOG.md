@@ -21,7 +21,7 @@ First (late) changelog entry!
 
 ### Removed
 
-- The app's model is being reworded. Some features are missing, and some are planned to be cut.
+- The app's model is being reworked. Some features are missing, and some are planned to be cut.
 - eslint and prettier no more.
 
 ### Changed
