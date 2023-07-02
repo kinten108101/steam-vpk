@@ -60,6 +60,6 @@ Dependencies:
 Clone the repository as above. Then run these commands:
 
 ```shell
-meson build
-sudo meson install -C build
+meson configure _build
+sudo meson install -C _build
 ```
