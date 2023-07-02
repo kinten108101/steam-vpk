@@ -50,12 +50,14 @@ flatpak-builder --force-clean --user --install build build-aux/com.github.kinten
 Dependencies:
 
 - meson ^0.63.0
-- gtk4 ^4.10.3
-- libpanel ^1.1.0 (https://gitlab.gnome.org/GNOME/libpanel)
-- libadwaita ^1.3.3
-- gjs ^1.76.0
-- blueprint-compiler ^0.8.0 (https://gitlab.gnome.org/jwestman/blueprint-compiler)
 - yarn ^1.22.19
+- gjs ^1.76.0
+- gtk4 ^4.10.3
+- libadwaita ^1.3.3
+- libsoup ^3.4.2
+- libpanel ^1.1.0 (https://gitlab.gnome.org/GNOME/libpanel)
+- blueprint-compiler ^0.8.0 (https://gitlab.gnome.org/jwestman/blueprint-compiler)
+- glib-compile-schemas
 
 Clone the repository as above. Then run these commands at this directory:
 

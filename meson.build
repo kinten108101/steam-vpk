@@ -5,13 +5,14 @@ project(
 	license: ['GPL-3.0-or-later'],
 )
 
-gtk4 = dependency('gtk4', version: '>=4.10.3', required: true)
-panel1 = dependency('libpanel-1', version: '>=1.1.0', required: true)
-adw1 = dependency('libadwaita-1', version: '>=1.3.3', required: true)
+yarn = find_program('yarn', version: '>=1.22.19', required: true)
 gjs = dependency('gjs-1.0', version: '>=1.76.0', required: true)
 gjs_console = gjs.get_variable(pkgconfig: 'gjs_console')
+gtk4 = dependency('gtk4', version: '>=4.10.3', required: true)
+adw1 = dependency('libadwaita-1', version: '>=1.3.3', required: true)
+soup3 = dependency('libsoup-3.0', version: '>=3.4.2', required: true)
+panel1 = dependency('libpanel-1', version: '>=1.1.0', required: true)
 blueprint_compiler = find_program('blueprint-compiler', version: '>=0.8.0', required: true)
-yarn = find_program('yarn', version: '>=1.22.19', required: true)
 gschema_compiler = find_program('glib-compile-schemas', required: true)
 
 gnome = import('gnome')
