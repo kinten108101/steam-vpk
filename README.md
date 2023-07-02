@@ -32,7 +32,7 @@ flatpak install org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Ext
 Then run `flatpak-builder` with the application manifest inside `/build-aux`.
 
 ```shell
-flatpak-builder --force-clean --user --install build build-aux/com.github.kinten108101.SteamVpk.yml
+flatpak-builder --force-clean --user --install build build-aux/com.github.kinten108101.AddonBox.yml
 ```
 
 ### Install with Meson
