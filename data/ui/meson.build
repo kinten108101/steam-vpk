@@ -1,22 +1,18 @@
-ui_templates = [
-  'add-addon.blp',
-  'add-addon-preview.blp',
+interface = [
+  'add-addon-name.blp',
+  'add-addon-preview-download.blp',
   'add-addon-url.blp',
-  'addonlist-page.blp',
-  'addonlist-row.blp',
-  'addonlist-section.blp',
+  'add-addon.blp',
+  'create-profile.blp',
+  'download-page-row.blp',
   'download-page.blp',
-  'main-window.blp',
-  'omnibar-popover.blp',
-  'omnibar.blp',
+  'launchpad-page.blp',
+  'launchpad-row.blp',
+  'launchpad-section.blp',
   'preferences-window.blp',
-  'new-profile.blp',
+  'profile-bar-popover.blp',
+  'profile-bar.blp',
+  'window.blp',
 ]
 
-blueprints = custom_target('blueprints',
-  input: files(
-    ui_templates
-  ),
-  output: '.',
-  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
-)
+interface_files = files(interface)

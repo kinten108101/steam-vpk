@@ -1,7 +1,18 @@
-import GObject from 'gi://GObject';
-import Gtk from 'gi://Gtk';
+import Gtk from 'gi://Gtk?version=4.0';
 
-GObject.registerClass({
-  GTypeName: 'DownloadPage',
-  Template: 'resource:///com/github/kinten108101/SteamVpk/ui/download-page.ui',
-}, class extends Gtk.Box {});
+import { Config } from './config.js';
+import { gobjectClass } from './utils/decorator.js';
+
+@gobjectClass({
+  Template: `resource://${Config.config.app_rdnn}/ui/download-page-row.ui`,
+})
+export class DownloadPageRow extends Gtk.ListBoxRow {
+
+}
+
+@gobjectClass({
+  Template: `resource://${Config.config.app_rdnn}/ui/download-page.ui`,
+})
+export class DownloadPage extends Gtk.Box {
+
+}

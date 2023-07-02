@@ -25,13 +25,11 @@ configure_file(
 )
 
 configure_file(
-	input: 'yarn.lock.in',
-	output: 'yarn.lock',
-	copy: true,
+  input: 'yarn.lock.in',
+  output: 'yarn.lock',
+  copy: true,
 )
 
-# Only management-related commands are affected by this "virtual environment" solution.
-# Other executables e.g. tsc, eslint, etc still start searching from shell's cwd. 
 yarn_args += [
   '--cwd', meson.project_build_root() / 'build-node-env',
 ]
@@ -40,4 +38,16 @@ yarn_deps = custom_target(
   'yarn-deps',
   command: [ yarn, 'install', yarn_args ],
   output: [ 'yarn-deps-out' ],
+)
+
+TS_CONFIG = configure_file(
+  input: 'tsconfig.json.in',
+  output: 'tsconfig.json',
+  configuration: {
+    'CURRENT_BUILD_DIR': meson.current_build_dir(),
+    'PROJECT_SOURCE_ROOT': meson.project_source_root(),
+    'PROJECT_BUILD_ROOT': meson.project_build_root(),
+    'APP_RDNN': app_rdnn,
+    'APP_ID': app_id,
+  }
 )

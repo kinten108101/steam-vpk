@@ -1,201 +1,277 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
+import Adw from 'gi://Adw';
+import Gtk from 'gi://Gtk';
 
-export const getTemplateData = (path: string) => {
-  const [, template] = Gio.File.new_for_path(path).load_contents(null);
-  return template;
+import * as JSON1 from './utils/json1.js';
+import * as GLib1 from './utils/glib1.js';
+
+import { Errors, FlatError } from './utils/errors.js';
+import { Result, Results } from './utils/result.js';
+import { TextDecoderWrap } from './utils/code.js';
+import { Log } from './utils/log.js';
+
+Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
+
+const _decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
+const _encoder = new TextEncoder();
+
+export const _FileUtils = {
+  loadContentsR,
+  replaceContentsR,
+  parseJsonR,
+  decodeR,
+  listFiles,
+  Encoder: _encoder,
+  Decoder: _decoder,
+  readJSON,
+  replaceJSON,
+  readJSONbytes,
+  makeDirectory,
 };
 
-export async function list_files_async(dir: Gio.File) {
-  const enumerator: Gio.FileEnumerator = await new Promise((resolve, reject) => {
-    dir.enumerate_children_async(
-      'standard::name,standard::type',
-      Gio.FileQueryInfoFlags.NONE,
-      GLib.PRIORITY_DEFAULT,
-      null,
-      (_file_, result) => {
-        try {
-          resolve(dir.enumerate_children_finish(result));
-        } catch (e) {
-          reject(e);
-        }
-      });
-  });
-  const files: Gio.File[] = [];
-  let info: Gio.FileInfo | null;
-  while ((info = enumerator.next_file(null)) !== null) {
-    const file = enumerator.get_child(info);
-    files.push(file);
-  }
-  return files;
+/*
+
+if (error instanceof GLib.Error) {
+  // ...
+}
+else {
+  Log.error('Detected an uncaught error in an attempt to Result-ize function:');
+  Log.error(error);
 }
 
-export function list_files(path: string): Gio.File[] {
-  const dir = Gio.File.new_for_path(path);
-  const enumerator = dir.enumerate_children(
-    'standard::name,standard::type',
-    Gio.FileQueryInfoFlags.NONE,
-    null,
-  );
-  const files: Gio.File[] = [];
-  let info: Gio.FileInfo | null;
+*/
 
-  while ((info = enumerator.next_file(null)) !== null) {
-    const file = enumerator.get_child(info);
-    files.push(file);
-  }
-  return files;
-}
-
-export async function load_file_content_into_string_async(file: Gio.File): Promise<string> {
-  const [, content]: [boolean, Uint8Array, string | null] = await new Promise((resolve, reject) => {
-    file.load_contents_async(null, (_file_, result) => {
-      try {
-        resolve(file.load_contents_finish(result));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-  const decoder = new TextDecoder('utf-8');
-  return decoder.decode(content);
-}
-
-export function load_file_content_into_string(file: Gio.File): string {
-  const [, content] = file.load_contents(null);
-  const decoder = new TextDecoder('utf-8');
-  return decoder.decode(content);
-}
-
-export function is_a_in_b(a: string, b: string[]) {
-  let mismatch = 0;
-  let isFound = true;
-  b.forEach((item): void => {
-    if (item !== a)
-      mismatch++;
-    if (mismatch === b.length)
-      isFound = false;
-  });
-  return isFound;
-}
-
-export function parse_json(path: string) {
-  const file = Gio.File.new_for_path(path);
-  const buffer = load_file_content_into_string(file);
-  return JSON.parse(buffer);
-}
-
-export async function write_and_replace_file_async(path: string, content: string) {
-  const file = Gio.File.new_for_path(path);
-  const ofs: Gio.FileOutputStream | null = await new Promise((resolve, reject) => {
-    file.replace_async(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, GLib.PRIORITY_DEFAULT, null, (_file_, result) => {
-      try {
-        resolve(file.replace_finish(result));
-      } catch (e) {
-        reject(e);
-      }
-    });
-  });
-  if (ofs === null)
-    return;
-  const bytes_written: number = await new Promise((resolve, reject) => {
-    ofs.write_bytes_async(
-      new GLib.Bytes(Uint8Array.from(Array.from(content).map(letter => letter.charCodeAt(0)))),
-      GLib.PRIORITY_DEFAULT,
-      null,
-      (_ofs_, result) => {
-        try {
-          resolve(ofs.write_bytes_finish(result));
-        } catch (e) {
-          reject(e);
-        }
-      });
-  });
-  ofs.close(null);
-  return bytes_written;
-}
-
-export function write_and_replace_file(path: string, content: string) {
-  const file = Gio.File.new_for_path(path);
-  const ofs: Gio.FileOutputStream = file.replace(null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-  if (ofs === null)
-    return;
-  const bytes_written = ofs.write_bytes(
-    new GLib.Bytes(
-      Uint8Array.from(
-        Array.from(content).map(
-          letter => letter.charCodeAt(0),
-        ),
-      ),
-    ), null);
-  ofs.close(null);
-  return bytes_written;
-}
-
-export function create_file(path: string, content: string) {
-  const file = Gio.File.new_for_path(path);
-  let ofs: Gio.FileOutputStream | null = null;
+function makeDirectory(dest: Gio.File) {
   try {
-    ofs = file.create(Gio.FileCreateFlags.NONE, null);
+    dest.make_directory(null);
+    Log.debug(`Created ${dest.get_basename()} for the first time.`);
   } catch (error) {
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS)) {
-      log('Handled file exists in file creation');
-      return 0;
+    if (error instanceof GLib.Error && error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.EXISTS)) {}
+    else {
+      Log.error('Detected an uncaught error:');
+      Log.error(error);
     }
   }
-  if (ofs === null)
-    return;
-  const bytes_written = ofs.write_bytes(
-    new GLib.Bytes(
-      Uint8Array.from(
-        Array.from(content).map(
-          letter => letter.charCodeAt(0),
-        ),
-      ),
-    ), null);
-  ofs.close(null);
-  return bytes_written;
 }
 
-export async function create_directory_async(path: string) {
-  const dir = Gio.File.new_for_path(path);
-  await new Promise((resolve, reject) => {
-    dir.make_directory_async(
-      GLib.PRIORITY_DEFAULT,
+function readJSON(file: Gio.File) {
+  const readbytes = Utils.loadContentsR(file, null);
+  if (readbytes.code !== Results.OK) {
+    Log.warn(`Caught an input stream error.`);
+    return readbytes;
+  }
+
+  const decodebytes = Utils.Decoder.decode(readbytes.data[1]);
+  if (decodebytes.code !== Results.OK) {
+    Log.warn(`Caught an encoding error.`);
+    return decodebytes;
+  }
+
+  const parsejsobject = JSON1.parse(decodebytes.data);
+  if (parsejsobject.code !== Results.OK) {
+    Log.warn(`Caught a JSON syntax error.`);
+    return parsejsobject;
+  }
+  return parsejsobject;
+}
+
+function readJSONbytes(contents: ArrayBuffer) {
+  const decodebytes = Utils.Decoder.decode(contents);
+  if (decodebytes.code !== Results.OK) {
+    Log.warn(`Caught an encoding error.`);
+    return decodebytes;
+  }
+
+  const parsejsobject = JSON1.parse(decodebytes.data);
+  if (parsejsobject.code !== Results.OK) {
+    Log.warn(`Caught a JSON syntax error.`);
+    return parsejsobject;
+  }
+  return parsejsobject;
+}
+
+function replaceJSON(value: any, dest: Gio.File,
+  prettified: boolean = true, etag?: string | null, makeBackup?: boolean,
+  flags?: Gio.FileCreateFlags, cancellable?: Gio.Cancellable | null) {
+  const serialize = JSON1.stringify(
+    value,
+    null,
+    (() => {
+      if (prettified) return 2;
+      else return undefined;
+    })(),
+  );
+  if (serialize.code !== Results.OK) {
+    Log.warn('Couldn\'t stringify JSObject, caught a TypeError');
+    return serialize;
+  }
+
+  const buffer = Utils.Encoder.encode(serialize.data);
+  const writebytes = Utils.replaceContentsR(dest, buffer, etag || null, makeBackup || false, flags || Gio.FileCreateFlags.REPLACE_DESTINATION, cancellable || null);
+  if (writebytes.code !== Results.OK) {
+    const error = writebytes.data;
+    Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
+    return writebytes;
+  }
+  return writebytes;
+}
+
+/**
+ * Replaces the contents of `file` with `contents` of `length` bytes.
+ *
+ * If `etag` is specified (not %NULL), any existing file must have that etag,
+ * or the error %G_IO_ERROR_WRONG_ETAG will be returned.
+ *
+ * If `make_backup` is %TRUE, this function will attempt to make a backup
+ * of `file`. Internally, it uses g_file_replace(), so will try to replace the
+ * file contents in the safest way possible. For example, atomic renames are
+ * used when replacing local files’ contents.
+ *
+ * If `cancellable` is not %NULL, then the operation can be cancelled by
+ * triggering the cancellable object from another thread. If the operation
+ * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
+ *
+ * The returned `new_etag` can be used to verify that the file hasn't
+ * changed the next time it is saved over.
+ * @param contents a string containing the new contents for `file`
+ * @param etag the old [entity-tag][gfile-etag] for the document,   or %NULL
+ * @param make_backup %TRUE if a backup should be created
+ * @param flags a set of #GFileCreateFlags
+ * @param cancellable optional #GCancellable object, %NULL to ignore
+ * @returns %TRUE if successful. If an error has occurred, this function   will return %FALSE and set @error appropriately if present.
+ */
+function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: string | null, make_backup: boolean, flags: Gio.FileCreateFlags, cancellable: Gio.Cancellable | null): Result<[ boolean, string | null ], GLib.Error> {
+  try {
+    const result = file.replace_contents(contents, etag, make_backup, flags, cancellable);
+    return Result.compose.OK(result);
+  } catch (error) {
+    if (error instanceof GLib.Error) {
+      return Result.compose.NotOK(error);
+    } else throw error;
+  }
+}
+
+function parseJsonR(text: string): Result<any, SyntaxError> {
+  try {
+    const obj = JSON.parse(text);
+    return Result.compose.OK(obj);
+  } catch (error) {
+    if (error instanceof SyntaxError)
+      return Result.compose.NotOK(error);
+    else
+      throw error;
+  }
+}
+
+/**
+ * @param {Gio.File} dir The directory inside which the scan takes place
+ * @returns { Gio.File[] } A list of files in directory
+ */
+function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
+  try {
+    const enumerator = dir.enumerate_children(
+      'standard::name,standard::type',
+      Gio.FileQueryInfoFlags.NONE,
       null,
-      (_dir, result) => {
-        try {
-          resolve(dir.make_directory_finish(result));
-        } catch (e) {
-          reject(e);
-        }
-      });
-  });
-  return dir;
-}
+    );
+    const files: Gio.File[] = [];
+    let info: Gio.FileInfo | null;
 
-export function create_directory(path: string) {
-  const dir = Gio.File.new_for_path(path);
-  try {
-    dir.make_directory(null);
+    while ((info = enumerator.next_file(null)) !== null) {
+      const file = enumerator.get_child(info);
+      files.push(file);
+    }
+    return Result.compose.OK(files);
   } catch (error) {
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.EXISTS))
-      log('HANDLED ERROR: Directory exists');
-  }
-  return dir;
-}
-
-export function retry(fn: (...args: any[]) => any, ...argss: any[]) {
-  return fn(argss);
-}
-
-export function delete_file(path: string): void {
-  const file = Gio.File.new_for_path(path);
-  try {
-    file.delete(null);
-  } catch (error) {
-    log('Caught error in delete_file');
-    if (error instanceof GLib.Error && error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND))
-      log('Handled trivial error file not found');
+    if (error instanceof GLib.Error) {
+      return Result.compose.NotOK(error);
+    } else if (error instanceof Error) {
+      const newerr = GLib1.Error.new_from_jserror(error);
+      return Result.compose.NotOK(newerr);
+    } else {
+      Log.error(`Unable to Result-ize operation: unknown object throw. Details: ${error}`);
+      throw error;
+    }
   }
 }
+
+function loadContentsR(file: Gio.File, cancellable: Gio.Cancellable | null): Result<[boolean, Uint8Array, string | null], GLib.Error> {
+  try {
+    const res = file.load_contents(cancellable);
+    return Result.compose.OK(res);
+  } catch (error) {
+    if (error instanceof GLib.Error) {
+      return Result.compose.NotOK(error);
+    } else {
+      throw error;
+    }
+  }
+}
+
+function decodeR(decoder: TextDecoder, input?: ArrayBufferView | ArrayBuffer, options?: TextDecodeOptions): Result<string, TypeError> {
+  try {
+    const str = decoder.decode(input, options);
+    return Result.compose.OK(str);
+  } catch (error) {
+    if (error instanceof TypeError)
+      return Result.compose.NotOK(error);
+    else
+      throw error;
+  }
+}
+
+/*
+function parseJsonFile(file: Gio.File): Result<unknown>;
+function parseJsonFile(path: string): Result<unknown>;
+function parseJsonFile(arg: unknown): Result<unknown> {
+  const file: Gio.File = handleFileInOverloading(arg);
+  const buffer: string = loadContents(file);
+  try {
+    const obj: unknown = JSON.parse(buffer);
+    return Result.compose.OK(obj);
+  } catch (error) {
+    if (error instanceof SyntaxError) {
+      return Result.compose.NotOK(undefined);
+    } else {
+      throw error;
+    }
+  }
+}
+*/
+
+const _String = {
+  isNumberString,
+}
+
+function isNumberString(str: string): boolean {
+  for (let i = 0; i < str.length; i++) {
+    if (str.charCodeAt(i) < 48 || str.charCodeAt(i) > 57) return false;
+  }
+  return true;
+}
+
+const _MiscUtils = {
+  jsType2GVariantSig,
+};
+
+function jsType2GVariantSig(val: string): string {
+  switch (val) {
+  case 'string':
+    return 's';
+  default:
+    throw new FlatError({
+      code: Errors.UNEXPECTED_TYPE,
+    });
+  }
+}
+
+export const Utils = {
+  ..._FileUtils,
+  ..._MiscUtils,
+  ..._String,
+};
+
+Gio._promisify(Adw.MessageDialog.prototype, 'choose', 'choose_finish');
+Gio._promisify(Gtk.FileDialog.prototype, 'save', 'save_finish');
+Gio._promisify(Gtk.FileDialog.prototype, 'open', 'open_finish');

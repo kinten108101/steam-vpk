@@ -1,29 +1,24 @@
 # Nodejs
 /node_modules
 
-# GNOME Builder
+# Build artifacts
 /_build
-
-# Flatpak
 /build
-/_build
 /.flatpak-builder
 
 # Sublime
-/*.sublime-project
-/*.sublime-workspace
+*.sublime-workspace
 
 # TypeScript definitions generated from GIR files
 /@types
+/gi-types
 
-# tsc output
-/steamvpk/*.js
-
-# Obsidian
-/docs/.obsidian
+# tsc dev typecheck output
+/_tsc_out
 
 # yarn
 /yarn-error.log
 
 # personal
-/TODO
+/docs/.obsidian
+/TODO.md

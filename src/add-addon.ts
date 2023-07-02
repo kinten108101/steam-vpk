@@ -1,231 +1,375 @@
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
-import Adw from 'gi://Adw';
+import Soup from 'gi://Soup';
 
-import { ActionEntry, StatelessActionEntry, makeAction } from './actions.js';
+import * as Gio1 from './utils/gio1.js';
+import * as Gtk1 from './utils/gtk1.js';
+import * as Adw1 from './utils/adw1.js';
+import * as GLib1 from './utils/glib1.js';
 
-class InsertUrlPage extends Gtk.Box {
-  private _validate_button !: Gtk.Button;
+import { gobjectClass } from './utils/decorator.js';
+import { Log } from './utils/log.js';
+import { Result, Results } from './utils/result.js';
+import { Errors, FlatError } from './utils/errors.js';
 
-  static {
-    GObject.registerClass({
-      GTypeName: 'InsertUrlPage',
-      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-url.ui',
-      InternalChildren: [
-        'url_row',
-        'validate_button',
-      ],
-    }, this);
+import { Config } from './config.js';
+import { Window } from './window.js';
+import { Utils } from './utils.js';
+import { Downloader } from './downloader.js';
+import { generateAddonName, generateAuthor, generateName } from './id.js';
+import { AddonManifest } from './addons.js';
+import { AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
+import { ActionOrder } from './addon-action.js';
+import { Application } from './application.js';
+import { AddAddonPreviewDownload, AddAddonWindow, AddAddonWizard } from './add-addon-window.js';
+import { WriteOrders } from './index-dir.js';
+
+@gobjectClass({
+  GTypeName: 'StvpkAddAddon',
+})
+export class AddAddon extends GObject.Object {
+  application: Application;
+  mainWindow: Window;
+  downloader: Downloader;
+  actionGroup: Gio.SimpleActionGroup;
+
+  constructor(param: {
+    application: Application;
+    window: Window;
+    downloader: Downloader;
+  }) {
+    super({});
+    this.application = param.application;
+    this.mainWindow = param.window;
+    this.downloader = param.downloader;
+    this.actionGroup = new Gio.SimpleActionGroup();
+    this.mainWindow.insert_action_group('add-addon', this.actionGroup);
+    this.setupActions();
   }
 
-  switchToLoadingState() {
-    const spinner = new Gtk.Spinner();
-    spinner.set_parent(this._validate_button);
-    this._validate_button.sensitive = false;
-    this._validate_button.label = '';
-    spinner.start();
-  }
-}
+  setupActions() {
+    const addName = Gio1.SimpleAction
+      .builder({ name: 'add-name' })
+      .activate(this.onAddNameActivate)
+      .build();
+    this.actionGroup.add_action(addName);
 
+    const addUrl = Gio1.SimpleAction
+      .builder({ name: 'add-url' })
+      .activate(this.onAddUrlActivate)
+      .build();
+    this.actionGroup.add_action(addUrl);
 
-export class DowloadPreviewPage extends Gtk.Box {
-  public row_uuid!: Adw.EntryRow;
-
-  public row_display_id!: Adw.EntryRow;
-
-  public row_name!: Adw.EntryRow;
-
-  public row_creators!: Adw.EntryRow;
-
-  public row_categories!: Adw.EntryRow;
-
-  public row_description!: Adw.EntryRow;
-
-  public row_last_update!: Adw.EntryRow;
-
-  static {
-    GObject.registerClass({
-      GTypeName: 'DownloadPreviewPage',
-      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon-preview.ui',
-      Children: [
-        'row_uuid',
-        'row_display_id',
-        'row_name',
-        'row_creators',
-        'row_categories',
-        'row_description',
-        'row_last_update',
-      ],
-    }, this);
-  }
-}
-
-export class AddAddonWindow extends Adw.Window {
-  private _view_stack!: Adw.ViewStack;
-
-  private _insert_url_stack_page!: Adw.ViewStackPage;
-
-  private _download_preview_stack_page!: Adw.ViewStackPage;
-
-  static {
-    GObject.registerClass({
-      GTypeName: 'AddAddonWindow',
-      Template: 'resource:///com/github/kinten108101/SteamVpk/ui/add-addon.ui',
-      InternalChildren: [
-        'view_stack',
-        'insert_url_stack_page',
-        'download_preview_stack_page',
-      ],
-    }, this);
+    const addArchive = Gio1.SimpleAction
+      .builder({ name: 'add-archive' })
+      .activate(async () => {
+        const dialog = Gtk1.FileDialog.builder()
+          .title('Select an Add-on Archive')
+          .filter(Gtk1.FileFilter.builder().suffix('vpk').build())
+          .wrap()
+          .build()
+        const openResult = await dialog.open_async(this.mainWindow, null);
+        if (openResult.code !== Results.OK) {
+          const error = openResult.data;
+          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
+            return;
+          Log.warn(String(error));
+          return;
+        }
+      })
+      .build();
+    this.actionGroup.add_action(addArchive);
   }
 
-  constructor(params = {}) {
-    super(params);
-    const actionGroup = new Gio.SimpleActionGroup();
-
-    const actionList: ActionEntry[] = [
-      {
-        name: 'validate-url',
-        activate: () => {
-          const insertUrlPage: InsertUrlPage = <InsertUrlPage><unknown> this._insert_url_stack_page.get_child();
-          insertUrlPage.switchToLoadingState();
-          setTimeout(this.switchToDownloadPreviewPage.bind(this), 2000, SampleStorageItem);
-        },
-      } as StatelessActionEntry,
-      {
-        name: 'download',
-        activate: () => {
-          this.close();
-        },
-      } as StatelessActionEntry,
-    ];
-    actionList.forEach(item => {
-      const action = makeAction(item);
-      actionGroup.insert(action);
+  onAddNameActivate = async () => {
+    const addAddonWindow = new AddAddonWindow({
+      transient_for: this.mainWindow,
     });
+    const wizard = new AddAddonWizard();
 
-    this.insert_action_group('add-addon', actionGroup);
-  }
+    wizard.addPage(async (): Promise<[Symbol]> => {
+try {
+      const namePage = addAddonWindow.namePage;
+      const namePresent = await namePage.present();
+      if (namePresent.code !== Results.OK) {
+        const error = namePresent.data;
+        if (error instanceof GLib.Error) {
+          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
+            return [wizard.navigation.QUIT];
+          }
+        }
+        Log.warn(error);
+        return [wizard.navigation.RETRY];
+      }
 
-  switchToDownloadPreviewPage(target: IStorageItem): void {
-    const previewPage: DowloadPreviewPage = <DowloadPreviewPage><unknown> this._download_preview_stack_page.get_child();
-    previewPage.set_visible(true);
+      const [id] = namePresent.data;
 
-    previewPage.row_uuid.set_text(target.uuid);
-    previewPage.row_display_id.set_text(target.display_id);
-    previewPage.row_name.set_text(target.name);
-    if (target.creators !== undefined) {
-      previewPage.row_creators.set_text(
-        target.creators.reduce((acc: string, cur: string, idx: number) => {
-          if (idx === 0)
-            return acc;
-          return `${acc}, ${cur}`;
-        }, <string>target.creators[0]),
-      );
-    }
-    if (target.categories !== undefined) {
-      previewPage.row_categories.set_text(
-        target.categories.reduce((acc: string, cur: string, idx: number) => {
-          if (idx === 0)
-            return acc;
-          return `${acc}, ${cur}`;
-        }, <string>target.categories[0]),
-      );
-    }
-    previewPage.row_description.set_text(target.description);
-    previewPage.row_last_update.set_text(target.last_update);
+      const requested_subdir = this.application.addonStorage.subdirFolder.get_child(id);
+      var file_type = requested_subdir.query_file_type(Gio.FileQueryInfoFlags.NONE, null)
+      if (file_type !== Gio.FileType.DIRECTORY) {
+        Log.warn('Not a subdirectory');
+        namePage.showErrorMsg('Not a subdirectory');
+        return [wizard.navigation.RETRY];
+      }
 
-    this._view_stack.set_visible_child_name('downloadPreviewPage');
-  }
+      const info = requested_subdir.get_child(Config.config.addon_info);
+      var file_type = info.query_file_type(Gio.FileQueryInfoFlags.NONE, null);
+      if (file_type !== Gio.FileType.REGULAR) {
+        Log.warn('Not a subdirectory');
+        namePage.showErrorMsg('Subdirectory has no manifest file');
+        return [wizard.navigation.RETRY];
+      }
+
+      this.application.addonStorage.indexer.writeable.order({ code: WriteOrders.AddEntry, param: { id } });
+      addAddonWindow.close();
+      return [wizard.navigation.QUIT];
+} catch (error) {
+  Log.error(error);
+  return [wizard.navigation.QUIT];
 }
-
-export class SelectAddonDialog extends Gtk.FileChooserNative {
-
-  static {
-    GObject.registerClass({
-      GTypeName: 'SelectAddonDialog',
-    }, this);
+    })
+    wizard.start();
   }
 
-  constructor(params = {}) {
-    const filter = new Gtk.FileFilter();
-    filter.add_pattern('*.vpk');
-    super({
-      ...params,
-      title: 'Select add-on archive file',
-      modal: true,
-      action: Gtk.FileChooserAction.OPEN,
-      filter,
+  onAddUrlActivate = async () => {
+    const addAddonWindow = new AddAddonWindow({
+      transient_for: this.mainWindow,
     });
-    // the callback below didn't need to bind this. How did that happen?
-    this.connect('response', (fileChooser: Gtk.FileChooserNative, response: number) => {
-      if (response !== Gtk.ResponseType.ACCEPT)
-        return;
-      // TODO: process file here
-      const file: Gio.File | null = fileChooser.get_file();
-      if (!file)
-        return;
-      const addAddonWindow = new AddAddonWindow({
-        transient_for: this.transient_for,
+    const wizard = new AddAddonWizard();
+
+    let sharedFileDetails: any | undefined;
+    let sharedCreatorDetails: any | undefined;
+    let sharedFieldCache: AddAddonPreviewDownload.CacheInfo | undefined;
+
+    // @ts-ignore
+    wizard.addPage(async (): Promise<[Symbol]> => {
+      const urlPage = addAddonWindow.url;
+      const urlPresent = await urlPage.present();
+
+      const showErrorMsg = (msg: string) => {
+        urlPage.errorSource.url.errorMsg = msg;
+        urlPage.inputSource.url.setValid(false);
+      };
+
+      if (urlPresent.code !== Results.OK) {
+        const error = urlPresent.data;
+        if (error instanceof GLib.Error)
+          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
+            return [wizard.navigation.QUIT];
+        }
+        Log.error(String(error));
+        return [wizard.navigation.RETRY];
+      }
+
+      const [url] = urlPresent.data;
+      const idxParam = url.indexOf('?id=', 0);
+      if (idxParam === undefined) {
+        Log.warn('ID extraction algorithm failed');
+        showErrorMsg('Incorrect Workshop Item URL');
+        return [wizard.navigation.RETRY];
+      }
+      const fileId = url.substring(idxParam + 4, idxParam + 14);
+      if (fileId.length !== 10 || !Utils.isNumberString(fileId)) {
+        Log.warn('ID extraction algorithm failed');
+        showErrorMsg('Incorrect Workshop Item URL');
+        return [wizard.navigation.RETRY];
+      }
+      Log.debug(fileId);
+
+      const parseUri = GLib1.Uri.parse('https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/', GLib.UriFlags.NONE);
+      if (parseUri.code !== Results.OK) {
+        Log.warn('API method no longer valid');
+        showErrorMsg('Internal Error');
+        return [wizard.navigation.RETRY];
+      }
+
+      const uri = parseUri.data;
+      const getDetails = new Soup.Message({
+        method: 'POST',
+        uri,
       });
-      addAddonWindow.show();
-      addAddonWindow.switchToDownloadPreviewPage(SampleStorageItem);
-      // file_chooser.destroy() ??
+      const requestBody = new GLib.Bytes(Utils.Encoder.encode(`itemcount=1&publishedfileids%5B0%5D=${fileId}`));
+      getDetails.set_request_body_from_bytes(
+        'application/x-www-form-urlencoded',
+        requestBody,
+      );
+
+      const readGbytes = await this.downloader.session.send_and_read_async(getDetails, GLib.PRIORITY_DEFAULT, null);
+      if (readGbytes.code !== Results.OK) {
+        const error = readGbytes.data;
+        if (error.matches(Gio.resolver_error_quark(), Gio.ResolverError.TEMPORARY_FAILURE)) {
+          Log.warn('Couldn\'t resolve IP');
+          showErrorMsg('Incorrect Workshop Item URL');
+          return [wizard.navigation.RETRY];
+        }
+        Log.error(error);
+        return [wizard.navigation.RETRY];
+      }
+
+      const bytes = readGbytes.data.get_data();
+      if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
+        Log.warn('Not OK response');
+        showErrorMsg('Incorrect Workshop Item URL');
+        return [wizard.navigation.RETRY];
+      }
+
+      const readjson = Utils.readJSONbytes(bytes);
+      if (readjson.code !== Results.OK) {
+        const error = readjson.data;
+        Log.error(error);
+        showErrorMsg('Incorrect Workshop Item URL');
+        return [wizard.navigation.RETRY];
+      }
+
+      const response = readjson.data;
+      const fileDetails = response['response']?.['publishedfiledetails']?.[0];
+      if (typeof fileDetails === undefined) {
+        Log.warn('Wrong object structure');
+        showErrorMsg('Incorrect Workshop Item URL');
+        return [wizard.navigation.RETRY];
+      }
+
+      sharedFileDetails = fileDetails;
+
+      const appid = fileDetails['consumer_app_id'];
+      if (appid !== 550) {
+        Log.warn('Only L4D2 add-ons are allowed');
+        showErrorMsg('Only L4D2 add-ons are allowed');
+        return [wizard.navigation.RETRY];
+      }
+
+      const addonName = generateAddonName(fileDetails['title']) || '';
+      const creator = fileDetails['creator'];
+
+      let playerDetails: any;
+      {
+        const webapi = Config.config.oauth;
+        const uriParse = GLib1.Uri.parse(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?access_token=${webapi}&steamids=${creator}&key=`, GLib.UriFlags.NONE);
+        if (uriParse.code !== Results.OK) {
+          Log.warn('Bad URL');
+          showErrorMsg('Programming Error');
+          return [wizard.navigation.RETRY];
+        }
+
+        const uri = uriParse.data;
+        const getDetails = new Soup.Message({
+          method: 'GET',
+          uri,
+        });
+
+        const creatorRequestResult = await this.downloader.session.send_and_read_async(getDetails, GLib.PRIORITY_DEFAULT, null);
+        if (creatorRequestResult.code !== Results.OK) {
+          Log.warn('Request error')
+          showErrorMsg('Bad Connection');
+          return [wizard.navigation.RETRY];
+        }
+
+        const bytes = creatorRequestResult.data.get_data();
+        if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
+          Log.warn('Not OK response');
+          showErrorMsg('Incorrect Workshop Item URL');
+          return [wizard.navigation.RETRY];
+        }
+
+        const readjson = Utils.readJSONbytes(bytes);
+        if (readjson.code !== Results.OK) {
+          const error = readjson.data;
+          Log.error(error);
+          showErrorMsg('Incorrect Workshop Item URL');
+          return [wizard.navigation.RETRY];
+        }
+
+        const response = readjson.data;
+        playerDetails = response['response']?.['players']?.[0];
+        if (typeof playerDetails === undefined) {
+          Log.warn('Wrong object structure');
+          showErrorMsg('Incorrect Workshop Item URL');
+          return [wizard.navigation.RETRY];
+        }
+
+        sharedCreatorDetails = playerDetails;
+      }
+
+      const getCreatorPart = ((): Result<string, [symbol]> => {
+        const personaname = playerDetails['personaname'];
+        if (!(typeof personaname !== 'string' || personaname === ''))
+          return Result.compose.OK(generateAuthor(personaname));
+
+        const profileurl = playerDetails['profileurl'];
+        const idIdx = profileurl.indexOf('/id/');
+        const vanityId = profileurl.substring(idIdx + 4, profileurl.length - 1);
+        if (!(idIdx === -1 || Utils.isNumberString(vanityId))) // not vanityid found
+          return Result.compose.OK(generateAuthor(vanityId));
+
+        const realname = playerDetails['realname'];
+        if (!(typeof realname !== 'string' || realname === ''))
+          return Result.compose.OK(generateAuthor(realname));
+
+        return Result.compose.NotOK([wizard.navigation.RETRY] as [symbol]);
+      })();
+
+      if (getCreatorPart.code !== Results.OK) {
+        const decision = getCreatorPart.data;
+        return decision;
+      }
+
+      const creatorPart = getCreatorPart.data;
+      Log.debug(`Creator part: ${creatorPart}`);
+      const addonId = `${generateName(addonName)}@${creatorPart}`;
+
+      sharedFieldCache = {
+        addonName,
+        addonId,
+      };
+      return [wizard.navigation.NEXT];
     });
+    wizard.addPage(async (): Promise<[Symbol]> => {
+      if (sharedFieldCache === undefined || sharedCreatorDetails === undefined || sharedFileDetails === undefined) {
+        Log.error('Info was not filled!');
+        return [wizard.navigation.BACK];
+      }
+      const infoPresent = await addAddonWindow.previewDownload.present(sharedFieldCache);
+      if (infoPresent.code !== Results.OK) {
+        const error = infoPresent.data;
+        if (error instanceof FlatError) {
+          if (error.code === Errors.DIALOG_GO_BACK)
+            return [wizard.navigation.BACK];
+        }
+        else if (error instanceof GLib.Error) {
+          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
+            return [wizard.navigation.QUIT];
+        }
+        Log.error(String(error));
+        return [wizard.navigation.QUIT];
+      }
+
+      const [addonName, addonId,] = infoPresent.data;
+
+      const manifest = AddonManifest.new_from_published_file_details({
+        ...sharedFileDetails,
+        title: addonName,
+      }, addonId);
+
+      const order = ActionOrder.compose.Create(manifest);
+      const createAddon = await order.process(this.application.addonSynthesizer);
+      if (createAddon.code !== Results.OK) {
+        const error = createAddon.data;
+        if (error.matches(addon_storage_error_quark(), AddonStorageError.ADDON_EXISTS)) {
+          Adw1.Toast.builder()
+            .title('Add-on already exists')
+            .wrap().build().present(addAddonWindow);
+          return [wizard.navigation.RETRY];
+        }
+        Log.error(error);
+        return [wizard.navigation.RETRY];
+      }
+      console.log('hi!');
+      // Request a download
+      addAddonWindow.close();
+      return [wizard.navigation.QUIT];
+    });
+    wizard.start();
   }
 }
-
-export interface IStorageItem {
-  uuid: string,
-  display_id: string,
-  icon?: string,
-  name: string,
-  creators: string[],
-  categories: string[],
-  description: string,
-  last_update: string,
-  file: string,
-}
-
-export class Js_StorageItem extends GObject.Object {}
-
-export const StorageItem = GObject.registerClass({
-  GTypeName: 'StorageItem',
-  Properties: {
-
-  },
-}, Js_StorageItem);
-
-export const SampleStorageItem: IStorageItem = {
-  uuid: '2964411676',
-  display_id: '',
-  name: 'Counter-Strike 2: P90',
-  creators: ['ihcorochris'],
-  categories: [
-    'Sounds',
-    'UI',
-    'Models',
-    'SMG',
-  ],
-  description:
-`The most futuristic gun on the planet!
-
-The FN P90 TR (Triple Rail) appears in the game with rail-mounted iron sights. It is the only submachine gun not to award extra money for kills. The weapon is frequently linked with lower-skilled players due to its high armor penetration value, high capacity, respectable damage, mild recoil, and quick rate of fire; its only major drawbacks are the aforementioned low kill award, an outrageous price, and a long reload.
-
-Magazine isn't animated for the same reason as the Steyr AUG and FAMAS. The charging handle on the other hand, moves in thirdperson.
-
-Replaces the Uzi on Twilight Sparkle's ported Global Offensive animations.
-
-FEATURES:
-Global Offensive Sounds and Animations
-Custom HUD Icon
-Skin Support
-Another gun that doesn't have the mag animated.
-
-CREDITS
-Valve - Model, Textures, Sounds, and Animations
-Twilight Sparkle - Animations`,
-  last_update: '19 Apr @ 7:20pm',
-  file: '~/.cache/a912bdf2e0',
-};

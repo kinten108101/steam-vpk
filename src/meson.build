@@ -1,80 +1,122 @@
-const_config = {
-  'GJS': gjs_console,
-  'PACKAGE_VERSION': meson.project_version(),
-  'PACKAGE_NAME': APPID,
-  'PREFIX': get_option('prefix'),
-  'LIBDIR': get_option('prefix') / get_option('libdir'),
-}
+exec_config = configuration_data()
+exec_config.set('GJS', gjs_console)
+exec_config.set('VERSION', meson.project_version())
+exec_config.set('APP_ID', app_id)
+exec_config.set('APP_RDNN', app_rdnn)
+exec_config.set('APP_FULLNAME', app_fullname)
+exec_config.set('APP_SHORTNAME', app_shortname)
+exec_config.set('PREFIX', get_option('prefix'))
+exec_config.set('DATADIR', get_option('datadir'))
+exec_config.set('LIBDIR', get_option('libdir'))
+exec_config.set('SRC_DIR', meson.current_source_dir())
+exec_config.set('BUILD_TYPE', get_option('buildtype'))
 
-sources = []
-
-sources_names = [
-  'addon-schema.ts',
-  'addon-manager.ts',
-  'profile-schema.ts',
-  'profile-manager.ts',
-  'settings.ts',
-  'actions.ts',
-  'const.ts',
-  'errors.ts',
-  'id-table.ts',
-  'utils.ts',
+script = [
+  'add-addon-window.ts',
   'add-addon.ts',
-  'addonlist-page.ts',
-  'addonlist-widgets.ts',
-  'download-page.ts',
-  'input-dialog.ts',
-  'main-window.ts',
-  'omnibar.ts',
-  'preferences-window.ts',
+  'addon-action.ts',
+  'addon-storage.ts',
+  'addons.ts',
   'application.ts',
+  'config.ts',
+  'create-profile.ts',
+  'download-page.ts',
+  'downloader.ts',
+  'id.ts',
+  'index-dir.ts',
+  'launchpad.ts',
   'main.ts',
-  'sample_addons.ts',
+  'mvc.ts',
+  'preferences-window.ts',
+  'profile-bar.ts',
+  'profiles.ts',
+  'session-data.ts',
+  'utils.ts',
+  'window.ts',
 ]
+script_files = files(script)
 
-sources += files(sources_names)
+lib = [
+  'utils/action.ts',
+  'utils/adw1.ts',
+  'utils/code.ts',
+  'utils/decorator.ts',
+  'utils/errors.ts',
+  'utils/file-dialog.ts',
+  'utils/gio1.ts',
+  'utils/glib1.ts',
+  'utils/gtk1.ts',
+  'utils/json1.ts',
+  'utils/log.ts',
+  'utils/message-dialog.ts',
+  'utils/result.ts',
+  'utils/revealer.ts',
+  'utils/soup1.ts',
+  'utils/spinning-button.ts',
+  'utils/toast.ts',
+  'utils/window-promiser.ts',
+  ]
+lib_files = files(lib)
+
 
 tsc_out = join_paths(meson.project_build_root(), 'tsc-out')
 
+_build_root = meson.project_build_root() / '@0@'
 typescript = custom_target(
   'typescript-compile',
-  input: sources,
+  input: script_files + lib_files,
   build_by_default: true,
   build_always_stale: true,
-  command: [ yarn, yarn_args, 'run', 'tsc', '--outDir', tsc_out ],
-  depends: yarn_deps,
+  command: [ yarn, yarn_args, 'run', 'tsc',
+    '--outDir', tsc_out,
+    '--project', _build_root.format(TS_CONFIG) ],
+  depends: [ yarn_deps ],
   output: [ 'tsc-output' ],
 )
 
-source_file_elements = ''
-foreach name : sources_names
-  source_file_elements = ''.join([source_file_elements, '<file>'])
-  source_file_elements = ''.join([source_file_elements, name.replace('.ts', '.js')])
-  source_file_elements = ''.join([source_file_elements, '</file>'])
+SRC = ''
+foreach x : script
+  SRC = ''.join([SRC, '<file>'])
+  SRC = ''.join([SRC, x.replace('.ts', '.js')])
+  SRC = ''.join([SRC, '</file>'])
 endforeach
 
-src_resrc_manifest = configure_file(
-  input: 'steam-vpk.src.gresource.xml.in',
-  output: 'steam-vpk.src.gresource.xml',
+LIB = ''
+foreach x : lib
+  LIB = ''.join([LIB, '<file>'])
+  LIB = ''.join([LIB, x.replace('.ts', '.js')])
+  LIB = ''.join([LIB, '</file>'])
+endforeach
+
+src_manifest = configure_file(
+  input:  'resource.src.gresource.xml.in',
+  output: 'resource.src.gresource.xml',
   configuration: {
-    'SOURCE_FILES': source_file_elements
+    'SRC': SRC,
+    'LIB': LIB,
+    'APP_RDNN': app_rdnn,
   },
 )
 
-app_resource = gnome.compile_resources(
-  APPID + '.src',
-  src_resrc_manifest,
+src_resource = gnome.compile_resources(
+  app_id + '.src',
+  src_manifest,
   dependencies: typescript,
-  source_dir: tsc_out,
+  source_dir: tsc_out / 'src',
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
 )
 
 app_launcher = configure_file(
-  input: 'steam-vpk.in',
-  output: APPID,
-  configuration: const_config,
+  input: 'stvpk.js',
+  output: app_id + '.js',
+  configuration: exec_config,
+)
+
+install_data(
+  app_launcher,
+  rename: app_id,
   install_dir: get_option('bindir'),
-  install_mode: 'rwxr-xr-x',
+  install_mode: 'rwxrwxrwx',
 )

@@ -1,3 +1,0 @@
-extends:
-  - ./.eslintrc-gjs.yml
-  - ./.eslintrc-steamvpk.yml

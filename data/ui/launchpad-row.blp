@@ -1,0 +1,115 @@
+using Gtk 4.0;
+using Adw 1;
+
+menu move-row-menu {
+  section {
+    item (_("Move up"), "row.move-up")
+    item (_("Move down"), "row.move-down")
+  }
+  section {
+    item (_("Configure"), "row.config")
+  }
+}
+
+template $StvpkLaunchpadRow: Adw.ExpanderRow {
+  activatable: true;
+  // title: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).name as <string>;
+  // subtitle: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).id as <string>;
+  icon-name: "list-drag-handle-symbolic";
+  width-request: 200;
+
+  [action]
+  Gtk.MenuButton {
+    valign: center;
+    menu-model: move-row-menu;
+    icon-name: "view-more-symbolic";
+    tooltip-text: "Options";
+
+    styles ["flat"]
+  }
+
+  [action]
+  Gtk.Separator {
+    orientation: vertical;
+    margin-top: 12;
+    margin-bottom: 12;
+  }
+
+  [action]
+  Gtk.Switch toggle {
+    valign: center;
+    halign: center;
+    // active: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).enabled as <string>;
+  }
+
+  Gtk.Box {
+    orientation: vertical;
+    Gtk.Grid {
+      styles ["row-content"]
+
+      row-spacing: 15;
+      column-spacing: 15;
+
+      Gtk.Label {
+        styles ["dim-label"]
+        label: _("Description");
+
+        xalign: 0;
+        yalign: 0;
+        layout {
+          row: 0;
+          column: 0;
+        }
+      }
+
+      Gtk.ScrolledWindow {
+        min-content-width: 400;
+        max-content-width: 400;
+        min-content-height: 200;
+        max-content-height: 400;
+
+        layout {
+          row: 0;
+          column: 1;
+        }
+
+        Gtk.Label description_field {
+          styles ["multiline"]
+          // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).description as <string>;
+          use-markup: true;
+          wrap: true;
+          wrap-mode: word;
+          selectable: true;
+          halign: center;
+          valign: start;
+        }
+      }
+
+      Gtk.Label {
+        styles ["dim-label"]
+        label: _("Last Update");
+
+        xalign: 0;
+        yalign: 0;
+        layout {
+          row: 1;
+          column: 0;
+        }
+      }
+
+      Gtk.Label last_update_field {
+        // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).last_update as <string>;
+        wrap: true;
+        wrap-mode: word;
+        selectable: true;
+
+        xalign: 0;
+        layout {
+          row: 1;
+          column: 1;
+        }
+      }
+
+    }
+  }
+}

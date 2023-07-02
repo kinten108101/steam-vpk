@@ -1,0 +1,50 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkAddAddonName : Gtk.Box {
+  orientation: vertical;
+  visible: false;
+
+  Gtk.HeaderBar {
+    show-title-buttons: false;
+
+    [start]
+    Gtk.Button {
+      label: _("Cancel");
+      action-name: 'window.close';
+    }
+
+    [end]
+    $Gtk1SpinningButton scanButton {
+      label: "Scan";
+      styles ["suggested-action"]
+      clicked => $onScan();
+    }
+  }
+
+  Gtk.Box {
+    orientation: vertical;
+    margin-start: 12;
+    margin-end: 12;
+    margin-bottom: 12;
+    margin-top: 12;
+    spacing: 12;
+    vexpand: true;
+
+    Adw.PreferencesGroup {
+      vexpand: true;
+      Adw.EntryRow stvpkid {
+        sensitive: true;
+        title: _("Add-on ID");
+      }
+
+      Gtk.Label {
+        label: _('Must already exists in add-ons directory.');
+        xalign: 0; // left align
+        margin-top: 12;
+        wrap: true;
+        styles ["dim-label", "caption"]
+      }
+    }
+  }
+}

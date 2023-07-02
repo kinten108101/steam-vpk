@@ -1,25 +1,38 @@
 project(
-	'steam-vpk',
-	version: '0.4.0',
+	'stvpk',
+	version: '0.5.0',
 	meson_version: '>= 0.63.0',
 	license: ['GPL-3.0-or-later'],
 )
 
-gnome = import('gnome')
+gtk4 = dependency('gtk4', version: '>=4.10.3', required: true)
+panel1 = dependency('libpanel-1', version: '>=1.1.0', required: true)
+adw1 = dependency('libadwaita-1', version: '>=1.3.3', required: true)
+gjs = dependency('gjs-1.0', version: '>=1.76.0', required: true)
+gjs_console = gjs.get_variable(pkgconfig: 'gjs_console')
+blueprint_compiler = find_program('blueprint-compiler', version: '>=0.8.0', required: true)
+yarn = find_program('yarn', version: '>=1.22.19', required: true)
+gschema_compiler = find_program('glib-compile-schemas', required: true)
 
-APPID = 'com.github.kinten108101.SteamVpk'
-if get_option('build-type') == 'dev'
-	APPID = ''.join([APPID,'.Dev'])
+gnome = import('gnome')
+fs = import('fs')
+
+app_id = 'com.github.kinten108101.SteamVpk'
+app_rdnn = '/com/github/kinten108101/SteamVpk'
+app_fullname = 'Add-on Box'
+app_shortname = 'add-on-box'
+if get_option('buildtype') == 'debug'
+	app_id = ''.join([app_id, '.Dev'])
+	app_rdnn = ''.join([app_rdnn, '/Dev'])
 endif
 
-pkgdatadir = get_option('datadir') / APPID
-
-gjs_lib = dependency('gjs-1.0', version: '>= 1.76.0', required: true)
-gjs_console = gjs_lib.get_variable(pkgconfig: 'gjs_console')
-yarn = find_program('yarn', required: true)
+pkgdatadir = get_option('datadir') / app_id
+girdir = 'gir-1.0'
+girdir_abs = get_option('prefix') / get_option('datadir') / girdir
+typelibdir = 'girepository-1.0'
+typelibdir_abs = get_option('prefix') / get_option('libdir') / typelibdir
 
 yarn_args = []
-
 subdir('build-node-env')
 subdir('data')
 subdir('src')

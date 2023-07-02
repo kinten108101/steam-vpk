@@ -1,64 +1,64 @@
-#local_schemas = configure_file(
-#  input: 'steam-vpk.gschema.xml',
-#  output: 'steam-vpk.gschema.xml',
-#  copy: true,
-#)
-
-install_data(
-  'steam-vpk.gschema.xml',
-  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
-)
-
-gschema_compiler = find_program('glib-compile-schemas', required: false)
-
-compile_local_schemas = custom_target(
-  'compile_local_schemas',
-  input: 'steam-vpk.gschema.xml',
-  output: 'gschemas.compiled',
-  command: [gschema_compiler, meson.current_build_dir()]
-)
-
-if gschema_compiler.found()
-  test('Validate schema file',
-       gschema_compiler,
-       args: ['--strict', '--dry-run', meson.current_source_dir()])
-endif
-
+interface = []
+interface_files = []
 subdir('ui')
 
-ui_fillin = ''
-foreach name : ui_templates
-  ui_fillin = ''.join([ui_fillin, '<file>ui/'])
-  ui_fillin = ''.join([ui_fillin, name.replace('.blp', '.ui')])
-  ui_fillin = ''.join([ui_fillin, '</file>'])
+blueprints = custom_target('blueprints',
+  input: interface_files,
+  output: '.',
+  build_by_default: true,
+  build_always_stale: true,
+  command: [blueprint_compiler,
+    'batch-compile', # action
+    '--typelib-path', typelibdir_abs, # config
+    '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'], # targets
+)
+
+UI = ''
+foreach x : interface
+  UI = ''.join([UI, '<file>ui/'])
+  UI = ''.join([UI, x.replace('.blp', '.ui')])
+  UI = ''.join([UI, '</file>'])
 endforeach
 
+icons = []
 subdir('icons')
 
-icons_fillin = ''
-foreach name : icons
-  icons_fillin = ''.join([icons_fillin, '<file alias="'])
-  icons_fillin = ''.join([icons_fillin, name])
-  icons_fillin = ''.join([icons_fillin, '">icons/'])
-  icons_fillin = ''.join([icons_fillin, name])
-  icons_fillin = ''.join([icons_fillin, '</file>'])
+ICONS = ''
+foreach x : icons
+  ICONS = ''.join([ICONS, '<file alias="'])
+  ICONS = ''.join([ICONS, x])
+  ICONS = ''.join([ICONS, '">icons/'])
+  ICONS = ''.join([ICONS, x])
+  ICONS = ''.join([ICONS, '</file>'])
 endforeach
 
 data_manifest = configure_file(
-  input: 'steam-vpk.data.gresource.xml.in',
-  output: 'steam-vpk.data.gresource.xml',
+  input:  'resource.data.gresource.xml.in',
+  output: 'resource.data.gresource.xml',
   configuration: {
-    'UI_FILES': ui_fillin,
-    'ICON_FILES': icons_fillin,
+    'APP_RDNN': app_rdnn,
+    'UI': UI,
+    'ICONS': ICONS,
   },
 )
 
 data_resource = gnome.compile_resources(
-	APPID + '.data',
-	data_manifest,
+  app_id + '.data',
+  data_manifest,
   dependencies: blueprints,
-  source_dir: meson.project_build_root() / 'data',
-	gresource_bundle: true,
-	install: true,
-	install_dir: pkgdatadir
+  gresource_bundle: true,
+  install: true,
+  install_dir: pkgdatadir
+)
+
+test('GSettings schema test', gschema_compiler, args: ['--strict', '--dry-run', meson.current_build_dir()])
+
+configure_file(
+  input: 'resource.gschema.xml.in',
+  output: app_id + '.gschema.xml',
+  configuration: {
+    'APP_ID': app_id,
+    'APP_RDNN': app_rdnn,
+  },
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )

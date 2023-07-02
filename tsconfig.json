@@ -1,40 +1,44 @@
 {
   "compilerOptions": {
+    "paths": {
+        "gi://Gtk": ["node_modules/@girs/gtk-4.0/gtk-4.0.d.ts"],
+        "gi://Gdk": ["node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"],
+        "gi://Soup": ["node_modules/@girs/soup-3.0/soup-3.0.d.ts"],
+        "resource://@APP_RDNN@/js/*": ["src/*"],
+        "@SRC_DIR@/*": ["src/*"]
+    },
     "lib": [
-      "ES2017",
-      "ES2021", /* Template does not have this but this is available in GJS now. */
       "ES2022" /* Template does not have this but this is available in GJS now. */
     ],
-    "pretty": false, /* Template does not have this but oh come on */
+    "pretty": true,
     "target": "ES2018",
     "module": "ES2020",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "paths": {
-      "*": ["*", "types/*", "gi-types/*"]
-    },
-    "allowJs": true, /* Allow javascript files to be compiled. */
-    "checkJs": true, /* Report errors in .js files. */
     "outDir": "_tsc_out",
     "strict": true,
-    /* Additional Checks */
-    "noUnusedLocals": true,                 /* Report errors on unused locals. */
-    "noUnusedParameters": true,             /* Report errors on unused parameters. */
-    "noImplicitReturns": true,              /* Report error when not all code paths in function return a value. */
-    "noFallthroughCasesInSwitch": true,     /* Report errors for fallthrough cases in switch statement. */
-    "noUncheckedIndexedAccess": true,       /* Include 'undefined' in index signature results */
-    "resolveJsonModule": true,
-    "forceConsistentCasingInFileNames": true, /* Disallow inconsistently-cased references to the same file. */
-    "experimentalDecorators": true,
-    "typeRoots": [
-      "gi-types"
-    ], /* List of folders to include type definitions from. */
-    "skipLibCheck": true,                      /* Skip type checking of declaration files. */
-    "forceConsistentCasingInFileNames": true  /* Disallow inconsistently-cased references to the same file. */
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false,   // ignore some issues in the typedef libs
+    "allowJs": true,
+    "checkJs": true,
+    "experimentalDecorators": true
   },
   "include": [
-    "gi-types/gi.d.ts",
-    "types/ambient.d.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.js",
+    "tests/*.ts",
+    "lib/@girs/panel-1/panel-1.d.ts",
+    "lib/@libone/**/*.ts",
+    "node_modules/@girs/soup-3.0/soup-3.0.d.ts",
+    "node_modules/@girs/adw-1/adw-1.d.ts",
+    "node_modules/@girs/gjs/gjs.d.ts",
+    "node_modules/@girs/gjs/dom.d.ts"
   ]
 }
