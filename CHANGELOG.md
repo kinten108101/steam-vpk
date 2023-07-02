@@ -29,7 +29,6 @@ First (late) changelog entry!
 - Transition from Evan Welsh's gi-ts to gjsify's ts-for-gir.
 - Transition from whole git submodule to NPM packages (@girs/xxx) for type definition libararies. Unfornately libpanel types aren't available for download, so I pregenerated it and keep it in `lib/@girs/panel-1` for now (there are plans to move away from libpanel).
 - `build-node-env` now has its own tsconfig to facilitate the two transitions above.
-- Data resources (UI markups, icons, stylesheets) now lie in `/src`. I prefer editing application code side-by-side with UI markups. Might not make sense data-wise.
 - Various renames, mostly for data types in the model.
 - Transition from single-window app to multi-window app, which is reflected in the overall architecture.
 
