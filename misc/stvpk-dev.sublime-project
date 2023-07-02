@@ -1,0 +1,26 @@
+{
+	"folders":
+	[
+		{
+			"path": "../",
+		},
+	],
+	"settings" : {
+		"draw_centered": true,
+		"SublimeLinter.linters.annotations": {
+			"infos": ["NOTA BENE", "FYI"],
+        	"warnings": ["FOO", "BAR"],
+        	"errors": ["WHAT?", "OMG!"],
+		},
+		"LSP":
+		{
+			"LSP-typescript":
+			{
+				"enabled": true,
+			},
+		},
+	},
+	"debugger_configurations":
+	[
+	],
+}
