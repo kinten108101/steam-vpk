@@ -29,12 +29,6 @@ Make sure you have Flatpak and Flatpak Builder installed on your computer. Also 
 flatpak install org.gnome.Platform//44 org.gnome.Sdk//44 org.freedesktop.Sdk.Extension.node18//22.08
 ```
 
-Then clone this repository to your computer, pulling all submodules with the `--recurse-submodules` flag.
-
-```shell
-git clone https://github.com/kinten108101/steam-vpk.git --recurse-submodules
-```
-
 Then run `flatpak-builder` with the application manifest inside `/build-aux`.
 
 ```shell
