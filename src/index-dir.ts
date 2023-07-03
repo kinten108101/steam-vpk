@@ -70,7 +70,8 @@ export class WriteOrderAddEntry {
 
 @gobjectClass({
   Signals: {
-    'queue-changed': [],
+    'queue-changed': {},
+    'index-written': {},
   },
 })
 export class DirectoryWriter extends GObject.Object {
@@ -214,12 +215,14 @@ export class DirectoryWriter extends GObject.Object {
       order = queue.pop();
     }
     this.isRunning = false;
+    this.emit('index-written');
   }
 }
 
 @gobjectClass({
   Signals: {
-    'subdirs-changed': [],
+    'subdirs-changed': {},
+    'force-read': {},
   },
 })
 export class IndexDirectory extends GObject.Object
@@ -228,26 +231,25 @@ implements Model {
 
   writeable: DirectoryWriter;
   subdirs: Readonly<Map<string, Subdir>>;
-  monitor: Gio.FileMonitor;
   comment?: string;
   isRunning: boolean;
 
   constructor(param: { file: Gio.File }) {
     super({});
+    this.connect('force-read', this.readIndexFile);
     this.index = param.file;
     Log.info(`index: ${this.index.get_path()}`);
     this.subdirs = new Map;
     this.writeable = new DirectoryWriter({ index: this.index, readable: this });
+    this.writeable.connect('index-written', this.readIndexFile);
     this.isRunning = false;
-    this.monitor = this.index.monitor_file(Gio.FileMonitorFlags.NONE, null);
-    this.monitor.connect('changed', this.readIndexFile);
   }
 
   async start() {
-    this.monitor.emit_event(this.index, this.index, Gio.FileMonitorEvent.CHANGED);
+    this.emit('force-read');
   }
 
-  readIndexFile = (_: any, __: any, ___: any, ____: Gio.FileMonitorEvent) => {
+  readIndexFile = () => {
     if (this.isRunning) {
       Log.warn('readIndexFile is busy...');
       return;
