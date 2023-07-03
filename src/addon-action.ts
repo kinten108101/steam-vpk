@@ -45,6 +45,7 @@ export class ActionSynthesizer extends GObject.Object {
       Log.warn('Action Synthesizer is busy...')
       return;
     }
+    this.isRunning = true;
     const queue = this.queue; // TODO(kinten):
     this.queue = [];          // Is this atomic?
     let order = queue.pop();
