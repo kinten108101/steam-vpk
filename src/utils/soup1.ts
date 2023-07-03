@@ -3,6 +3,12 @@ import GLib from 'gi://GLib';
 import Soup from 'gi://Soup';
 
 import { Result } from './result.js';
+Gio._promisify(Soup.Session.prototype,
+  'send_async',
+  'send_finish');
+Gio._promisify(Soup.Session.prototype,
+  'send_and_read_async',
+  'send_and_read_finish');
 
 export class SessionWrap {
   session: Soup.Session;
