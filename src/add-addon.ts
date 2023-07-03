@@ -89,7 +89,6 @@ export class AddAddon extends GObject.Object {
     const wizard = new AddAddonWizard();
 
     wizard.addPage(async (): Promise<[Symbol]> => {
-try {
       const namePage = addAddonWindow.namePage;
       const namePresent = await namePage.present();
       if (namePresent.code !== Results.OK) {
@@ -124,10 +123,6 @@ try {
       this.application.addonStorage.indexer.writeable.order({ code: WriteOrders.AddEntry, param: { id } });
       addAddonWindow.close();
       return [wizard.navigation.QUIT];
-} catch (error) {
-  Log.error(error);
-  return [wizard.navigation.QUIT];
-}
     })
     wizard.run();
   }

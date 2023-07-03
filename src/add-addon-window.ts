@@ -602,7 +602,11 @@ export class AddAddonWizard {
     let args: any[] = [];
     while (next !== undefined && !this.cancellable.is_cancelled()) {
       const page = next;
-      const [decision, ...nextargs] = await page.action(...args);
+      const [decision, ...nextargs] = await page.action(...args).catch(error => {
+        Log.error('Caught a loose error in AddAddonWizard::run:');
+        Log.error(error);
+        return [this.navigation.QUIT];
+      });
       if (decision === this.navigation.QUIT) {
         Log.debug('quit');
         break;
