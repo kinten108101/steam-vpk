@@ -1,0 +1,42 @@
+{
+  "compilerOptions": {
+    "paths": { 
+        "gi://Gtk": ["@CURRENT_BUILD_DIR@/node_modules/@girs/gtk-4.0/gtk-4.0.d.ts"],
+        "gi://Gdk": ["@CURRENT_BUILD_DIR@/node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"],
+        "gi://Soup": ["@CURRENT_BUILD_DIR@/node_modules/@girs/soup-3.0/soup-3.0.d.ts"],
+        "resource://@APP_RDNN@/js/*": ["@PROJECT_SOURCE_ROOT@/src/*"]
+    },
+    "lib": [
+      "ES2022"
+    ],
+    "pretty": false,
+    "target": "ES2018",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "baseUrl": "@PROJECT_SOURCE_ROOT@",
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictNullChecks": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    "skipLibCheck": true,
+    "allowJs": true,
+    "checkJs": true,
+    "experimentalDecorators": true
+  },
+  "include": [
+    "@CURRENT_BUILD_DIR@/node_modules/@girs/soup-3.0/soup-3.0.d.ts",
+    "@CURRENT_BUILD_DIR@/node_modules/@girs/adw-1/adw-1.d.ts",
+    "@CURRENT_BUILD_DIR@/node_modules/@girs/gjs/gjs.d.ts",
+    "@CURRENT_BUILD_DIR@/node_modules/@girs/gjs/dom.d.ts",
+    "@PROJECT_BUILD_ROOT@/src/@APP_ID@.js",
+    "@PROJECT_SOURCE_ROOT@/src/**/*.ts",
+    "@PROJECT_SOURCE_ROOT@/lib/@girs/panel-1/panel-1.d.ts",
+    "@PROJECT_SOURCE_ROOT@/lib/@libone/**/*.ts"
+  ]
+}

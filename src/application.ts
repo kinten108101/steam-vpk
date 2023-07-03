@@ -1,149 +1,113 @@
 import GLib from 'gi://GLib';
-import Gio from 'gi://Gio';
-import GObject from 'gi://GObject';
-import Adw from 'gi://Adw';
 import Gdk from 'gi://Gdk';
+import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
 
-import { MainWindow } from './main-window.js';
-import { initSettingsManager } from './settings';
-import { init_profile_manager, restore_last_profile, save_current_as_last_profile } from './profile-manager';
-import { initAddonManager } from './addon-manager';
-import { ActionEntry } from './actions';
-import { Errors, StvpkError } from './errors';
+import { gobjectClass } from './utils/decorator.js';
+import * as Gio1 from './utils/gio1.js';
 
-let _application_instance: Application | undefined;
+import { Config } from './config.js';
+import { Window } from './window.js';
+import { SessionData } from './session-data.js';
+import { Log } from './utils/log.js';
+import { Downloader } from './downloader.js';
+import { ActionSynthesizer } from './addon-action.js';
+import { AddonStorage } from './addon-storage.js';
+import { Utils } from './utils.js';
+import { AddAddon } from './add-addon.js';
 
-function get_application_instance(): Application {
-  if (!_application_instance) {
-    throw new StvpkError({
-      code: Errors.SINGLETON_UNINITIALIZED,
-      msg: 'Application has not been instantitated',
-    });
-  }
-  return _application_instance;
-}
-
-function save_application_instance(val: Application): void {
-  if (_application_instance !== undefined) {
-    throw new StvpkError({
-      code: Errors.SINGLETON_INITIALIZED,
-      msg: 'Application has already been instantiated',
-    });
-  }
-  _application_instance = val;
-}
-
+@gobjectClass()
 export class Application extends Adw.Application {
+  settings: Gio.Settings;
+  addonStorage: AddonStorage;
+  addonSynthesizer: ActionSynthesizer;
+  downloader: Downloader;
 
-  static {
-    GObject.registerClass({
-      GTypeName: 'Application',
-    }, this);
-  }
+  pkg_user_data_dir: Gio.File;
+  pkg_user_state_dir: Gio.File;
 
-  constructor(params={}) {
+  constructor(params: Adw.Application.ConstructorProperties = {}) {
     super(params);
-    GLib.set_application_name('SteamVpk');
-    save_application_instance(this);
-    initSettingsManager();
-    init_profile_manager();
-    initAddonManager();
-    this.connect('shutdown', () => {
-      save_current_as_last_profile();
-    });
+    GLib.set_application_name(Config.config.app_fullname);
+    this.settings = new Gio.Settings({
+      schema_id: Config.config.app_id,
+    })
+    this.downloader = new Downloader();
+    Log.info(`${Config.config.app_fullname} (${Config.config.app_id})`);
+    Log.info(`build-type: ${Config.config.build_type}`);
+    Log.info(`version: ${Config.config.version}`);
+
+    this.pkg_user_data_dir = Gio.File.new_for_path(Config.config.pkg_user_data_dir);
+    Utils.makeDirectory(this.pkg_user_data_dir);
+    Log.info(`pkg-user-data-dir: ${this.pkg_user_data_dir.get_path()}`);
+
+    this.pkg_user_state_dir = Gio.File.new_for_path(Config.config.pkg_usr_state_dir);
+    Utils.makeDirectory(this.pkg_user_state_dir);
+    Log.info(`pkg-user-state-dir: ${this.pkg_user_state_dir.get_path()}`);
+
+    this.addonStorage = new AddonStorage({ application: this });
+    this.addonSynthesizer = new ActionSynthesizer({ writeable: this.addonStorage.indexer.writeable, storage: this.addonStorage, index: this.addonStorage.indexer });
   }
 
   vfunc_startup() {
     super.vfunc_startup();
-    this.#setAppActions();
-    this.#setAppAccels();
-    this.#setStylesheet();
+    this.setStylesheet();
+    this.setAppActions();
+    this.setAppAccels();
+    this.addonStorage.start();
   }
 
-  #setAppActions() {
-    const actionEntries: Gio.ActionEntry[] = [{
-      name: 'quit',
-      activate: (() =>{
-        this.get_windows().forEach( win => {
+  setAppActions() {
+    const quit = Gio1.SimpleAction
+      .builder({ name: 'quit' })
+      .activate(() => {
+        this.get_windows().forEach(win => {
           win.close();
         });
-      }).bind(this as Adw.Application),
-      parameter_type: null,
-      state: null,
-      change_state: () => { return; },
-    },
-    {
-      name: 'placeholder-command',
-      activate: () => {
-        log('Run placeholder command!');
-        return;
-      },
-      parameter_type: null,
-      state: null,
-      change_state: () => { return; },
-    },
-    ];
-    this.add_action_entries(actionEntries, null);
+      })
+      .build();
+    this.add_action(quit);
   }
 
-  #setAppAccels() {
-    set_accels_for_local_action('app.placeholder-command', ['<Control>x']);
-    set_accels_for_local_action('app.quit', ['<Control>q']);
+  setAppAccels() {
+    this.set_accels_for_action('app.quit', ['<Control>q']);
+    this.set_accels_for_action('win.close', ['<Control>w']);
   }
 
-  #setStylesheet(){
+  setStylesheet() {
     const provider = new Gtk.CssProvider();
-    provider.load_from_resource('com/github/kinten108101/SteamVpk/css/style.css');
+    provider.load_from_resource(`${Config.config.app_rdnn}/css/style.css`);
 
-    const default_display: any = Gdk.Display.get_default();
-    if (!default_display) return;
+    const defaultDisplay: Gdk.Display | null = Gdk.Display.get_default();
+    if (!defaultDisplay) {
+      return;
+    }
     Gtk.StyleContext.add_provider_for_display(
-      default_display,
+      defaultDisplay,
       provider,
-      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION
+      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
   }
 
   vfunc_activate() {
     super.vfunc_activate();
-    const main_window = new MainWindow({ application: this });
-    restore_last_profile();
-    main_window.present();
-  }
-}
-
-/**
- * @param actionList An array of ActionEntry
- * @param prefix The prefix for the action group of the above actionList
- */
-export function set_accels_for_local_action(actionList: ActionEntry[], prefix?: string): void;
-
-/**
- * @param detailed_action_name Name of the action, including prefix
- * @param accels The accelerators that bind to this action
- */
-export function set_accels_for_local_action(detailed_action_name: string, accels: string[]): void;
-
-export function set_accels_for_local_action(arg1: any, arg2: any): void {
-  if (typeof arg1 === 'string' && Array.isArray(arg2)) {
-    const detailed_action_name: string = arg1;
-    const accels: string[] = arg2;
-    get_application_instance().set_accels_for_action(detailed_action_name, accels);
-    return;
-  }
-  else {
-    const actionList: ActionEntry[] = arg1;
-    const prefix: string | undefined = arg2;
-    actionList.forEach( actionEntry => {
-      if (!actionEntry.name || !actionEntry.accels) return;
-      const detailed_action_name: string = (
-        prefix
-          ? `${prefix}.${actionEntry.name}`
-          : actionEntry.name
-      );
-      get_application_instance().set_accels_for_action(detailed_action_name, actionEntry.accels);
+    const sessionData = new SessionData({
+      application: this,
     });
-    return;
+    const mainWindow = new Window({
+      application: this,
+      title: GLib.get_application_name(),
+      icon_name: 'addon-box',
+      session: sessionData,
+    });
+    new AddAddon({
+      application: this,
+      window: mainWindow,
+      downloader: this.downloader,
+    });
+    mainWindow.onBind(this);
+    sessionData.start();
+    mainWindow.present();
   }
 }

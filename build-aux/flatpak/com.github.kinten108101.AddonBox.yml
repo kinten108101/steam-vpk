@@ -1,0 +1,64 @@
+app-id: com.github.kinten108101.AddonBox
+runtime: org.gnome.Platform
+runtime-version: "44"
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node18
+build-options:
+  append-path: /usr/lib/sdk/node18/bin
+command: com.github.kinten108101.AddonBox
+
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --filesystem=home:rw
+  - --env=GJS_DISABLE_JIT=1
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - /share/doc
+  - /share/gtk-doc
+  - /man
+  - /share/man
+  - "*.a"
+  - "*.la"
+  - /yarn-mirror
+
+modules:
+  - name: blueprint
+    buildsystem: meson
+    builddir: true
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        tag: v0.8.0
+        commit: 8f3682135b6015f38fcf09c8714e4a89daa91987
+  - name: libpanel
+    buildsystem: meson
+    builddir: true
+    config-opts:
+      - -Ddocs=disabled
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/GNOME/libpanel.git
+        tag: 1.3.0
+  - name: yarn-deps
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/node18/enable.sh
+      - mkdir -p /app
+      - "cp -r ${FLATPAK_BUILDER_BUILDDIR}/flatpak-node/yarn-mirror /app"
+    sources:
+      - generated-sources.json
+  - name: stvpk
+    buildsystem: meson
+    config-opts:
+      - -Doffline-mirror=/app/yarn-mirror
+      - -Dbuildtype=release
+    sources:
+      - type: dir
+        path: ../

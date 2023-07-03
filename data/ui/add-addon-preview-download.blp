@@ -1,0 +1,116 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkAddAddonPreviewDownload : Gtk.Box {
+  orientation: vertical;
+  visible: false;
+
+  Gtk.HeaderBar {
+    show-title-buttons: false;
+
+    [start]
+    Gtk.Button {
+      label: _("Back");
+      clicked => $onGoBack();
+    }
+
+    [end]
+    Gtk.Button downloadButton {
+      label: _("Download");
+      styles ["suggested-action"]
+      clicked => $onDownload();
+    }
+  }
+
+  Gtk.Box {
+    orientation: vertical;
+    margin-start: 12;
+    margin-end: 12;
+    margin-bottom: 12;
+    margin-top: 12;
+    spacing: 12;
+    vexpand: true;
+
+    Gtk.ScrolledWindow {
+      vexpand: true;
+      hexpand: true;
+      height-request: 400;
+
+      Gtk.Box {
+        orientation: vertical;
+        spacing: 20;
+
+        Adw.PreferencesGroup {
+          Adw.EntryRow addonName {
+            sensitive: true;
+            title: _("Add-on Name");
+
+            [suffix]
+            Gtk.Button {
+              icon-name: "update-symbolic";
+              tooltip-text: "Sync with item";
+              valign: center;
+              styles ["flat"]
+              clicked => $onSyncName();
+            }
+          }
+
+          Gtk.Label {
+            label: _('A human-readable name. It can contain non-ASCII characters.');
+            xalign: 0; // left align
+            margin-top: 12;
+            wrap: true;
+            styles ["dim-label", "caption"]
+          }
+        }
+
+        Adw.PreferencesGroup {
+          Adw.EntryRow stvpkid {
+            sensitive: true;
+            title: _("Add-on ID");
+            text: "mw19-famas@mav";
+
+            [suffix]
+            Gtk.Button {
+              icon-name: "update-symbolic";
+              tooltip-text: "Sync with item";
+              valign: center;
+              styles ["flat"]
+              clicked => $onSyncId();
+            }
+          }
+
+          Gtk.Label {
+            label: _('An email-address-like string used to identify the add-on and its resources. It is made up of three parts - the add-on name, the symbol @, and the author name.');
+            xalign: 0; // left align
+            margin-top: 12;
+            wrap: true;
+            styles ["dim-label", "caption"]
+          }
+
+          Gtk.Label {
+            label: _('An example would be "ram7-rifle@marumori7".');
+            xalign: 0; // left align
+            margin-top: 12;
+            wrap: true;
+            styles ["dim-label", "caption"]
+          }
+        }
+
+        Adw.PreferencesGroup {
+          Adw.ActionRow {
+            title: _("Include in profile");
+            subtitle: _("Once download is finished, this add-on will be included in the current profile.");
+
+            [suffix]
+            Gtk.Switch includeInProfile {
+              valign: center;
+              halign: center;
+              active: true;
+            }
+          }
+        }
+      }
+    }
+  }
+}

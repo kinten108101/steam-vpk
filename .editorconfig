@@ -1,14 +1,15 @@
-# EditorConfig is awesome: http://EditorConfig.org
-
 root = true
 
 [*]
 end_of_line = lf
-insert_final_newline = true
 charset = utf-8
 trim_trailing_whitespace = true
+insert_final_newline = true
+
+[*.{build,json,yml,yaml,doap,ui,blp,js,ts}]
 indent_style = space
 indent_size = 2
 
-[LINGUAS]
-insert_final_newline = false
+[*.{py}]
+indent_style = tab
+indent_size = 4

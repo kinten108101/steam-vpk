@@ -1,32 +1,64 @@
+interface = []
+interface_files = []
+subdir('ui')
+
 blueprints = custom_target('blueprints',
-  input: files(
-    'ui/add-addon.blp',
-    'ui/add-addon-preview.blp',
-    'ui/add-addon-url.blp',
-    'ui/addonlist-page.blp',
-    'ui/addonlist-row.blp',
-    'ui/addonlist-section.blp',
-    'ui/download-page.blp',
-    'ui/main-window.blp',
-    'ui/omnibar-popover.blp',
-    'ui/omnibar.blp',
-    'ui/preferences-window.blp',
-    'ui/new-profile.blp'
-  ),
+  input: interface_files,
   output: '.',
-  command: [find_program('blueprint-compiler'), 'batch-compile', '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
+  build_by_default: true,
+  build_always_stale: true,
+  command: [blueprint_compiler,
+    'batch-compile', # action
+    '--typelib-path', typelibdir_abs, # config
+    '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'], # targets
 )
 
-install_data(
-  APPID + '.gschema.xml',
-  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas'
+UI = ''
+foreach x : interface
+  UI = ''.join([UI, '<file>ui/'])
+  UI = ''.join([UI, x.replace('.blp', '.ui')])
+  UI = ''.join([UI, '</file>'])
+endforeach
+
+icons = []
+subdir('icons')
+
+ICONS = ''
+foreach x : icons
+  ICONS = ''.join([ICONS, '<file alias="'])
+  ICONS = ''.join([ICONS, x])
+  ICONS = ''.join([ICONS, '">icons/'])
+  ICONS = ''.join([ICONS, x])
+  ICONS = ''.join([ICONS, '</file>'])
+endforeach
+
+data_manifest = configure_file(
+  input:  'resource.data.gresource.xml.in',
+  output: 'resource.data.gresource.xml',
+  configuration: {
+    'APP_RDNN': app_rdnn,
+    'UI': UI,
+    'ICONS': ICONS,
+  },
 )
 
-gnome.compile_resources(
-	APPID + '.data',
-	APPID + '.data.gresource.xml',
-	dependencies: blueprints,
-	gresource_bundle: true,
-	install: true,
-	install_dir: INSTALL_DIR
+data_resource = gnome.compile_resources(
+  app_id + '.data',
+  data_manifest,
+  dependencies: blueprints,
+  gresource_bundle: true,
+  install: true,
+  install_dir: pkgdatadir
+)
+
+test('GSettings schema test', gschema_compiler, args: ['--strict', '--dry-run', meson.current_build_dir()])
+
+configure_file(
+  input: 'resource.gschema.xml.in',
+  output: app_id + '.gschema.xml',
+  configuration: {
+    'APP_ID': app_id,
+    'APP_RDNN': app_rdnn,
+  },
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )

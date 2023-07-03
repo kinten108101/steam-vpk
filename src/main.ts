@@ -1,13 +1,23 @@
-import '../@types/Gjs/index';
 import 'gi://Gdk?version=4.0';
 import 'gi://Gtk?version=4.0';
-import 'gi://Adw';
+import 'gi://Soup?version=3.0';
 
+import { Log, getShortTraceGjs } from './utils/log.js';
+Log.init({
+  buildtype: Config.config.build_type,
+  prefix: Config.config.app_shortname,
+  implementations: {
+    printRaw: print,
+    getShortTrace: getShortTraceGjs,
+  },
+});
+
+import { Config } from './config.js';
 import { Application } from './application.js';
 
-export function main(argv: string[] | null) {
+export function main(argv: string[] | null): number {
   const app = new Application({
-    'application-id': imports.package.name,
+    application_id: Config.config.app_id,
   });
   return app.run(argv);
 }

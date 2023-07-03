@@ -1,0 +1,29 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkLaunchpadPage : Gtk.Box {
+  orientation: vertical;
+  vexpand: true;
+  hexpand: true;
+
+  Gtk.ScrolledWindow {
+    vexpand: true;
+    hexpand: true;
+
+    Adw.Clamp {
+      vexpand: true;
+      hexpand: true;
+      maximum-size: 300;
+      Gtk.Box contentArea {
+        styles ["content"]
+        vexpand: true;
+        hexpand: true;
+        margin-top: 20;
+        margin-start: 16;
+        margin-end: 16;
+        orientation: vertical;
+        spacing: 10;
+      }
+    }
+  }
+}

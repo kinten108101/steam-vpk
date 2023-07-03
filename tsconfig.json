@@ -1,15 +1,44 @@
 {
-  "extends": "./tsconfig.alias.json",
   "compilerOptions": {
-    "lib": ["ESNext", "dom"],
-    "types": [],
-    "target": "ESNext",
-    "module": "ESNext",
+    "paths": {
+        "gi://Gtk": ["node_modules/@girs/gtk-4.0/gtk-4.0.d.ts"],
+        "gi://Gdk": ["node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"],
+        "gi://Soup": ["node_modules/@girs/soup-3.0/soup-3.0.d.ts"],
+        "resource://@APP_RDNN@/js/*": ["src/*"],
+        "@SRC_DIR@/*": ["src/*"]
+    },
+    "lib": [
+      "ES2022" /* Template does not have this but this is available in GJS now. */
+    ],
+    "pretty": true,
+    "target": "ES2018",
+    "module": "ES2020",
+    "moduleResolution": "node",
+    "baseUrl": ".",
+    "outDir": "_tsc_out",
     "strict": true,
-    "noImplicitAny": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "forceConsistentCasingInFileNames": true,
     "strictNullChecks": true,
-    "noImplicitThis": true,
-    "alwaysStrict": true
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": false,   // ignore some issues in the typedef libs
+    "allowJs": true,
+    "checkJs": true,
+    "experimentalDecorators": true
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.js",
+    "tests/*.ts",
+    "lib/@girs/panel-1/panel-1.d.ts",
+    "lib/@libone/**/*.ts",
+    "node_modules/@girs/soup-3.0/soup-3.0.d.ts",
+    "node_modules/@girs/adw-1/adw-1.d.ts",
+    "node_modules/@girs/gjs/gjs.d.ts",
+    "node_modules/@girs/gjs/dom.d.ts"
+  ]
 }

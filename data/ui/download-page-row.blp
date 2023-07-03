@@ -1,0 +1,70 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkDownloadPageRow: Gtk.ListBoxRow {
+  styles ["search-row"]
+
+  activatable: true;
+
+  Gtk.Box {
+    styles ["header"]
+    hexpand: true;
+    spacing: 10;
+
+    Gtk.Grid {
+      hexpand: true;
+      column-spacing: 10;
+
+      Gtk.Box {
+        hexpand: true;
+        orientation: vertical;
+        valign: center;
+
+        Gtk.Label title {
+          styles ["title"]
+          ellipsize: end;
+          xalign: 0;
+        }
+
+        Gtk.Label subtitle {
+          styles ["subtitle"]
+          ellipsize: end;
+          xalign: 0;
+        }
+
+        layout {
+          row: 0;
+          column: 1;
+        }
+      }
+
+      Gtk.Label description {
+        styles ["dim-label"]
+
+        margin-top: 5;
+        single-line-mode: true;
+        xalign: 0;
+        wrap: true;
+        wrap-mode: word_char;
+        ellipsize: end;
+        lines: 2;
+
+        layout {
+          row: 1;
+          column: 1;
+        }
+      }
+    }
+
+    // button goes here
+
+    Gtk.Image {
+      styles ["expander-row-arrow"]
+
+      valign: center;
+      halign: end;
+
+      icon-name: "go-next-symbolic";
+    }
+  }
+}

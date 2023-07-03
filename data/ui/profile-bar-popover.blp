@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Panel 1;
+
+template $StvpkProfileBarPopover : Gtk.Popover {
+  width-request: 500;
+  position: bottom;
+
+  Gtk.Box {
+    orientation: vertical;
+
+    Gtk.Box {
+      orientation: vertical;
+      margin-start: 24;
+      margin-end: 24;
+      margin-top: 12;
+      margin-bottom: 12;
+
+      Gtk.Box {
+        hexpand: true;
+        spacing: 12;
+
+        Gtk.Label profileName {
+          label: "<b>Maru Mori</b>";
+          use-markup: true;
+          valign: baseline;
+          hexpand: true;
+          xalign: 0;
+          margin-bottom: 12;
+        }
+      }
+
+      Gtk.Grid {
+        row-spacing: 6;
+        column-spacing: 18;
+
+        Gtk.Label {
+          label: _("Profile ID");
+          xalign: 1;
+          styles ["mori3112"]
+          layout {
+            row: 0;
+            column: 0;
+          }
+        }
+
+        Gtk.Label profileId {
+          label: "kintenAddons";
+          hexpand: true;
+          xalign: 1;
+          layout {
+            row: 0;
+            column: 1;
+          }
+        }
+
+        Gtk.Label {
+          label: _("Add-on count");
+          xalign: 1;
+          styles ["dim-label"]
+          layout {
+            row: 1;
+            column: 0;
+          }
+        }
+
+        Gtk.Label addonCount {
+          label: "15";
+          hexpand: true;
+          xalign: 1;
+          layout {
+            row: 1;
+            column: 1;
+          }
+        }
+      }
+    }
+  }
+}

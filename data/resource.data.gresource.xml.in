@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gresources>
+  <gresource prefix="@APP_RDNN@">
+    @UI@
+  </gresource>
+  <gresource prefix="@APP_RDNN@/css">
+    <file>style.css</file>
+  </gresource>
+  <gresource prefix="@APP_RDNN@/icons/scalable/actions">
+    @ICONS@
+  </gresource>
+</gresources>
