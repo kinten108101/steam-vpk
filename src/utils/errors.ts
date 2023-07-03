@@ -38,7 +38,7 @@ export const ErrorDomains = {
 }
 
 export interface FlatErrorConstructor {
-  code: FlatErrorCode;
+  code?: FlatErrorCode;
   cause?: string;
   domain?: FlatErrorDomain;
   message?: string;
@@ -49,14 +49,14 @@ const FlatErrorConfigructorDefault = {
 };
 
 export class FlatError extends Error {
-  readonly code: FlatErrorCode;
+  readonly code?: FlatErrorCode;
   readonly cause?: string;
   readonly msg?: string;
   readonly domain?: FlatErrorDomain;
 
   constructor(params: FlatErrorConstructor = FlatErrorConfigructorDefault) {
     const { code, cause, message, domain } = params;
-    const messageFull = `<${domain}::${Errors[code]}> ${message}${ cause ? `. Caused by ${cause}` : ''}`;
+    const messageFull = `<${domain}${code ? `::${Errors[code]}` : ''}> ${message}${ cause ? `. Caused by ${cause}` : ''}`;
     super(messageFull);
     Log.debug('Thrown ' + messageFull);
     this.code = code;
