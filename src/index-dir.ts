@@ -115,19 +115,10 @@ export class DirectoryWriter extends GObject.Object {
             subdirs: [],
             comment:  this.readable.comment,
           });
-          const serialize = JSON1.stringify(content);
-          if (serialize.code !== Results.OK) {
-            Log.warn('Couldn\'t stringify JSObject, this is a programming error');
-            break;
-          }
 
-          const buffer = Utils.Encoder.encode(serialize.data);
-          // how to use encodeInto
-
-          console.log(serialize.data);
-          const writebytes = Utils.replaceContentsR(this.index, buffer, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-          if (writebytes.code !== Results.OK) {
-            const error = writebytes.data;
+          const writejson = Utils.replaceJSON(content, this.index);
+          if (writejson.code !== Results.OK) {
+            const error = writejson.data;
             Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
@@ -155,16 +146,9 @@ export class DirectoryWriter extends GObject.Object {
                     })(),
             comment:  this.readable.comment,
           });
-          const serialize = JSON1.stringify(content);
-          if (serialize.code !== Results.OK) {
-            Log.warn('Couldn\'t stringify JSObject, this is a programming error');
-            break;
-          }
-
-          const buffer = Utils.Encoder.encode(serialize.data);
-          const writebytes = Utils.replaceContentsR(this.index, buffer, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-          if (writebytes.code !== Results.OK) {
-            const error = writebytes.data;
+          const writejson = Utils.replaceJSON(content, this.index);
+          if (writejson.code !== Results.OK) {
+            const error = writejson.data;
             Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
@@ -192,17 +176,9 @@ export class DirectoryWriter extends GObject.Object {
                     })(),
             comment:  this.readable.comment,
           });
-          Log.debug(content);
-          const serialize = JSON1.stringify(content);
-          if (serialize.code !== Results.OK) {
-            Log.warn('Couldn\'t stringify JSObject, this is a programming error');
-            break;
-          }
-
-          const buffer = Utils.Encoder.encode(serialize.data);
-          const writebytes = Utils.replaceContentsR(this.index, buffer, null, false, Gio.FileCreateFlags.REPLACE_DESTINATION, null);
-          if (writebytes.code !== Results.OK) {
-            const error = writebytes.data;
+          const writejson = Utils.replaceJSON(content, this.index);
+          if (writejson.code !== Results.OK) {
+            const error = writejson.data;
             Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
