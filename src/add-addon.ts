@@ -129,7 +129,7 @@ try {
   return [wizard.navigation.QUIT];
 }
     })
-    wizard.start();
+    wizard.run();
   }
 
   onAddUrlActivate = async () => {
@@ -369,6 +369,6 @@ try {
       addAddonWindow.close();
       return [wizard.navigation.QUIT];
     });
-    wizard.start();
+    wizard.run();
   }
 }

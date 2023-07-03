@@ -597,7 +597,7 @@ export class AddAddonWizard {
     this.cancellable = new Gio.Cancellable();
   }
 
-  async start() {
+  async run() {
     let next = this.pages[0];
     let args: any[] = [];
     while (next !== undefined && !this.cancellable.is_cancelled()) {
