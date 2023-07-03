@@ -21,7 +21,7 @@ fs = import('fs')
 app_id = 'com.github.kinten108101.SteamVpk'
 app_rdnn = '/com/github/kinten108101/SteamVpk'
 app_fullname = 'Add-on Box'
-app_shortname = 'add-on-box'
+app_shortname = 'addon-box'
 if get_option('buildtype') == 'debug'
 	app_id = ''.join([app_id, '.Dev'])
 	app_rdnn = ''.join([app_rdnn, '/Dev'])
