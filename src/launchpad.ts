@@ -3,6 +3,8 @@ import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 
+import * as Utils from './utils.js';
+
 import { Config } from './config.js';
 import { LateBindee } from './mvc.js';
 import { MainWindowContext } from './window.js';
@@ -185,7 +187,7 @@ implements LateBindee<MainWindowContext> {
               if (session.currentProfile.activelist?.has(addon.vanityId)) return true;
               return false;
             })(),
-      description: addon.description || '',
+      description: Utils.SteamMd2Pango(addon.description || ''),
       last_update: (() => {
                 const date = addon?.timeUpdated;
                 if (date === undefined) return '';

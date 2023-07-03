@@ -25,6 +25,11 @@ else {
 
 */
 
+export function SteamMd2Pango(text: string) {
+  const _text = text.replaceAll('&', '&amp;');
+  return _text;
+}
+
 export function makeDirectory(dir: Gio.File) {
   try {
     dir.make_directory(null);
