@@ -212,6 +212,8 @@ export const FileDialog = {
   }
 }
 
+Gio._promisify(Gtk.FileDialog.prototype, 'save', 'save_finish');
+Gio._promisify(Gtk.FileDialog.prototype, 'open', 'open_finish');
 export class FileDialogWrap {
   dialog: Gtk.FileDialog;
 

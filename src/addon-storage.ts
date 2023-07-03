@@ -2,14 +2,15 @@ import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
+import * as Utils from './utils.js';
+import { Log } from './utils/log.js';
+import { Results } from './utils/result.js';
+import { gobjectClass } from './utils/decorator.js';
+
 import { IndexDirectory, WriteOrders } from './index-dir.js';
 import { Model } from './mvc.js';
 import { Addon, AddonManifest } from './addons.js';
-import { Log } from './utils/log.js';
 import { Config } from './config.js';
-import { Results } from './utils/result.js';
-import { Utils } from './utils.js';
-import { gobjectClass } from './utils/decorator.js';
 import { Application } from './application.js';
 
 const _quark = GLib.quark_from_string('stvpk-addon-storage-error');

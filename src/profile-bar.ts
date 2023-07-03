@@ -12,10 +12,11 @@ import { Errors, FlatError } from './utils/errors.js';
 import { gobjectChild, gobjectClass, bind } from './utils/decorator.js';
 import { Results } from './utils/result.js';
 import { Log } from './utils/log.js';
+import * as Utils from './utils.js';
+import * as JSON1 from './utils/json1.js';
 
 import { Config } from './config.js';
 import { MainWindowContext } from './window.js';
-import { Utils } from './utils.js';
 import { CreateProfileDialog } from './create-profile.js';
 import { LateBindee } from './mvc.js';
 import { SessionData } from './session-data.js';
@@ -322,7 +323,7 @@ implements LateBindee<MainWindowContext> {
     }
 
     const str = decodeResult.data;
-    const parseResult = Utils.parseJsonR(str);
+    const parseResult = JSON1.parse(str);
     if (parseResult.code !== Results.OK) {
       Adw1.Toast.builder()
         .title('Incorrect JSON syntax')

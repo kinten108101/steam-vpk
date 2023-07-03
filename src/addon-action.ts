@@ -3,16 +3,16 @@ import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 
 import * as GLib1 from './utils/glib1.js';
-
-import { gobjectClass } from "./utils/decorator.js";
-import { DirectoryWriter, IndexDirectory, WriteOrders } from './index-dir.js';
-import { AddonStorage, AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
-import { AddonManifest } from './addons.js';
+import * as Utils from './utils.js';
 import { Log } from './utils/log.js';
+import { gobjectClass } from "./utils/decorator.js";
 import { Result, Results } from './utils/result.js';
 import { Errors, FlatError } from './utils/errors.js';
 import { PromiseReject, PromiseResolve } from './utils/window-promiser.js';
-import { Utils } from './utils.js';
+
+import { DirectoryWriter, IndexDirectory, WriteOrders } from './index-dir.js';
+import { AddonStorage, AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
+import { AddonManifest } from './addons.js';
 import { Config } from './config.js';
 
 

@@ -8,7 +8,7 @@ import * as Gio1 from './utils/gio1.js';
 import * as Gtk1 from './utils/gtk1.js';
 import * as Adw1 from './utils/adw1.js';
 import * as GLib1 from './utils/glib1.js';
-
+import * as Utils from './utils.js';
 import { gobjectClass } from './utils/decorator.js';
 import { Log } from './utils/log.js';
 import { Result, Results } from './utils/result.js';
@@ -16,7 +16,6 @@ import { Errors, FlatError } from './utils/errors.js';
 
 import { Config } from './config.js';
 import { Window } from './window.js';
-import { Utils } from './utils.js';
 import { Downloader } from './downloader.js';
 import { generateAddonName, generateAuthor, generateName } from './id.js';
 import { AddonManifest } from './addons.js';

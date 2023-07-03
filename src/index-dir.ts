@@ -4,10 +4,10 @@ import Gio from 'gi://Gio';
 import { Log } from './utils/log.js';
 import * as JSON1 from './utils/json1.js';
 import { Results } from './utils/result.js';
-
-import { Utils } from './utils.js';
-import { gobjectClass } from './utils/decorator.js';
+import * as Utils from './utils.js';
 import { Errors, FlatError } from './utils/errors.js';
+import { gobjectClass } from './utils/decorator.js';
+
 import { Model } from './mvc.js';
 
 export interface Subdir {
@@ -285,7 +285,7 @@ implements Model {
     }
     const strbuf = decoding.data;
 
-    const parsing = Utils.parseJsonR(strbuf);
+    const parsing = JSON1.parse(strbuf);
     if (parsing.code !== Results.OK) {
       Log.warn('Index file has JSON syntax error! Requested a reset.');
       this.writeable.order({ code: WriteOrders.Reset });

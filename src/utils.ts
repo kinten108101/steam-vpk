@@ -1,34 +1,17 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-import Adw from 'gi://Adw';
-import Gtk from 'gi://Gtk';
 
 import * as JSON1 from './utils/json1.js';
 import * as GLib1 from './utils/glib1.js';
 
-import { Errors, FlatError } from './utils/errors.js';
 import { Result, Results } from './utils/result.js';
 import { TextDecoderWrap } from './utils/code.js';
 import { Log } from './utils/log.js';
 
 Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
 
-const _decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
-const _encoder = new TextEncoder();
-
-export const _FileUtils = {
-  loadContentsR,
-  replaceContentsR,
-  parseJsonR,
-  decodeR,
-  listFiles,
-  Encoder: _encoder,
-  Decoder: _decoder,
-  readJSON,
-  replaceJSON,
-  readJSONbytes,
-  makeDirectory,
-};
+export const Decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
+export const Encoder = new TextEncoder();
 
 /*
 
@@ -42,10 +25,10 @@ else {
 
 */
 
-function makeDirectory(dest: Gio.File) {
+export function makeDirectory(dir: Gio.File) {
   try {
-    dest.make_directory(null);
-    Log.debug(`Created ${dest.get_basename()} for the first time.`);
+    dir.make_directory(null);
+    Log.debug(`Created ${dir.get_basename()} for the first time.`);
   } catch (error) {
     if (error instanceof GLib.Error && error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.EXISTS)) {}
     else {
@@ -55,14 +38,15 @@ function makeDirectory(dest: Gio.File) {
   }
 }
 
-function readJSON(file: Gio.File) {
-  const readbytes = Utils.loadContentsR(file, null);
+export function readJSON(file: Gio.File) {
+  const readbytes = loadContentsR(file, null);
   if (readbytes.code !== Results.OK) {
     Log.warn(`Caught an input stream error.`);
     return readbytes;
   }
 
-  const decodebytes = Utils.Decoder.decode(readbytes.data[1]);
+  const [ , bytes, ] = readbytes.data;
+  const decodebytes = Decoder.decode(bytes);
   if (decodebytes.code !== Results.OK) {
     Log.warn(`Caught an encoding error.`);
     return decodebytes;
@@ -76,8 +60,8 @@ function readJSON(file: Gio.File) {
   return parsejsobject;
 }
 
-function readJSONbytes(contents: ArrayBuffer) {
-  const decodebytes = Utils.Decoder.decode(contents);
+export function readJSONbytes(contents: ArrayBuffer) {
+  const decodebytes = Decoder.decode(contents);
   if (decodebytes.code !== Results.OK) {
     Log.warn(`Caught an encoding error.`);
     return decodebytes;
@@ -91,7 +75,7 @@ function readJSONbytes(contents: ArrayBuffer) {
   return parsejsobject;
 }
 
-function replaceJSON(value: any, dest: Gio.File,
+export function replaceJSON(value: any, dest: Gio.File,
   prettified: boolean = true, etag?: string | null, makeBackup?: boolean,
   flags?: Gio.FileCreateFlags, cancellable?: Gio.Cancellable | null) {
   const serialize = JSON1.stringify(
@@ -107,8 +91,8 @@ function replaceJSON(value: any, dest: Gio.File,
     return serialize;
   }
 
-  const buffer = Utils.Encoder.encode(serialize.data);
-  const writebytes = Utils.replaceContentsR(dest, buffer, etag || null, makeBackup || false, flags || Gio.FileCreateFlags.REPLACE_DESTINATION, cancellable || null);
+  const buffer = Encoder.encode(serialize.data);
+  const writebytes = replaceContentsR(dest, buffer, etag || null, makeBackup || false, flags || Gio.FileCreateFlags.REPLACE_DESTINATION, cancellable || null);
   if (writebytes.code !== Results.OK) {
     const error = writebytes.data;
     Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
@@ -141,7 +125,7 @@ function replaceJSON(value: any, dest: Gio.File,
  * @param cancellable optional #GCancellable object, %NULL to ignore
  * @returns %TRUE if successful. If an error has occurred, this function   will return %FALSE and set @error appropriately if present.
  */
-function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: string | null, make_backup: boolean, flags: Gio.FileCreateFlags, cancellable: Gio.Cancellable | null): Result<[ boolean, string | null ], GLib.Error> {
+export function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: string | null, make_backup: boolean, flags: Gio.FileCreateFlags, cancellable: Gio.Cancellable | null): Result<[ boolean, string | null ], GLib.Error> {
   try {
     const result = file.replace_contents(contents, etag, make_backup, flags, cancellable);
     return Result.compose.OK(result);
@@ -152,23 +136,11 @@ function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: string | n
   }
 }
 
-function parseJsonR(text: string): Result<any, SyntaxError> {
-  try {
-    const obj = JSON.parse(text);
-    return Result.compose.OK(obj);
-  } catch (error) {
-    if (error instanceof SyntaxError)
-      return Result.compose.NotOK(error);
-    else
-      throw error;
-  }
-}
-
 /**
  * @param {Gio.File} dir The directory inside which the scan takes place
  * @returns { Gio.File[] } A list of files in directory
  */
-function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
+export function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
   try {
     const enumerator = dir.enumerate_children(
       'standard::name,standard::type',
@@ -196,7 +168,7 @@ function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
   }
 }
 
-function loadContentsR(file: Gio.File, cancellable: Gio.Cancellable | null): Result<[boolean, Uint8Array, string | null], GLib.Error> {
+export function loadContentsR(file: Gio.File, cancellable: Gio.Cancellable | null): Result<[boolean, Uint8Array, string | null], GLib.Error> {
   try {
     const res = file.load_contents(cancellable);
     return Result.compose.OK(res);
@@ -206,18 +178,6 @@ function loadContentsR(file: Gio.File, cancellable: Gio.Cancellable | null): Res
     } else {
       throw error;
     }
-  }
-}
-
-function decodeR(decoder: TextDecoder, input?: ArrayBufferView | ArrayBuffer, options?: TextDecodeOptions): Result<string, TypeError> {
-  try {
-    const str = decoder.decode(input, options);
-    return Result.compose.OK(str);
-  } catch (error) {
-    if (error instanceof TypeError)
-      return Result.compose.NotOK(error);
-    else
-      throw error;
   }
 }
 
@@ -240,38 +200,9 @@ function parseJsonFile(arg: unknown): Result<unknown> {
 }
 */
 
-const _String = {
-  isNumberString,
-}
-
-function isNumberString(str: string): boolean {
+export function isNumberString(str: string): boolean {
   for (let i = 0; i < str.length; i++) {
     if (str.charCodeAt(i) < 48 || str.charCodeAt(i) > 57) return false;
   }
   return true;
 }
-
-const _MiscUtils = {
-  jsType2GVariantSig,
-};
-
-function jsType2GVariantSig(val: string): string {
-  switch (val) {
-  case 'string':
-    return 's';
-  default:
-    throw new FlatError({
-      code: Errors.UNEXPECTED_TYPE,
-    });
-  }
-}
-
-export const Utils = {
-  ..._FileUtils,
-  ..._MiscUtils,
-  ..._String,
-};
-
-Gio._promisify(Adw.MessageDialog.prototype, 'choose', 'choose_finish');
-Gio._promisify(Gtk.FileDialog.prototype, 'save', 'save_finish');
-Gio._promisify(Gtk.FileDialog.prototype, 'open', 'open_finish');

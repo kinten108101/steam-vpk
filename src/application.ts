@@ -6,15 +6,15 @@ import Adw from 'gi://Adw';
 
 import { gobjectClass } from './utils/decorator.js';
 import * as Gio1 from './utils/gio1.js';
+import * as Utils from './utils.js';
+import { Log } from './utils/log.js';
 
 import { Config } from './config.js';
 import { Window } from './window.js';
 import { SessionData } from './session-data.js';
-import { Log } from './utils/log.js';
 import { Downloader } from './downloader.js';
 import { ActionSynthesizer } from './addon-action.js';
 import { AddonStorage } from './addon-storage.js';
-import { Utils } from './utils.js';
 import { AddAddon } from './add-addon.js';
 
 @gobjectClass()

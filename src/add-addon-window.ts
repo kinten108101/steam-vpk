@@ -4,7 +4,6 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import './utils/spinning-button.js';
 import * as Gtk1 from './utils/gtk1.js';
 import * as Adw1 from './utils/adw1.js';
 
