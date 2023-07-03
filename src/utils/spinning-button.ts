@@ -20,7 +20,6 @@ export class SpinningButton extends Gtk.Button {
   constructor(param = {}) {
     super(param);
     this.spinner = new Gtk.Spinner({ spinning: true });
-    this.set_label(this.get_label());
     this.label_saved = this.get_label() || 'aaaaaa'; // FIXME(kinten): Why is this.label empty!?
   }
 
