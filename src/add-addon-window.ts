@@ -81,6 +81,7 @@ class InputStateManager extends GObject.Object {
       return;
     }
     state.valid = val;
+    this.emit('state-changed');
   }
 
   get_valid(id: string) {
