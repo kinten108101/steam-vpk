@@ -100,6 +100,23 @@ implements Adw1.Toaster {
       })
       .build();
     this.add_action(showAbout);
+
+    const reloadData = Gio1.SimpleAction
+      .builder({ name: 'reload-data' })
+      .activate(() => {
+        const app = (this.application as Application);
+        const addonChangeSub = app.addonStorage.connect(AddonStorage.Signals.addons_changed, () => {
+          app.addonStorage.disconnect(addonChangeSub);
+          Adw1.Toast.builder()
+            .title('Add-ons updated!')
+            .timeout(3)
+            .wrap().build().present(this);
+        });
+        app.addonStorage.emit('force-update');
+      })
+      .build();
+    this.add_action(reloadData);
+
   }
 
   vfunc_close_request() {

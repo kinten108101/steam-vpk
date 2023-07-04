@@ -26,6 +26,7 @@ export enum AddonStorageError {
 @gobjectClass({
   Signals: {
     [AddonStorage.Signals.addons_changed]: {},
+    'force-update': {},
   }
 })
 export class AddonStorage extends GObject.Object
@@ -52,6 +53,8 @@ implements Model {
     this.index = application.pkg_user_state_dir.get_child(Config.config.addon_index);
     this.indexer = new IndexDirectory({ file: this.index });
     this.indexer.connect('subdirs-changed', this.updateIdMap);
+
+    this.connect('force-update', this.updateIdMap);
   }
 
   async start() {
