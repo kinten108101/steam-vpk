@@ -12,7 +12,6 @@ import * as Utils from './utils.js';
 import { gobjectClass } from './utils/decorator.js';
 import { Log } from './utils/log.js';
 import { Result, Results } from './utils/result.js';
-import { Errors, FlatError } from './utils/errors.js';
 
 import { Config } from './config.js';
 import { Window } from './window.js';
@@ -93,10 +92,8 @@ export class AddAddon extends GObject.Object {
       const namePresent = await namePage.present();
       if (namePresent.code !== Results.OK) {
         const error = namePresent.data;
-        if (error instanceof GLib.Error) {
-          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
-            return [wizard.navigation.QUIT];
-          }
+        if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
+          return [wizard.navigation.QUIT];
         }
         Log.warn(error);
         return [wizard.navigation.RETRY];
@@ -327,14 +324,10 @@ export class AddAddon extends GObject.Object {
       const infoPresent = await addAddonWindow.previewDownload.present(sharedFieldCache);
       if (infoPresent.code !== Results.OK) {
         const error = infoPresent.data;
-        if (error instanceof FlatError) {
-          if (error.code === Errors.DIALOG_GO_BACK)
-            return [wizard.navigation.BACK];
-        }
-        else if (error instanceof GLib.Error) {
-          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
-            return [wizard.navigation.QUIT];
-        }
+        if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
+          return [wizard.navigation.QUIT];
+        else if (error.matches(Gtk1.dialog_error_ext_quark(), Gtk1.DialogErrorExt.BACK))
+          return [wizard.navigation.BACK];
         Log.error(String(error));
         return [wizard.navigation.QUIT];
       }

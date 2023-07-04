@@ -1,6 +1,8 @@
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 
+import { Error as GError } from './glib1.js';
+
 import { Result } from './result.js';
 import { Log } from './log.js';
 
@@ -26,14 +28,17 @@ export class WindowPromiser<T> {
       (value) => {
         return Result.compose.OK(value);
       }, (error) => {
-        if (error instanceof Error || error instanceof GLib.Error)
+        if (error instanceof GLib.Error)
           return Result.compose.NotOK(error);
-        else {
+        else if (error instanceof Error) {
+          const newerr = GError.new_from_jserror(error);
+          return Result.compose.NotOK(newerr);
+        } else {
           Log.error('Did not convert all errors to result in WindowPromiser');
           return error;
         }
       }
-    ) as Promise<Result<T, GLib.Error | Error>>;
+    ) as Promise<Result<T, GLib.Error>>;
     // Due to how signals work, we can't connect in constructor, or else 3 cbs for 3 promisers in 3 pages will be called upon the signal.
     // instead, the cb is bound and released per promise session. This is why we connect in promise() and disconnect in resolve() and reject()
     this.#closeCb = this.window.connect('close-request', () => {

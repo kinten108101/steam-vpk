@@ -10,7 +10,6 @@ import * as Adw1 from './utils/adw1.js';
 import { gobjectChild, gobjectClass, gobjectProp } from './utils/decorator.js';
 import { Log } from './utils/log.js';
 import { Result } from './utils/result.js';
-import { Errors, FlatError } from './utils/errors.js';
 import { bind } from './utils/decorator.js';
 
 import { Config } from './config.js';
@@ -226,7 +225,7 @@ implements StackPage, LateBindee<AddAddonWindow> {
     this.scanButton.set_spinning(true);
   }
 
-  async present(): Promise<Result<[string], GLib.Error | Error>> {
+  async present(): Promise<Result<[string], GLib.Error>> {
     this.resetState();
     const promise = this.promiser.promise();
     this.emit('switch-to-here');
@@ -397,9 +396,7 @@ implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
   }
 
   onGoBack() {
-    const error = new FlatError({
-      code: Errors.DIALOG_GO_BACK,
-    })
+    const error = new GLib.Error(Gtk1.dialog_error_ext_quark(), Gtk1.DialogErrorExt.BACK, 'Go back to previous view');
     this.promiser.reject(error);
   }
 
@@ -563,7 +560,7 @@ implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
     this.setValidateButtonSpinning(true);
   }
 
-  async present(): Promise<Result<[string], GLib.Error | Error>> {
+  async present() {
     this.resetState();
     const promise = this.promiser.promise();
     this.emit('switch-to-here');
