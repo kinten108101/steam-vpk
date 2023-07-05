@@ -146,9 +146,8 @@ export class AddAddon extends GObject.Object {
 
       if (urlPresent.code !== Results.OK) {
         const error = urlPresent.data;
-        if (error instanceof GLib.Error)
-          if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
-            return [wizard.navigation.QUIT];
+        if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
+          return [wizard.navigation.QUIT];
         }
         Log.error(String(error));
         return [wizard.navigation.RETRY];
