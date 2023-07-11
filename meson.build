@@ -27,6 +27,7 @@ if get_option('buildtype') == 'debug'
 	app_rdnn = ''.join([app_rdnn, '/Dev'])
 endif
 
+datadir = get_option('datadir')
 pkgdatadir = get_option('datadir') / app_id
 girdir = 'gir-1.0'
 girdir_abs = get_option('prefix') / get_option('datadir') / girdir

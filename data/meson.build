@@ -62,3 +62,20 @@ configure_file(
   },
   install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )
+
+icondir = 'icons' / 'hicolor' / 'scalable' / 'apps'
+install_data(
+  'resources' / 'logo' / 'addon-box.svg',
+  install_dir: datadir / icondir
+)
+
+desktop_conf = configuration_data()
+desktop_conf.set('APP_ID', app_id)
+desktop_conf.set('APP_FULLNAME', app_fullname)
+desktop_file = configure_file(
+  input: 'addonbox.desktop.in',
+  output: '@0@.desktop'.format(app_id),
+  configuration: desktop_conf,
+  install: true,
+  install_dir: datadir / 'applications',
+)
