@@ -26,8 +26,7 @@
     "removeComments": true,
     "skipLibCheck": true,
     "allowJs": true,
-    "checkJs": true,
-    "experimentalDecorators": true
+    "checkJs": true
   },
   "include": [
     "@CURRENT_BUILD_DIR@/node_modules/@girs/soup-3.0/soup-3.0.d.ts",

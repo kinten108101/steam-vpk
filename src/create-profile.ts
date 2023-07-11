@@ -7,7 +7,7 @@ import * as Gio1 from './utils/gio1.js';
 import * as Gtk1 from './utils/gtk1.js';
 
 import { Config } from './config.js';
-import { gobjectClass, gobjectProp } from './utils/decorator.js';
+import { gobjectClass } from './utils/decorator.js';
 import { Result } from './utils/result.js';
 import { generateName } from './id.js';
 
@@ -23,9 +23,9 @@ import { generateName } from './id.js';
   ],
 })
 export class CreateProfileDialog extends Adw.Window {
-  @gobjectProp nameRow!: Adw.EntryRow;
-  @gobjectProp idRow!: Adw.EntryRow;
-  @gobjectProp useAllSwitch!: Gtk.Switch;
+  nameRow!: Adw.EntryRow;
+  idRow!: Adw.EntryRow;
+  useAllSwitch!: Gtk.Switch;
 
   resolve!: Gtk1.PromiseResolve<Result<[string, string, boolean], GLib.Error>>;
   reject!: Gtk1.PromiseReject;

@@ -27,8 +27,7 @@
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": false,   // ignore some issues in the typedef libs
     "allowJs": true,
-    "checkJs": true,
-    "experimentalDecorators": true
+    "checkJs": true
   },
   "include": [
     "src/**/*.ts",

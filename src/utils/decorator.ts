@@ -18,8 +18,8 @@ export function gobjectClass
         };
     }>
 (info: GObject.MetaInfo<Props, Interfaces, Sigs> = {}) {
-  return (constructor: Function) => {
-    console.log(`Registering ${constructor.name}`);
+  return (constructor: Function, _: ClassDecoratorContext) => {
+    console.debug(`Registering ${constructor.name}`);
     GObject.registerClass({
       GTypeName: `Stvpk${constructor.name}`,
       ...info
@@ -27,74 +27,5 @@ export function gobjectClass
   }
 }
 
-export function gobjectProp(target: Object, propertyKey: string | symbol) {
-  // how
-  target;
-  propertyKey;
-}
 
-export function gobjectChild(target: Object, propertyKey: string | symbol) {
-  // how
-  target;
-  propertyKey;
-}
-
-/*
-
-@gobjectClass({
-  name: 'Gjs_Foo',
-  template: 'resource:///org/gnome/myapp/ui/foo.ui',
-})
-class Foo extends Object.Object {
-  @gobjectChild
-  label!: Gtk.Label;
-
-  @gobjectChild
-  private _contentArea!: Gtk.Box;
-
-  @gobjectProp
-  model: Gio.ListStore<Item> = new Gio.ListStore(Item);
-
-  @gobjectSignal
-  static 'new-event' = {};
-
-  items: Map<string, Item> = new Map();
-}
-
-*/
-
-export function defined(originalMethod: any, ...props: any[]) {
-    return function(this: any, ...args: any[]) {
-      props.forEach((x) => {
-        if (x === undefined) {
-          console.log('oj no!');
-          throw new Error();
-        }
-      })
-      return originalMethod.call(this, ...args);
-    };
-}
-
-
-export function bind(target: Object, propertyKey: string | symbol) {
-  // how
-  target;
-  propertyKey;
-}
-
-export function unimplemented(
-  target: Object,
-  propertyKey: string | symbol,
-  descriptor: PropertyDescriptor
-) {
-  // how
-  target;
-  propertyKey;
-  descriptor;
-
-  //const original: Function = descriptor.value;
-
-  descriptor.value = (): never => {
-    throw new Error('Method is unimplemented')
-  }
 }

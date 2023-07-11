@@ -3,7 +3,6 @@ import GObject from 'gi://GObject';
 import { Model } from './mvc.js';
 import { Application } from './application.js';
 import { Profile } from './profiles.js';
-import { gobjectProp } from './utils/decorator.js';
 
 export class SessionData extends GObject.Object implements Model {
   static Signals = {
@@ -22,7 +21,7 @@ export class SessionData extends GObject.Object implements Model {
   }
   readonly application: Application;
   profiles: Map<string, Profile>;
-  @gobjectProp currentProfile: Profile;
+  currentProfile: Profile;
 
   constructor(param: {
     application: Application,

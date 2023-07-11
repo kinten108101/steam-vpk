@@ -1,7 +1,7 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 
-import { gobjectClass, gobjectProp } from './decorator.js';
+import { gobjectClass } from './decorator.js';
 
 @gobjectClass({
   GTypeName: 'Gtk1Revealer',
@@ -12,7 +12,7 @@ import { gobjectClass, gobjectProp } from './decorator.js';
   },
 })
 export class Revealer extends Gtk.Revealer {
-  @gobjectProp xTransitionType!: string;
+  xTransitionType!: string;
 
   constructor(param = {}) {
     super(param);

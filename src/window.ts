@@ -3,7 +3,7 @@ import Adw from 'gi://Adw';
 
 import * as Adw1 from './utils/adw1.js';
 import * as Gio1 from './utils/gio1.js';
-import { gobjectChild, gobjectClass } from './utils/decorator.js';
+import { gobjectClass } from './utils/decorator.js';
 import './utils/revealer.js';
 
 import './download-page.js';
@@ -36,10 +36,10 @@ export interface MainWindowContext { application: Application, main_window: Wind
 export class Window
 extends Adw.ApplicationWindow
 implements Adw1.Toaster {
-  @gobjectChild launchpadPage!: LaunchpadPage;
-  @gobjectChild profileBar!: ProfileBar;
-  @gobjectChild downloadPage!: DownloadPage;
-  @gobjectChild toastOverlay!: Adw.ToastOverlay;
+  launchpadPage!: LaunchpadPage;
+  profileBar!: ProfileBar;
+  downloadPage!: DownloadPage;
+  toastOverlay!: Adw.ToastOverlay;
 
   session: SessionData;
 

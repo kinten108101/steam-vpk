@@ -10,7 +10,6 @@ import { LateBindee } from './mvc.js';
 import { MainWindowContext } from './window.js';
 import { AddonStorage } from './addon-storage.js';
 import { Addon } from './addons.js';
-import { bind } from './utils/decorator.js';
 
 class AddonlistPageItem extends GObject.Object {
   name!: string;
@@ -143,7 +142,7 @@ implements LateBindee<MainWindowContext> {
     }, this);
   }
 
-  @bind context!: MainWindowContext;
+  context!: MainWindowContext;
 
   constructor() {
     super({

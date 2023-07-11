@@ -7,9 +7,8 @@ import Adw from 'gi://Adw';
 import * as Gtk1 from './utils/gtk1.js';
 import * as Adw1 from './utils/adw1.js';
 
-import { gobjectChild, gobjectClass, gobjectProp } from './utils/decorator.js';
+import { gobjectClass } from './utils/decorator.js';
 import { Result } from './utils/result.js';
-import { bind } from './utils/decorator.js';
 
 import { Config } from './config.js';
 import { isValidAddonId, isValidAddonName } from './id.js';
@@ -163,11 +162,11 @@ export class AddAddonName extends Gtk.Box
 implements StackPage, LateBindee<AddAddonWindow> {
   readonly stackPageId = 'namePage';
 
-  @gobjectChild scanButton!: Gtk1.SpinningButton;
-  @gobjectChild stvpkid!: Adw.EntryRow;
+  scanButton!: Gtk1.SpinningButton;
+  stvpkid!: Adw.EntryRow;
 
-  @bind toaster!: Adw1.Toaster;
-  @bind promiser!: Gtk1.WindowPromiser<[string]>;
+  toaster!: Adw1.Toaster;
+  promiser!: Gtk1.WindowPromiser<[string]>;
 
   input: InputStateManager;
   painter: ErrorPainter;
@@ -274,14 +273,14 @@ implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
 
   data!: AddAddonPreviewDownload.CacheInfo;
 
-  @gobjectChild addonName!: Adw.EntryRow;
-  @gobjectChild stvpkid!: Adw.EntryRow;
-  @gobjectChild includeInProfile!: Gtk.Switch;
-  @gobjectChild downloadButton!: Gtk.Button;
+  addonName!: Adw.EntryRow;
+  stvpkid!: Adw.EntryRow;
+  includeInProfile!: Gtk.Switch;
+  downloadButton!: Gtk.Button;
 
-  @bind toaster!: Adw1.Toaster;
-  @bind window!: Gtk.Window;
-  @bind promiser!: Gtk1.WindowPromiser<[string, string, boolean]>;
+  toaster!: Adw1.Toaster;
+  window!: Gtk.Window;
+  promiser!: Gtk1.WindowPromiser<[string, string, boolean]>;
 
   readonly inputSource = {
     addonName: {
@@ -448,7 +447,7 @@ export class AddAddonUrl extends Gtk.Box
 implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
   readonly stackPageId = 'url';
 
-  @gobjectProp inputSource = {
+  inputSource = {
     url: {
       valid: true,
       setValid: (val: boolean) => {
@@ -465,12 +464,12 @@ implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
     }
   }
 
-  @gobjectChild validateButton!: Gtk.Button;
-  @gobjectChild url!: Adw.EntryRow;
+  validateButton!: Gtk.Button;
+  url!: Adw.EntryRow;
 
-  @bind toaster!: Adw1.Toaster;
-  @bind window!: Gtk.Window;
-  @bind promiser!: Gtk1.WindowPromiser<[string]>;
+  toaster!: Adw1.Toaster;
+  window!: Gtk.Window;
+  promiser!: Gtk1.WindowPromiser<[string]>;
 
   spinner: Gtk.Spinner;
 
@@ -640,11 +639,11 @@ export class AddAddonWizard {
 })
 export class AddAddonWindow extends Adw.Window
 implements Adw1.Toaster, LateBinder {
-  @gobjectChild toastOverlay!: Adw.ToastOverlay;
-  @gobjectChild viewStack!: Adw.ViewStack;
-  @gobjectChild url!: AddAddonUrl;
-  @gobjectChild previewDownload!: AddAddonPreviewDownload;
-  @gobjectChild namePage!: AddAddonName;
+  toastOverlay!: Adw.ToastOverlay;
+  viewStack!: Adw.ViewStack;
+  url!: AddAddonUrl;
+  previewDownload!: AddAddonPreviewDownload;
+  namePage!: AddAddonName;
 
   constructor(params = {}) {
     super(params);

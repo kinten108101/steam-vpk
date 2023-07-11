@@ -9,7 +9,7 @@ import * as Adw1 from './utils/adw1.js';
 import * as Gio1 from './utils/gio1.js';
 import * as Gtk1 from './utils/gtk1.js';
 import { Errors, FlatError } from './utils/errors.js';
-import { gobjectChild, gobjectClass, bind } from './utils/decorator.js';
+import { gobjectClass } from './utils/decorator.js';
 import { Results } from './utils/result.js';
 import * as Utils from './utils.js';
 import * as JSON1 from './utils/json1.js';
@@ -140,13 +140,13 @@ export class ProfileMux implements LateBindee<MainWindowContext> {
 export class ProfileBar extends Panel.OmniBar
 implements LateBindee<MainWindowContext> {
   mux: ProfileMux;
-  @gobjectChild label!: Gtk.Label;
-  @gobjectChild activeProfileMenu!: Gio.Menu;
-  @gobjectChild profilePopover!: ProfileBarPopover;
+  label!: Gtk.Label;
+  activeProfileMenu!: Gio.Menu;
+  profilePopover!: ProfileBarPopover;
 
   actionGroup: Gio.SimpleActionGroup;
 
-  @bind context!: MainWindowContext;
+  context!: MainWindowContext;
 
   constructor(param = {}) {
     super(param);

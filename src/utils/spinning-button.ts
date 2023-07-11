@@ -1,7 +1,7 @@
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 
-import { gobjectClass, gobjectProp } from "./decorator.js";
+import { gobjectClass } from "./decorator.js";
 
 @gobjectClass({
   GTypeName: 'Gtk1SpinningButton',
@@ -14,7 +14,7 @@ import { gobjectClass, gobjectProp } from "./decorator.js";
 export class SpinningButton extends Gtk.Button {
   private spinner: Gtk.Spinner;
   private label_saved: string;
-  @gobjectProp is_spinning!: boolean;
+  is_spinning!: boolean;
   post_spinning_sensitivity_getter_override: (() => boolean) | undefined;
 
   constructor(param = {}) {
