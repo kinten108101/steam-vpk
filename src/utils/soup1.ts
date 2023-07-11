@@ -10,11 +10,22 @@ Gio._promisify(Soup.Session.prototype,
   'send_and_read_async',
   'send_and_read_finish');
 
+interface SoupMessageConstructorExtended {
+  method: string,
+  uri: GLib.Uri | string,
+  content_type?: string,
+  body?: GLib.Bytes,
+}
+
 export class SessionWrap {
   session: Soup.Session;
 
   constructor(param: { session: Soup.Session }) {
     this.session = param.session;
+  }
+
+  unwrap() {
+    return this.session;
   }
 
   /**
@@ -44,5 +55,24 @@ export class SessionWrap {
         }
         else throw error;
       });
+  }
+
+  async fetch(constructor: SoupMessageConstructorExtended, io_priority: number = GLib.PRIORITY_DEFAULT, cancellable: Gio.Cancellable | null = null): Promise<[Soup.Message, GLib.Bytes]> {
+    const message = new Soup.Message({
+      method: constructor.method,
+      uri: (() => {
+            if (constructor.uri instanceof GLib.Uri) return constructor.uri;
+            const uri = GLib.Uri.parse(constructor.uri, GLib.UriFlags.NONE);
+            return uri;
+          })(),
+    });
+    if (constructor.content_type && constructor.body) {
+      message.set_request_body_from_bytes(constructor.content_type, constructor.body);
+    }
+    const promise = this.unwrap().send_and_read_async(message, io_priority, cancellable)
+      .then(value => {
+        return [message, value] as [Soup.Message, GLib.Bytes];
+      });
+    return promise;
   }
 }
