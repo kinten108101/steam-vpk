@@ -10,7 +10,6 @@ import * as Adw1 from './utils/adw1.js';
 import * as GLib1 from './utils/glib1.js';
 import * as Utils from './utils.js';
 import { gobjectClass } from './utils/decorator.js';
-import { Log } from './utils/log.js';
 import { Result, Results } from './utils/result.js';
 
 import { Config } from './config.js';
@@ -73,7 +72,7 @@ export class AddAddon extends GObject.Object {
           const error = openResult.data;
           if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
             return;
-          Log.warn(String(error));
+          console.warn(String(error));
           return;
         }
       })
@@ -95,7 +94,7 @@ export class AddAddon extends GObject.Object {
         if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
           return [wizard.navigation.QUIT];
         }
-        Log.warn(error);
+        console.warn(error);
         return [wizard.navigation.RETRY];
       }
 
@@ -104,7 +103,7 @@ export class AddAddon extends GObject.Object {
       const requested_subdir = this.application.addonStorage.subdirFolder.get_child(id);
       var file_type = requested_subdir.query_file_type(Gio.FileQueryInfoFlags.NONE, null)
       if (file_type !== Gio.FileType.DIRECTORY) {
-        Log.warn('Not a subdirectory');
+        console.warn('Not a subdirectory');
         namePage.showErrorMsg('Not a subdirectory');
         return [wizard.navigation.RETRY];
       }
@@ -112,7 +111,7 @@ export class AddAddon extends GObject.Object {
       const info = requested_subdir.get_child(Config.config.addon_info);
       var file_type = info.query_file_type(Gio.FileQueryInfoFlags.NONE, null);
       if (file_type !== Gio.FileType.REGULAR) {
-        Log.warn('Not a subdirectory');
+        console.warn('Not a subdirectory');
         namePage.showErrorMsg('Subdirectory has no manifest file');
         return [wizard.navigation.RETRY];
       }
@@ -149,28 +148,28 @@ export class AddAddon extends GObject.Object {
         if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
           return [wizard.navigation.QUIT];
         }
-        Log.error(String(error));
+        console.error(String(error));
         return [wizard.navigation.RETRY];
       }
 
       const [url] = urlPresent.data;
       const idxParam = url.indexOf('?id=', 0);
       if (idxParam === undefined) {
-        Log.warn('ID extraction algorithm failed');
+        console.warn('ID extraction algorithm failed');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
       const fileId = url.substring(idxParam + 4, idxParam + 14);
       if (fileId.length !== 10 || !Utils.isNumberString(fileId)) {
-        Log.warn('ID extraction algorithm failed');
+        console.warn('ID extraction algorithm failed');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
-      Log.debug(fileId);
+      console.debug(fileId);
 
       const parseUri = GLib1.Uri.parse('https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/', GLib.UriFlags.NONE);
       if (parseUri.code !== Results.OK) {
-        Log.warn('API method no longer valid');
+        console.warn('API method no longer valid');
         showErrorMsg('Internal Error');
         return [wizard.navigation.RETRY];
       }
@@ -190,25 +189,25 @@ export class AddAddon extends GObject.Object {
       if (readGbytes.code !== Results.OK) {
         const error = readGbytes.data;
         if (error.matches(Gio.resolver_error_quark(), Gio.ResolverError.TEMPORARY_FAILURE)) {
-          Log.warn('Couldn\'t resolve IP');
+          console.warn('Couldn\'t resolve IP');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
-        Log.error(error);
+        console.error(error);
         return [wizard.navigation.RETRY];
       }
 
       const bytes = readGbytes.data.get_data();
       if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
-        Log.warn('Not OK response');
+        console.warn('Not OK response');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
 
-      const readjson = Utils.readJSONbytes(bytes);
+      const readjson = Utils.readJSONBytesResult(bytes);
       if (readjson.code !== Results.OK) {
         const error = readjson.data;
-        Log.error(error);
+        console.error(error);
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -216,7 +215,7 @@ export class AddAddon extends GObject.Object {
       const response = readjson.data;
       const fileDetails = response['response']?.['publishedfiledetails']?.[0];
       if (typeof fileDetails === undefined) {
-        Log.warn('Wrong object structure');
+        console.warn('Wrong object structure');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -225,7 +224,7 @@ export class AddAddon extends GObject.Object {
 
       const appid = fileDetails['consumer_app_id'];
       if (appid !== 550) {
-        Log.warn('Only L4D2 add-ons are allowed');
+        console.warn('Only L4D2 add-ons are allowed');
         showErrorMsg('Only L4D2 add-ons are allowed');
         return [wizard.navigation.RETRY];
       }
@@ -251,22 +250,22 @@ export class AddAddon extends GObject.Object {
 
         const creatorRequestResult = await this.downloader.session.send_and_read_async(getDetails, GLib.PRIORITY_DEFAULT, null);
         if (creatorRequestResult.code !== Results.OK) {
-          Log.warn('Request error')
+          console.warn('Request error')
           showErrorMsg('Bad Connection');
           return [wizard.navigation.RETRY];
         }
 
         const bytes = creatorRequestResult.data.get_data();
         if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
-          Log.warn('Not OK response');
+          console.warn('Not OK response');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
 
-        const readjson = Utils.readJSONbytes(bytes);
+        const readjson = Utils.readJSONBytesResult(bytes);
         if (readjson.code !== Results.OK) {
           const error = readjson.data;
-          Log.error(error);
+          console.error(error);
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -274,7 +273,7 @@ export class AddAddon extends GObject.Object {
         const response = readjson.data;
         playerDetails = response['response']?.['players']?.[0];
         if (typeof playerDetails === undefined) {
-          Log.warn('Wrong object structure');
+          console.warn('Wrong object structure');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -306,7 +305,7 @@ export class AddAddon extends GObject.Object {
       }
 
       const creatorPart = getCreatorPart.data;
-      Log.debug(`Creator part: ${creatorPart}`);
+      console.debug(`Creator part: ${creatorPart}`);
       const addonId = `${generateName(addonName)}@${creatorPart}`;
 
       sharedFieldCache = {
@@ -317,7 +316,7 @@ export class AddAddon extends GObject.Object {
     });
     wizard.addPage(async (): Promise<[Symbol]> => {
       if (sharedFieldCache === undefined || sharedCreatorDetails === undefined || sharedFileDetails === undefined) {
-        Log.error('Info was not filled!');
+        console.error('Info was not filled!');
         return [wizard.navigation.BACK];
       }
       const infoPresent = await addAddonWindow.previewDownload.present(sharedFieldCache);
@@ -327,7 +326,7 @@ export class AddAddon extends GObject.Object {
           return [wizard.navigation.QUIT];
         else if (error.matches(Gtk1.dialog_error_ext_quark(), Gtk1.DialogErrorExt.BACK))
           return [wizard.navigation.BACK];
-        Log.error(String(error));
+        console.error(String(error));
         return [wizard.navigation.QUIT];
       }
 
@@ -348,7 +347,7 @@ export class AddAddon extends GObject.Object {
             .wrap().build().present(addAddonWindow);
           return [wizard.navigation.RETRY];
         }
-        Log.error(error);
+        console.error(error);
         return [wizard.navigation.RETRY];
       }
       console.log('hi!');

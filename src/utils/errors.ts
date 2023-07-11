@@ -1,5 +1,3 @@
-import { Log } from "./log.js";
-
 type FlatErrorCode = Errors;
 
 export enum Errors {
@@ -58,7 +56,7 @@ export class FlatError extends Error {
     const { code, cause, message, domain } = params;
     const messageFull = `<${domain}${code ? `::${Errors[code]}` : ''}> ${message}${ cause ? `. Caused by ${cause}` : ''}`;
     super(messageFull);
-    Log.debug('Thrown ' + messageFull);
+    console.debug('Thrown ' + messageFull);
     this.code = code;
     this.cause = cause;
     this.msg = message;

@@ -8,7 +8,6 @@ import * as Gtk1 from './utils/gtk1.js';
 import * as Adw1 from './utils/adw1.js';
 
 import { gobjectChild, gobjectClass, gobjectProp } from './utils/decorator.js';
-import { Log } from './utils/log.js';
 import { Result } from './utils/result.js';
 import { bind } from './utils/decorator.js';
 
@@ -44,18 +43,18 @@ class InputStateManager extends GObject.Object {
 
   add_state(id: string, type: string, getter: () => any, setter: (val: any) => void, validator: (val: any) => boolean) {
     if (this.states.has(id)) {
-      Log.error('State already exists');
+      console.error('State already exists');
       return;
     }
     const init_value = getter();
     if (typeof init_value !== type) {
-      Log.error('Inconsistent state type');
+      console.error('Inconsistent state type');
       return;
     }
     setter(init_value);
     const another_value = getter();
     if (another_value !== init_value) {
-      Log.error('Setter is not consistent');
+      console.error('Setter is not consistent');
       return;
     }
     const state: InState = {
@@ -76,7 +75,7 @@ class InputStateManager extends GObject.Object {
   set_valid(id: string, val: boolean) {
     const state = this.states.get(id);
     if (state === undefined) {
-      Log.error('State doesn\'t exists');
+      console.error('State doesn\'t exists');
       return;
     }
     state.valid = val;
@@ -119,7 +118,7 @@ class ErrorPainter extends GObject.Object {
 
   add_painting(id: string, obj: Gtk.Widget, getter: () => boolean) {
     if (this.paintings.has(id)) {
-      Log.error('Painting already exists!');
+      console.error('Painting already exists!');
       return;
     }
     const painting: Painting = {
@@ -601,18 +600,18 @@ export class AddAddonWizard {
     while (next !== undefined && !this.cancellable.is_cancelled()) {
       const page = next;
       const [decision, ...nextargs] = await page.action(...args).catch(error => {
-        Log.error('Caught a loose error in AddAddonWizard::run:');
-        Log.error(error);
+        console.error('Caught a loose error in AddAddonWizard::run:');
+        console.error(error);
         return [this.navigation.QUIT];
       });
       if (decision === this.navigation.QUIT) {
-        Log.debug('quit');
+        console.debug('quit');
         break;
       }
       args = nextargs;
       next = page.neighbors.get(decision);
       if (next === undefined)
-        Log.warn('Unknown wizard.navigation encountered');
+        console.warn('Unknown wizard.navigation encountered');
     }
   }
 

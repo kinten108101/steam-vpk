@@ -1,4 +1,3 @@
-import { Log } from './utils/log.js';
 
 export interface StorageExport {
   addondetails: {
@@ -37,18 +36,18 @@ export const AddonManifest = {
       tags: (() => {
             const arr = response.tags;
             if (arr === undefined) {
-              Log.warn('GetPublishedFileDetails is missing the tags field.');
+              console.warn('GetPublishedFileDetails is missing the tags field.');
               return arr;
             }
             if (!Array.isArray(arr)) {
-              Log.warn('GetPublishedFileDetails has incorrect tags field.');
+              console.warn('GetPublishedFileDetails has incorrect tags field.');
               return undefined;
             }
             const newArr: { tag: string }[] = [];
             arr.forEach(x => {
               const tag = x.tag;
               if (typeof tag !== 'string') {
-                Log.warn('GetPublishedFileDetails has incorrect tag field.');
+                console.warn('GetPublishedFileDetails has incorrect tag field.');
                 return undefined;
               }
               newArr.push(x);

@@ -4,7 +4,6 @@ import Gtk from 'gi://Gtk';
 import { Error as GError } from './glib1.js';
 
 import { Result } from './result.js';
-import { Log } from './log.js';
 import type { SignalMethods } from '@girs/gjs';
 
 export type PromiseResolve<T = void> = (value: T | PromiseLike<T>) => void;
@@ -52,7 +51,7 @@ export class WindowPromiser<T> {
           const newerr = GError.new_from_jserror(error);
           return Result.compose.NotOK(newerr);
         } else {
-          Log.error('Did not convert all errors to result in WindowPromiser');
+          console.error('Did not convert all errors to result in WindowPromiser');
           return error;
         }
       }
@@ -66,8 +65,8 @@ export class WindowPromiser<T> {
   windowCloseReject() {
     const error = new GLib.Error(
       Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED, 'Dialog dismissed');
-    Log.debug('<<windowCloseReject>>');
-    Log.debug('If this is called multiple times, then there\'s a bug somewhere. Help me find it!');
+    console.debug('<<windowCloseReject>>');
+    console.debug('If this is called multiple times, then there\'s a bug somewhere. Help me find it!');
     this.reject(error);
   }
 

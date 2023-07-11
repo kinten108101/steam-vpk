@@ -1,7 +1,6 @@
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 
-import { Log } from './utils/log.js';
 import * as JSON1 from './utils/json1.js';
 import { Results } from './utils/result.js';
 import * as Utils from './utils.js';
@@ -119,7 +118,7 @@ export class DirectoryWriter extends GObject.Object {
           const writejson = Utils.replaceJSON(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
-            Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
+            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
           break;
@@ -128,13 +127,13 @@ export class DirectoryWriter extends GObject.Object {
         {
           const id = order.param;
           if (id === undefined) {
-            Log.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
+            console.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
             break;
           }
           const subdirs = new Map(this.readable.subdirs);
           const deletion = subdirs.delete(id.id);
           if (!deletion) {
-            Log.warn('Tried to delete a non-existent subdir. Skipping...');
+            console.warn('Tried to delete a non-existent subdir. Skipping...');
             break;
           }
 
@@ -149,7 +148,7 @@ export class DirectoryWriter extends GObject.Object {
           const writejson = Utils.replaceJSON(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
-            Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
+            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
           break;
@@ -158,12 +157,12 @@ export class DirectoryWriter extends GObject.Object {
         {
           const id = order.param;
           if (id === undefined) {
-            Log.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
+            console.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
             break;
           }
           const subdirs = new Map(this.readable.subdirs);
           if (subdirs.has(id.id)) {
-            Log.warn('Add-on already exists. Skipping...');
+            console.warn('Add-on already exists. Skipping...');
             break;
           }
           subdirs.set(id.id, id);
@@ -179,7 +178,7 @@ export class DirectoryWriter extends GObject.Object {
           const writejson = Utils.replaceJSON(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
-            Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
+            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
             break;
           }
           break;
@@ -214,7 +213,7 @@ implements Model {
     super({});
     this.connect('force-read', this.readIndexFile);
     this.index = param.file;
-    Log.info(`index: ${this.index.get_path()}`);
+    console.info(`index: ${this.index.get_path()}`);
     this.subdirs = new Map;
     this.writeable = new DirectoryWriter({ index: this.index, readable: this });
     this.writeable.connect('index-written', this.readIndexFile);
@@ -227,18 +226,18 @@ implements Model {
 
   readIndexFile = () => {
     if (this.isRunning) {
-      Log.warn('readIndexFile is busy...');
       return;
+      console.warn('readIndexFile is busy...');
     }
     this.isRunning = true;
-    Log.debug('Index is being read...');
+    console.debug('Index is being read...');
     /*
     switch (event) {
     case Gio.FileMonitorEvent.CHANGED:
     case Gio.FileMonitorEvent.CREATED:
       break;
     default:
-      Log.warn('Index file changed in unexpected ways. Skipping...');
+      console.warn('Index file changed in unexpected ways. Skipping...');
       return;
     }
     */
@@ -247,7 +246,7 @@ implements Model {
     if (readbytes.code !== Results.OK) {
       const error = readbytes.data;
       if (error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
-        Log.warn('Index file not found! Requested a reset.');
+        console.warn('Index file not found! Requested a reset.');
         this.writeable.order({ code: WriteOrders.Reset });
         return;
       }
@@ -257,31 +256,31 @@ implements Model {
 
     const decoding = Utils.Decoder.decode(bytes);
     if (decoding.code !== Results.OK) {
-      Log.warn('Index file could not be decoded! Requested a reset.');
       this.writeable.order({ code: WriteOrders.Reset });
       return;
+      console.warn('Index file could not be decoded! Must be resolved manually.');
     }
     const strbuf = decoding.data;
 
     const parsing = JSON1.parse(strbuf);
     if (parsing.code !== Results.OK) {
-      Log.warn('Index file has JSON syntax error! Requested a reset.');
       this.writeable.order({ code: WriteOrders.Reset });
       return;
+      console.warn('Index file has JSON syntax error! Must be resolved manually.');
     }
 
     const obj = parsing.data;
     // validation
     const subdirs = obj['subdirs'];
     if (subdirs === undefined) {
-      Log.warn('Index file lacks required fields! Resetting...')
       this.writeable.order({ code: WriteOrders.Reset });
       return;
+      console.warn('Index file lacks required fields! Must be resolved manually.')
     }
     if (!Array.isArray(subdirs)) {
-      Log.warn('Should be an array!')
       this.writeable.order({ code: WriteOrders.Reset });
       return;
+      console.warn('Should be an array!')
     }
 
     const map = new Map<string, Subdir>();
@@ -295,7 +294,11 @@ implements Model {
 
     const comment = obj['comment'];
     this.comment = comment;
-    Log.debug(`Index has finished reading! Result:\nsubdirs = NOT NOW\n`)
+    console.debug(`Index has finished reading! Result:\nids = ${(() => {
+          const arr: string[] = [];
+          this.subdirs.forEach(x => arr.push(x.id));
+          return arr;
+        })()}`)
     this.emit('subdirs-changed');
     this.isRunning = false;
   }

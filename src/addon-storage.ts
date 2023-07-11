@@ -3,7 +3,6 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
 import * as Utils from './utils.js';
-import { Log } from './utils/log.js';
 import { Results } from './utils/result.js';
 import { gobjectClass } from './utils/decorator.js';
 
@@ -80,11 +79,10 @@ implements Model {
       if (readjson.code !== Results.OK) {
         const error = readjson.data;
         if (error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.NOT_FOUND)) {
-          Log.warn(`Caught a file handler error in add-on ${x.id}. Add-on possibly does not exist. Requested a removal from index, now exit.`)
-          this.indexer.writeable.order({ code: WriteOrders.DeleteEntry, param: x });
+          console.warn(`Caught a file handler error in add-on ${x.id}. Add-on possibly does not exist. Must be manually resolved. Skipping...`)
           return;
         }
-        Log.error(error);
+        console.error(error);
         return;
       }
 
@@ -96,7 +94,7 @@ implements Model {
       })();
 
       if (manifest === undefined) {
-        Log.warn(`Add-on manifest lacks required fields! Must be manually resolved. Skipping...`);
+        console.warn(`Add-on manifest lacks required fields! Must be manually resolved. Skipping...`);
         return;
       }
 

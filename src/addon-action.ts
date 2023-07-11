@@ -4,7 +4,6 @@ import GObject from 'gi://GObject';
 
 import * as GLib1 from './utils/glib1.js';
 import * as Utils from './utils.js';
-import { Log } from './utils/log.js';
 import { gobjectClass } from "./utils/decorator.js";
 import { Result, Results } from './utils/result.js';
 import { Errors, FlatError } from './utils/errors.js';
@@ -42,7 +41,7 @@ export class ActionSynthesizer extends GObject.Object {
 
   updateQueue = () => {
     if (this.isRunning) {
-      Log.warn('Action Synthesizer is busy...')
+      console.warn('Action Synthesizer is busy...')
       return;
     }
     this.isRunning = true;
@@ -56,7 +55,7 @@ export class ActionSynthesizer extends GObject.Object {
           const addon = order.param;
 
           if (this.readable.index.subdirs.has(addon.stvpkid)) {
-            Log.warn('Add-on already exists. Quitting...');
+            console.warn('Add-on already exists. Quitting...');
             const error = new GLib.Error(
               addon_storage_error_quark(),
               AddonStorageError.ADDON_EXISTS,
@@ -64,7 +63,7 @@ export class ActionSynthesizer extends GObject.Object {
             order.quit(error);
             break;
           }
-          Log.debug('Add-on is unique!');
+          console.debug('Add-on is unique!');
 
           const subdir = this.readable.storage.subdirFolder.get_child(addon.stvpkid);
           try {
@@ -94,7 +93,7 @@ export class ActionSynthesizer extends GObject.Object {
           const id = order.param;
 
           if (!this.readable.storage.idmap.has(id)) {
-            Log.warn('Add-on does not exists. Quitting...');
+            console.warn('Add-on does not exists. Quitting...');
             const error = new GLib.Error(
               addon_storage_error_quark(),
               AddonStorageError.ADDON_NOT_EXISTS,
@@ -117,8 +116,8 @@ export class ActionSynthesizer extends GObject.Object {
             try {
               x.delete(null);
             } catch (error) {
-              Log.error(`Could not remove file. Details:`);
-              Log.error(error);
+              console.error(`Could not remove file. Details:`);
+              console.error(error);
               return;
             }
           })
@@ -193,7 +192,7 @@ const ActionOrderFrame = GObject.registerClass({
   }
 
   quit(reason: GLib.Error) {
-    Log.debug('Quitting...');
+    console.debug('Quitting...');
     this.finished = true;
     this.result = Result.compose.NotOK(reason);
     this.resolve(this.result);
@@ -227,8 +226,8 @@ const ActionOrderFrame = GObject.registerClass({
         return Result.compose.NotOK(gerror);
       }
       else {
-        Log.error('Error not captured by promise!');
-        Log.error(error);
+        console.error('Error not captured by promise!');
+        console.error(error);
         throw error;
       }
     });

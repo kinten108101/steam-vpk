@@ -6,7 +6,6 @@ import * as GLib1 from './utils/glib1.js';
 
 import { Result, Results } from './utils/result.js';
 import { TextDecoderWrap } from './utils/code.js';
-import { Log } from './utils/log.js';
 
 Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
 
@@ -19,8 +18,8 @@ if (error instanceof GLib.Error) {
   // ...
 }
 else {
-  Log.error('Detected an uncaught error in an attempt to Result-ize function:');
-  Log.error(error);
+  console.error('Detected an uncaught error in an attempt to Result-ize function:');
+  console.error(error);
 }
 
 */
@@ -33,12 +32,12 @@ export function SteamMd2Pango(text: string) {
 export function makeDirectory(dir: Gio.File) {
   try {
     dir.make_directory(null);
-    Log.debug(`Created ${dir.get_basename()} for the first time.`);
+    console.debug(`Created ${dir.get_basename()} for the first time.`);
   } catch (error) {
     if (error instanceof GLib.Error && error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.EXISTS)) {}
     else {
-      Log.error('Detected an uncaught error:');
-      Log.error(error);
+      console.error('Detected an uncaught error:');
+      console.error(error);
     }
   }
 }
@@ -46,20 +45,20 @@ export function makeDirectory(dir: Gio.File) {
 export function readJSON(file: Gio.File) {
   const readbytes = loadContentsR(file, null);
   if (readbytes.code !== Results.OK) {
-    Log.warn(`Caught an input stream error.`);
+    console.warn(`Caught an input stream error.`);
     return readbytes;
   }
 
   const [ , bytes, ] = readbytes.data;
   const decodebytes = Decoder.decode(bytes);
   if (decodebytes.code !== Results.OK) {
-    Log.warn(`Caught an encoding error.`);
+    console.warn(`Caught an encoding error.`);
     return decodebytes;
   }
 
   const parsejsobject = JSON1.parse(decodebytes.data);
   if (parsejsobject.code !== Results.OK) {
-    Log.warn(`Caught a JSON syntax error.`);
+    console.warn(`Caught a JSON syntax error.`);
     return parsejsobject;
   }
   return parsejsobject;
@@ -68,13 +67,13 @@ export function readJSON(file: Gio.File) {
 export function readJSONbytes(contents: ArrayBuffer) {
   const decodebytes = Decoder.decode(contents);
   if (decodebytes.code !== Results.OK) {
-    Log.warn(`Caught an encoding error.`);
+    console.warn(`Caught an encoding error.`);
     return decodebytes;
   }
 
   const parsejsobject = JSON1.parse(decodebytes.data);
   if (parsejsobject.code !== Results.OK) {
-    Log.warn(`Caught a JSON syntax error.`);
+    console.warn(`Caught a JSON syntax error.`);
     return parsejsobject;
   }
   return parsejsobject;
@@ -92,15 +91,15 @@ export function replaceJSON(value: any, dest: Gio.File,
     })(),
   );
   if (serialize.code !== Results.OK) {
-    Log.warn('Couldn\'t stringify JSObject, caught a TypeError');
+    console.warn('Couldn\'t stringify JSObject, caught a TypeError');
     return serialize;
   }
 
   const buffer = Encoder.encode(serialize.data);
-  const writebytes = replaceContentsR(dest, buffer, etag || null, makeBackup || false, flags || Gio.FileCreateFlags.REPLACE_DESTINATION, cancellable || null);
+  const writebytes = replaceContentsResult(dest, buffer, etag || null, makeBackup || false, flags || Gio.FileCreateFlags.NONE, cancellable || null);
   if (writebytes.code !== Results.OK) {
     const error = writebytes.data;
-    Log.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
+    console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
     return writebytes;
   }
   return writebytes;
@@ -167,7 +166,7 @@ export function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
       const newerr = GLib1.Error.new_from_jserror(error);
       return Result.compose.NotOK(newerr);
     } else {
-      Log.error(`Unable to Result-ize operation: unknown object throw. Details: ${error}`);
+      console.error(`Unable to Result-ize operation: unknown object throw. Details: ${error}`);
       throw error;
     }
   }

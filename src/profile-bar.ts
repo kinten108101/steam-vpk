@@ -11,7 +11,6 @@ import * as Gtk1 from './utils/gtk1.js';
 import { Errors, FlatError } from './utils/errors.js';
 import { gobjectChild, gobjectClass, bind } from './utils/decorator.js';
 import { Results } from './utils/result.js';
-import { Log } from './utils/log.js';
 import * as Utils from './utils.js';
 import * as JSON1 from './utils/json1.js';
 
@@ -270,7 +269,7 @@ implements LateBindee<MainWindowContext> {
       const error = openResult.data;
       if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
         return;
-      Log.debug(error.toString());
+      console.debug(error.toString());
       return;
     }
     const file = openResult.data;
@@ -334,7 +333,7 @@ implements LateBindee<MainWindowContext> {
     }
 
     const manifest = parseResult.data;
-    Log.debug(String(manifest));
+    console.debug(String(manifest));
 
     /*
     const _rawList: unknown = Utils.parseJsonFile(file);
@@ -385,13 +384,13 @@ implements LateBindee<MainWindowContext> {
     warning.unwrap().set_response_appearance('import::proceed', Adw.ResponseAppearance.SUGGESTED);
     const chooseResult = await warning.choose_async(null);
     if (chooseResult.code !== Results.OK) {
-      Log.error('Unhandled MessageDialog error!');
+      console.error('Unhandled MessageDialog error!');
       return;
     }
     const button = chooseResult.data;
 
     if (button !== 'import::proceed') {
-      Log.debug('Did not click yes!');
+      console.debug('Did not click yes!');
       return;
     }
 
@@ -447,7 +446,7 @@ implements LateBindee<MainWindowContext> {
       const error = saveResult.data;
       if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
         return;
-      Log.debug(error.toString());
+      console.debug(error.toString());
       return;
     }
     const exportFile = saveResult.data;
@@ -515,7 +514,7 @@ implements LateBindee<MainWindowContext> {
       if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) {
         return;
       }
-      Log.warn(error.toString());
+      console.warn(error.toString());
       return;
     }
     const button = chooseResult.data;
@@ -538,7 +537,7 @@ implements LateBindee<MainWindowContext> {
       const error = fillResult.data;
       if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED))
         return;
-      Log.warn(error.toString());
+      console.warn(error.toString());
       return;
     }
     /*
@@ -556,10 +555,10 @@ implements LateBindee<MainWindowContext> {
       Utils.Encoder.encode(JSON.stringify(profileManifest)),
     );
     let filterlist = FilterList.build(null);
-    Log.info(String(useAllAvailableAddons));
+    console.info(String(useAllAvailableAddons));
     const filterlistFile: Gio.File = profileSubdir.get_child(Config.FILTER_LIST_FILE);
     const profileAddonListStrBuffer = JSON.stringify(filterlist);
-    Log.info(`final filter list: ${profileAddonListStrBuffer}`)
+    console.info(`final filter list: ${profileAddonListStrBuffer}`)
     Utils.createFile(
       filterlistFile,
       Utils.Encoder.encode(profileAddonListStrBuffer),

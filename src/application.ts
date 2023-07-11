@@ -7,7 +7,6 @@ import Adw from 'gi://Adw';
 import { gobjectClass } from './utils/decorator.js';
 import * as Gio1 from './utils/gio1.js';
 import * as Utils from './utils.js';
-import { Log } from './utils/log.js';
 
 import { Config } from './config.js';
 import { Window } from './window.js';
@@ -34,17 +33,17 @@ export class Application extends Adw.Application {
       schema_id: Config.config.app_id,
     })
     this.downloader = new Downloader();
-    Log.info(`${Config.config.app_fullname} (${Config.config.app_id})`);
-    Log.info(`build-type: ${Config.config.build_type}`);
-    Log.info(`version: ${Config.config.version}`);
+    console.info(`${Config.config.app_fullname} (${Config.config.app_id})`);
+    console.info(`build-type: ${Config.config.build_type}`);
+    console.info(`version: ${Config.config.version}`);
 
     this.pkg_user_data_dir = Gio.File.new_for_path(Config.config.pkg_user_data_dir);
     Utils.makeDirectory(this.pkg_user_data_dir);
-    Log.info(`pkg-user-data-dir: ${this.pkg_user_data_dir.get_path()}`);
+    console.info(`pkg-user-data-dir: ${this.pkg_user_data_dir.get_path()}`);
 
     this.pkg_user_state_dir = Gio.File.new_for_path(Config.config.pkg_usr_state_dir);
     Utils.makeDirectory(this.pkg_user_state_dir);
-    Log.info(`pkg-user-state-dir: ${this.pkg_user_state_dir.get_path()}`);
+    console.info(`pkg-user-state-dir: ${this.pkg_user_state_dir.get_path()}`);
 
     this.addonStorage = new AddonStorage({ application: this });
     this.addonSynthesizer = new ActionSynthesizer({ writeable: this.addonStorage.indexer.writeable, storage: this.addonStorage, index: this.addonStorage.indexer });
