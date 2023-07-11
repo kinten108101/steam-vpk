@@ -1,4 +1,5 @@
 import Adw from 'gi://Adw';
+import { Wrapper } from './glib1.js';
 
 export interface Toaster {
   displayToast(toast: Adw.Toast): void;
@@ -46,19 +47,14 @@ export const Toast = {
   },
 }
 
-class ToastWrap {
-    toast: Adw.Toast;
-    constructor(param: {
-      toast: Adw.Toast,
-    }) {
-      this.toast = param.toast;
-    }
+class ToastWrap extends Wrapper<Adw.Toast> {
+  constructor(param: {
+    toast: Adw.Toast,
+  }) {
+    super(param.toast);
+  }
 
-    unwrap() {
-      return this.toast;
-    }
-
-    present(recv: Toaster) {
-      recv.displayToast(this.unwrap());
-    }
+  present(recv: Toaster) {
+    recv.displayToast(this.unwrap());
+  }
 }

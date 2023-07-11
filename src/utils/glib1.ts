@@ -3,6 +3,32 @@ import GLib from 'gi://GLib';
 import { Result } from "./result.js";
 import { Errors } from './errors.js';
 
+
+/**
+ * Extend a class's feature set without overriding old ones.
+ */
+export class Wrapper<T> {
+  /**
+   * Direct readwrite reference to the child instance of this wrapper.
+   * You should not use this.
+   */
+  _child: T;
+
+  /**
+   * @param instance The child instance to be wrapped.
+   */
+  constructor(instance: T) {
+    this._child = instance;
+  }
+
+  /**
+   * @return The child instance held by this wrapper.
+   */
+  unwrap() {
+    return this._child;
+  }
+}
+
 export const Uri = {
   /**
    * Parses `uri_string` according to `flags`. If the result is not a
