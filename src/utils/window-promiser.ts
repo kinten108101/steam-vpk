@@ -5,16 +5,20 @@ import { Error as GError } from './glib1.js';
 
 import { Result } from './result.js';
 import { Log } from './log.js';
+import type { SignalMethods } from '@girs/gjs';
 
 export type PromiseResolve<T = void> = (value: T | PromiseLike<T>) => void;
 export type PromiseReject = (reason?: any) => void;
 export type PromiseExecutor<T> = (resolve: PromiseResolve<T>, reject: PromiseReject) => void
 
+export interface WindowPromiser<T> extends SignalMethods {}
+
 export class WindowPromiser<T> {
+  static {
+    imports.signals.addSignalMethods(this.prototype);
+  }
+
   window: Gtk.Window;
-  #resolve: PromiseResolve<T> | undefined;
-  #reject: PromiseReject | undefined;
-  #closeCb: number | undefined;
 
   constructor(window: Gtk.Window) {
     this.window = window;
@@ -22,8 +26,22 @@ export class WindowPromiser<T> {
 
   promise() {
     const promise = new Promise<T>((resolve, reject) => {
-      this.#resolve = resolve;
-      this.#reject = reject;
+      const handleCloseWindow = this.window.connect('close-request', () => {
+        this.windowCloseReject();
+      });
+      const handleResolve = this.connect('resolve', (_: WindowPromiser<T>, value: unknown) => {
+        this.window.disconnect(handleCloseWindow);
+        this.disconnect(handleResolve);
+        this.disconnect(handleReject);
+        resolve(value as T);
+      });
+      const handleReject = this.connect('reject', (_: WindowPromiser<T>, reason: unknown) => {
+        this.window.disconnect(handleCloseWindow);
+        this.disconnect(handleResolve);
+        this.disconnect(handleReject);
+        if (!(reason instanceof GLib.Error)) throw new Error('Rejected reasoning is not GError');
+        reject(reason);
+      });
     }).then(
       (value) => {
         return Result.compose.OK(value);
@@ -41,9 +59,6 @@ export class WindowPromiser<T> {
     ) as Promise<Result<T, GLib.Error>>;
     // Due to how signals work, we can't connect in constructor, or else 3 cbs for 3 promisers in 3 pages will be called upon the signal.
     // instead, the cb is bound and released per promise session. This is why we connect in promise() and disconnect in resolve() and reject()
-    this.#closeCb = this.window.connect('close-request', () => {
-      this.windowCloseReject();
-    });
     this.window.present();
     return promise;
   }
@@ -57,22 +72,10 @@ export class WindowPromiser<T> {
   }
 
   resolve(value: T) {
-    if (this.#closeCb === undefined) {
-      throw new Error('CloseCb was not initialized!');
-    }
-    this.window.disconnect(this.#closeCb);
-    if (this.#resolve === undefined)
-      throw new Error('Resolve was not initialized!');
-    return this.#resolve(value);
+    return this.emit('resolve', value);
   }
 
   reject(reason: GLib.Error) {
-    if (this.#closeCb === undefined) {
-      throw new Error('CloseCb was not initialized!');
-    }
-    this.window.disconnect(this.#closeCb);
-    if (this.#reject === undefined)
-      throw new Error('Reject was not initialized!');
-    return this.#reject(reason);
+    return this.emit('reject', reason);
   }
 }
