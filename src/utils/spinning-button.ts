@@ -8,7 +8,7 @@ import { gobjectClass } from "./decorator.js";
   Properties: {
     'is-spinning': GObject.ParamSpec.boolean(
       'is-spinning', 'is-spinning', 'is-spinning',
-      GObject.ParamFlags.READWRITE, false),
+      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
   },
 })
 export class SpinningButton extends Gtk.Button {
