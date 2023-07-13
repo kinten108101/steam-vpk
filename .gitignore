@@ -6,9 +6,6 @@
 /build
 /.flatpak-builder
 
-# Sublime
-*.sublime-workspace
-
 # TypeScript definitions generated from GIR files
 /@types
 /gi-types
