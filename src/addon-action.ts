@@ -77,7 +77,7 @@ export class ActionSynthesizer extends GObject.Object {
           }
 
           const info_location = subdir.get_child(Config.config.addon_info);
-          const writejson = Utils.replaceJSON(addon, info_location);
+          const writejson = Utils.replaceJSONResult(addon, info_location);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
             order.quit(error);
@@ -103,14 +103,14 @@ export class ActionSynthesizer extends GObject.Object {
           }
 
           const subdir = this.readable.storage.subdirFolder.get_child(id);
-          const listFiles = Utils.listFiles(subdir);
-          if (listFiles.code !== Results.OK) {
-            const error = listFiles.data;
+          const listFilesResult = Utils.listFilesResult(subdir);
+          if (listFilesResult.code !== Results.OK) {
+            const error = listFilesResult.data;
             order.quit(error);
             break;
           }
 
-          const files = listFiles.data;
+          const files = listFilesResult.data;
           files.push(subdir);
           files.forEach(x => {
             try {

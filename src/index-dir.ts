@@ -115,7 +115,7 @@ export class DirectoryWriter extends GObject.Object {
             comment:  this.readable.comment,
           });
 
-          const writejson = Utils.replaceJSON(content, this.index);
+          const writejson = Utils.replaceJSONResult(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
             console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
@@ -145,7 +145,7 @@ export class DirectoryWriter extends GObject.Object {
                     })(),
             comment:  this.readable.comment,
           });
-          const writejson = Utils.replaceJSON(content, this.index);
+          const writejson = Utils.replaceJSONResult(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
             console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
@@ -175,7 +175,7 @@ export class DirectoryWriter extends GObject.Object {
                     })(),
             comment:  this.readable.comment,
           });
-          const writejson = Utils.replaceJSON(content, this.index);
+          const writejson = Utils.replaceJSONResult(content, this.index);
           if (writejson.code !== Results.OK) {
             const error = writejson.data;
             console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
@@ -242,7 +242,7 @@ implements Model {
     }
     */
 
-    const readbytes = Utils.loadContentsR(this.index, null);
+    const readbytes = Utils.loadContentsResult(this.index, null);
     if (readbytes.code !== Results.OK) {
       const error = readbytes.data;
       if (error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {

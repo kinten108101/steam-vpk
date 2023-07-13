@@ -1,6 +1,7 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
+import * as File from './file.js';
 import * as JSON1 from './utils/json1.js';
 import * as GLib1 from './utils/glib1.js';
 
@@ -29,6 +30,9 @@ export function SteamMd2Pango(text: string) {
   return _text;
 }
 
+/**
+ * @deprecated Use {@link File.make_dir_nonstrict} instead.
+ */
 export function makeDirectory(dir: Gio.File) {
   try {
     dir.make_directory(null);
@@ -42,8 +46,11 @@ export function makeDirectory(dir: Gio.File) {
   }
 }
 
-export function readJSON(file: Gio.File) {
-  const readbytes = loadContentsR(file, null);
+/**
+ * @deprecated Use {@link File.read_json} instead.
+ */
+export function readJSONResult(file: Gio.File) {
+  const readbytes = loadContentsResult(file, null);
   if (readbytes.code !== Results.OK) {
     console.warn(`Caught an input stream error.`);
     return readbytes;
@@ -64,7 +71,10 @@ export function readJSON(file: Gio.File) {
   return parsejsobject;
 }
 
-export function readJSONbytes(contents: ArrayBuffer) {
+/**
+ * @deprecated Use {@link File.read_json_bytes} instead.
+ */
+export function readJSONBytesResult(contents: ArrayBuffer) {
   const decodebytes = Decoder.decode(contents);
   if (decodebytes.code !== Results.OK) {
     console.warn(`Caught an encoding error.`);
@@ -79,7 +89,10 @@ export function readJSONbytes(contents: ArrayBuffer) {
   return parsejsobject;
 }
 
-export function replaceJSON(value: any, dest: Gio.File,
+/**
+ * @deprecated Use {@link File.replace_json} instead.
+ */
+export function replaceJSONResult(value: any, dest: Gio.File,
   prettified: boolean = true, etag?: string | null, makeBackup?: boolean,
   flags?: Gio.FileCreateFlags, cancellable?: Gio.Cancellable | null) {
   const serialize = JSON1.stringify(
@@ -106,30 +119,9 @@ export function replaceJSON(value: any, dest: Gio.File,
 }
 
 /**
- * Replaces the contents of `file` with `contents` of `length` bytes.
- *
- * If `etag` is specified (not %NULL), any existing file must have that etag,
- * or the error %G_IO_ERROR_WRONG_ETAG will be returned.
- *
- * If `make_backup` is %TRUE, this function will attempt to make a backup
- * of `file`. Internally, it uses g_file_replace(), so will try to replace the
- * file contents in the safest way possible. For example, atomic renames are
- * used when replacing local files’ contents.
- *
- * If `cancellable` is not %NULL, then the operation can be cancelled by
- * triggering the cancellable object from another thread. If the operation
- * was cancelled, the error %G_IO_ERROR_CANCELLED will be returned.
- *
- * The returned `new_etag` can be used to verify that the file hasn't
- * changed the next time it is saved over.
- * @param contents a string containing the new contents for `file`
- * @param etag the old [entity-tag][gfile-etag] for the document,   or %NULL
- * @param make_backup %TRUE if a backup should be created
- * @param flags a set of #GFileCreateFlags
- * @param cancellable optional #GCancellable object, %NULL to ignore
- * @returns %TRUE if successful. If an error has occurred, this function   will return %FALSE and set @error appropriately if present.
+ * @deprecated Result pattern is discouraged. Use {@link Gio.File.replace_contents} instead.
  */
-export function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: string | null, make_backup: boolean, flags: Gio.FileCreateFlags, cancellable: Gio.Cancellable | null): Result<[ boolean, string | null ], GLib.Error> {
+export function replaceContentsResult(file: Gio.File, contents: Uint8Array, etag: string | null, make_backup: boolean, flags: Gio.FileCreateFlags, cancellable: Gio.Cancellable | null): Result<[ boolean, string | null ], GLib.Error> {
   try {
     const result = file.replace_contents(contents, etag, make_backup, flags, cancellable);
     return Result.compose.OK(result);
@@ -143,8 +135,9 @@ export function replaceContentsR(file: Gio.File, contents: Uint8Array, etag: str
 /**
  * @param {Gio.File} dir The directory inside which the scan takes place
  * @returns { Gio.File[] } A list of files in directory
+ * @deprecated Use {@link File.list_files} instead.
  */
-export function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
+export function listFilesResult(dir: Gio.File): Result<Gio.File[], GLib.Error> {
   try {
     const enumerator = dir.enumerate_children(
       'standard::name,standard::type',
@@ -172,7 +165,10 @@ export function listFiles(dir: Gio.File): Result<Gio.File[], GLib.Error> {
   }
 }
 
-export function loadContentsR(file: Gio.File, cancellable: Gio.Cancellable | null): Result<[boolean, Uint8Array, string | null], GLib.Error> {
+/**
+ * @deprecated Use {@link Gio.File.load_contents} instead.
+ */
+export function loadContentsResult(file: Gio.File, cancellable: Gio.Cancellable | null): Result<[boolean, Uint8Array, string | null], GLib.Error> {
   try {
     const res = file.load_contents(cancellable);
     return Result.compose.OK(res);

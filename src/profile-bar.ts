@@ -301,7 +301,7 @@ implements LateBindee<MainWindowContext> {
       return;
     }
 
-    const loadAttempt = Utils.loadContentsR(file, null);
+    const loadAttempt = Utils.loadContentsResult(file, null);
     if (loadAttempt.code !== Results.OK) {
       Adw1.Toast.builder()
         .title('File does not exists')
