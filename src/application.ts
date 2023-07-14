@@ -8,13 +8,22 @@ import { gobjectClass } from './utils/decorator.js';
 import * as Gio1 from './utils/gio1.js';
 import * as Utils from './utils.js';
 
-import { Config } from './config.js';
 import { Window } from './window.js';
 import { SessionData } from './session-data.js';
 import { Downloader } from './downloader.js';
 import { ActionSynthesizer } from './addon-action.js';
 import { AddonStorage } from './addon-storage.js';
 import { AddAddon } from './add-addon.js';
+import {
+  APP_FULLNAME,
+  APP_ID,
+  APP_RDNN,
+  APP_SHORTNAME,
+  BUILD_TYPE,
+  USER_DATA_DIR,
+  USER_STATE_DIR,
+  VERSION
+} from './const.js';
 
 @gobjectClass()
 export class Application extends Adw.Application {
@@ -28,25 +37,33 @@ export class Application extends Adw.Application {
 
   constructor(params: Adw.Application.ConstructorProperties = {}) {
     super(params);
-    GLib.set_application_name(Config.config.app_fullname);
+    GLib.set_application_name(APP_FULLNAME);
     this.settings = new Gio.Settings({
-      schema_id: Config.config.app_id,
+      schema_id: APP_ID,
     })
     this.downloader = new Downloader();
-    console.info(`${Config.config.app_fullname} (${Config.config.app_id})`);
-    console.info(`build-type: ${Config.config.build_type}`);
-    console.info(`version: ${Config.config.version}`);
+    console.info(`${APP_FULLNAME} (${APP_ID})`);
+    console.info(`build-type: ${BUILD_TYPE}`);
+    console.info(`version: ${VERSION}`);
 
-    this.pkg_user_data_dir = Gio.File.new_for_path(Config.config.pkg_user_data_dir);
+    this.pkg_user_data_dir = Gio.File.new_for_path(
+      GLib.build_filenamev([USER_DATA_DIR, APP_SHORTNAME]),
+    );
     Utils.makeDirectory(this.pkg_user_data_dir);
     console.info(`pkg-user-data-dir: ${this.pkg_user_data_dir.get_path()}`);
 
-    this.pkg_user_state_dir = Gio.File.new_for_path(Config.config.pkg_usr_state_dir);
+    this.pkg_user_state_dir = Gio.File.new_for_path(
+      GLib.build_filenamev([USER_STATE_DIR, APP_SHORTNAME]),
+    );
     Utils.makeDirectory(this.pkg_user_state_dir);
     console.info(`pkg-user-state-dir: ${this.pkg_user_state_dir.get_path()}`);
 
     this.addonStorage = new AddonStorage({ application: this });
-    this.addonSynthesizer = new ActionSynthesizer({ writeable: this.addonStorage.indexer.writeable, storage: this.addonStorage, index: this.addonStorage.indexer });
+    this.addonSynthesizer = new ActionSynthesizer({
+      writeable: this.addonStorage.indexer.writeable,
+      storage: this.addonStorage,
+      index: this.addonStorage.indexer,
+    });
   }
 
   vfunc_startup() {

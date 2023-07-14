@@ -45,7 +45,9 @@ export namespace GObject1 {
     }
   }
 }
-
+/**
+ * @deprecated Use the const module instead.
+ */
 export class Config {
   static init(param: Configs): Config {
     if (this.instance) {
