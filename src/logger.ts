@@ -1,5 +1,5 @@
 import GLib from 'gi://GLib';
-import { APP_SHORTNAME } from './const';
+import { APP_SHORTNAME } from './const.js';
 
 const decoder = new TextDecoder('utf-8');
 
