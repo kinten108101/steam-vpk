@@ -23,28 +23,6 @@ export interface Configs {
   addon_dir?: string,
 }
 
-export namespace GObject1 {
-  interface ParamSpecString {
-    name: string,
-    nick?: string,
-    blurb?: string,
-    flags?: GObject.ParamFlags,
-    value?: string,
-  }
-
-  export const ParamSpec = {
-    string(param: ParamSpecString) {
-      const { name, nick, blurb, flags, value } = param;
-      return GObject.ParamSpec.string(
-        name,
-        nick || '',
-        blurb || '',
-        flags || GObject.ParamFlags.READWRITE,
-        value || '',
-      );
-    }
-  }
-}
 /**
  * @deprecated Use the const module instead.
  */
