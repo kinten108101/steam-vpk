@@ -93,7 +93,7 @@ export class Application extends Adw.Application {
 
   setStylesheet() {
     const provider = new Gtk.CssProvider();
-    provider.load_from_resource(`${Config.config.app_rdnn}/css/style.css`);
+    provider.load_from_resource(`${APP_RDNN}/css/style.css`);
 
     const defaultDisplay: Gdk.Display | null = Gdk.Display.get_default();
     if (!defaultDisplay) {
