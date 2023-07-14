@@ -22,6 +22,7 @@ script = [
   'create-profile.ts',
   'download-page.ts',
   'downloader.ts',
+  'file.ts',
   'id.ts',
   'index-dir.ts',
   'launchpad.ts',
