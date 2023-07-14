@@ -15,10 +15,9 @@ import * as Utils from './utils.js';
 import * as JSON1 from './utils/json1.js';
 
 import { Config } from './config.js';
-import { MainWindowContext } from './window.js';
+import { MainWindowContext, Window } from './window.js';
 import { CreateProfileDialog } from './create-profile.js';
 import { LateBindee } from './mvc.js';
-import { SessionData } from './session-data.js';
 
 export class ProfileBarPopover extends Gtk.Popover implements LateBindee<MainWindowContext> {
   static {
@@ -35,17 +34,15 @@ export class ProfileBarPopover extends Gtk.Popover implements LateBindee<MainWin
   }
 
   profileName!: Gtk.Label;
-
   profileId!: Gtk.Label;
-
   addonCount!: Gtk.Label;
 
+  context!: MainWindowContext;
+
   onBind(context: MainWindowContext) {
-    context.main_window.session.connect('notify::current-profile', (session: SessionData) => {
-      this.profileName.set_label(session.currentProfile.name);
-      this.profileId.set_label(session.currentProfile.id);
-      this.addonCount.set_label(String(session.currentProfile.whitelist?.size || 0));
-    });
+    this.context = context;
+    context.main_window.connect('notify::current-profile', this.update);
+    context.main_window.connect(Window.Signals.first_flush, this.update);
     // TODO(kinten): is binding strong ref or weak ref? Is it on the obj or on the pointer?
     /*
     context.addonManager.registerForDataReload(() => {
@@ -56,6 +53,12 @@ export class ProfileBarPopover extends Gtk.Popover implements LateBindee<MainWin
       this.addonCount.set_label(count.toString());
     });
     */
+  }
+
+  update = () => {
+    this.profileName.set_label(this.context.main_window.currentProfile?.name || 'No profile');
+    this.profileId.set_label(this.context.main_window.currentProfile?.id || 'none');
+    this.addonCount.set_label(String(this.context.main_window.currentProfile?.whitelist?.size || 0));
   }
 }
 
@@ -164,8 +167,8 @@ implements LateBindee<MainWindowContext> {
   }
 
   bindLabel() {
-    this.context.main_window.session.connect('notify::current-profile', (session: SessionData) => {
-      this.label.set_label(session.currentProfile.name);
+    this.context.main_window.connect('notify::current-profile', (main_window: Window) => {
+      this.label.set_label(main_window.currentProfile?.name || 'No profile');
     })
   }
 
@@ -198,7 +201,7 @@ implements LateBindee<MainWindowContext> {
   }
 
   setupProfileMux = () => {
-    const store = this.context.main_window.session;
+    const store = this.context.main_window;
     let lastval: GLib.Variant = new GLib.Variant('s', '');
     const profileMux = Gio1.SimpleAction
       .builder({
@@ -234,7 +237,8 @@ implements LateBindee<MainWindowContext> {
       })
       .build();
     store.connect('notify::current-profile', () => {
-      const newval: string = store.currentProfile.id;
+      const newval = store.currentProfile?.id;
+      if (typeof newval !== 'string') return;
       profileMux.set_state(GLib.Variant.new_string(newval));
     });
     this.actionGroup.add_action(profileMux);

@@ -13,6 +13,15 @@ Gio._promisify(Gio.File.prototype, 'query_info_async', 'query_info_finish');
 export const Decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
 export const Encoder = new TextEncoder();
 
+type typeofValues = 'string' | 'number' | 'bigint' | 'boolean' | 'symbol' | 'undefined' | 'object' | 'function';
+
+export function g_variant_unpack<T>(variant: GLib.Variant | null, type: typeofValues) {
+  if (!(variant instanceof GLib.Variant)) throw new Error(`Expect a GVariant, got ${variant}`);
+  const val = variant.unpack();
+  if (typeof val !== type) throw new Error(`Expect a ${type}, got ${val}`);
+  return val as T;
+}
+
 /*
 
 if (error instanceof GLib.Error) {
@@ -24,12 +33,6 @@ else {
 }
 
 */
-
-export function SteamMd2Pango(text: string) {
-  const _text = text.replaceAll('&', '&amp;');
-  return _text;
-}
-
 /**
  * @deprecated Use {@link File.make_dir_nonstrict} instead.
  */

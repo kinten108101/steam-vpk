@@ -2,8 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template $StvpkDownloadPageRow: Gtk.ListBoxRow {
-  styles ["search-row"]
-
+  styles ["search-row", "download-page-row"]
   activatable: true;
 
   Gtk.Box {
@@ -43,6 +42,7 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
 
         margin-top: 5;
         single-line-mode: true;
+        use-markup: true;
         xalign: 0;
         wrap: true;
         wrap-mode: word_char;
@@ -57,6 +57,8 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
     }
 
     // button goes here
+    $StvpkUseButton use_button {
+    }
 
     Gtk.Image {
       styles ["expander-row-arrow"]

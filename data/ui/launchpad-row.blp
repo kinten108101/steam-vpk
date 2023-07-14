@@ -2,9 +2,8 @@ using Gtk 4.0;
 using Adw 1;
 
 menu move-row-menu {
-  section {
-    item (_("Move up"), "row.move-up")
-    item (_("Move down"), "row.move-down")
+  section moveSection {
+    // There are items here but due to API constraints, they must be added programmatically. Just know that there are the move-up and move-down buttons here.
   }
   section {
     item (_("Configure"), "row.config")
@@ -29,13 +28,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
   }
 
   [action]
-  Gtk.Separator {
-    orientation: vertical;
-    margin-top: 12;
-    margin-bottom: 12;
-  }
-
-  [action]
   Gtk.Switch toggle {
     valign: center;
     halign: center;
@@ -44,6 +36,8 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
   Gtk.Box {
     orientation: vertical;
+    vexpand: true; hexpand: true;
+
     Gtk.Grid {
       styles ["row-content"]
 
@@ -67,6 +61,7 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
         max-content-width: 400;
         min-content-height: 200;
         max-content-height: 400;
+        vexpand: true; hexpand: true;
 
         layout {
           row: 0;
@@ -110,6 +105,25 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
         }
       }
 
+    }
+
+    Gtk.Box {
+      halign: end;
+      spacing: 8;
+      margin-top: 4;
+      margin-bottom: 4;
+      margin-start: 4;
+      margin-end: 4;
+
+      Gtk.Button removeAddon {
+        halign: end;
+        label: _('Remove');
+        styles ['destructive-action']
+      }
+
+      Gtk.Button seeDetails {
+        label: _('See Details');
+      }
     }
   }
 }

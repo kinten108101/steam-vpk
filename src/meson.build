@@ -29,11 +29,11 @@ script = [
   'launchpad.ts',
   'logger.ts',
   'main.ts',
+  'markup.ts',
   'mvc.ts',
   'preferences-window.ts',
   'profile-bar.ts',
   'profiles.ts',
-  'session-data.ts',
   'utils.ts',
   'window.ts',
 ]

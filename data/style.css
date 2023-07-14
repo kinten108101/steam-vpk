@@ -2,6 +2,12 @@
   padding-left: 10px;
 }
 
+
+.download-page-row {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
 splitbutton.omnibar {
   background: alpha(currentColor, 0.075);
 }

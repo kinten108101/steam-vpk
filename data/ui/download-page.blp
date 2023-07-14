@@ -1,48 +1,35 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkDownloadPage : Gtk.Box {
-  orientation: vertical;
+template $StvpkDownloadPage : Adw.PreferencesPage {
   vexpand: true;
   hexpand: true;
 
-  Gtk.ScrolledWindow {
-    vexpand: true;
-    hexpand: true;
-
-    Adw.Clamp {
-      vexpand: true;
-      hexpand: true;
-      maximum-size: 300;
-      Gtk.Box contentArea {
-        styles ["content"]
-        vexpand: true;
-        hexpand: true;
-        margin-top: 20;
-        margin-start: 16;
-        margin-end: 16;
-        orientation: vertical;
-        spacing: 10;
-
-Gtk.Box localRepo {
-  orientation: vertical;
-  spacing: 10;
-
-  Gtk.Label localRepoLabel {
-    label: _('Local');
-    xalign: 0;
-    styles ["heading"]
-  }
+Adw.PreferencesGroup localRepoSection {
+  title: _('From disk');
+  header-suffix: Gtk.Label { label: _('Unknown disk space'); styles ["dim-label"] };
+  hexpand: true; vexpand: true;
 
   Gtk.ListBox localRepoList {
-    selection-mode: single;
+    selection-mode: none;
+    valign: start;
+
+    styles ["boxed-list", "localRepoList"]
+  }
+}
+
+Adw.PreferencesGroup remoteRepoSection {
+  title: _('From remote locations');
+  header-suffix: Gtk.Label { label: _('Unknown disk space'); styles ["dim-label"] };
+  hexpand: true; vexpand: true;
+
+  Gtk.ListBox remoteRepoList {
+    selection-mode: none;
     valign: start;
 
     styles ["boxed-list"]
   }
 }
 
-      }
-    }
-  }
+
 }

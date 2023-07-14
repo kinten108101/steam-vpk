@@ -14,15 +14,27 @@ template $StvpkLaunchpadPage : Gtk.Box {
       vexpand: true;
       hexpand: true;
       maximum-size: 300;
+
       Gtk.Box contentArea {
         styles ["content"]
         vexpand: true;
         hexpand: true;
-        margin-top: 20;
+        margin-top: 24;
+        margin-bottom: 24;
         margin-start: 16;
         margin-end: 16;
         orientation: vertical;
-        spacing: 10;
+        spacing: 24;
+
+        Adw.PreferencesGroup { Adw.ActionRow {
+            title: 'Enable add-ons';
+            icon-name: 'puzzle-piece-symbolic';
+            subtitle: 'May lead to gameplay inconsistencies and performance issues.';
+
+            Gtk.Switch enable-addon {
+              valign: center;
+            }
+        }}
       }
     }
   }

@@ -1,3 +1,6 @@
+import GObject from 'gi://GObject';
+
+import { gobjectClass } from './utils/decorator.js';
 
 export interface StorageExport {
   addondetails: {
@@ -23,6 +26,7 @@ export interface AddonManifest {
   description?: string,
   tags?: { tag: string }[],
   comment?: string,
+  creators?: { creator: string }[],
 }
 
 export const AddonManifest = {
@@ -54,12 +58,16 @@ export const AddonManifest = {
             });
             return newArr;
           })(),
+      creators: (() => {
+            return [{ creator: String(response.creator) }];
+          })(),
     };
     return manifest;
   },
 }
 
-export class Addon {
+@gobjectClass()
+export class Addon extends GObject.Object {
   static new_from_manifest(manifest: AddonManifest) {
     return new Addon({
       vanityId: manifest.stvpkid,
@@ -83,6 +91,15 @@ export class Addon {
               return date;
             })(),
       comment: manifest.comment,
+      creators: (() => {
+              if (manifest.creators === undefined) return new Map();
+              const arr = manifest.creators?.map(({ creator }) => { return creator });
+              const map = new Map<string, {}>();
+              arr.forEach(x => {
+                map.set(x, {})
+              });
+              return map;
+            })(),
     });
   }
 
@@ -104,6 +121,12 @@ export class Addon {
             return tags;
           })(),
       comment: addon.comment,
+      creators: (() => {
+            const creators = new Map(addon.creators);
+            const _creators: { creator: string }[] = [];
+            creators.forEach((_, key) => _creators.push({ creator: key }));
+            return _creators;
+          })(),
     };
     return manifest;
   }
@@ -115,8 +138,19 @@ export class Addon {
   categories: Map<string, {}>;
   timeUpdated?: Date;
   comment?: string;
+  creators?: Map<string, {}>;
 
-  constructor(param: Addon) {
+  constructor(param: {
+    vanityId: string;
+    steamId?: string;
+    title?: string;
+    description?: string;
+    categories: Map<string, {}>;
+    timeUpdated?: Date;
+    comment?: string;
+    creators?: Map<string, {}>;
+  }) {
+    super({});
     this.vanityId = param.vanityId;
     this.steamId = param.steamId;
     this.title = param.title;
@@ -124,6 +158,7 @@ export class Addon {
     this.categories = param.categories;
     this.timeUpdated = param.timeUpdated;
     this.comment = param.comment;
+    this.creators = param.creators;
   }
 }
 

@@ -32,7 +32,15 @@ export class Profile {
   whitelist?: Map<string, Addon>;
   loadorder?: string[];
 
-  constructor(param: Profile, addonStorage: AddonStorage) {
+  constructor(param: {
+    id: string;
+    name: string;
+    enabled?: boolean;
+    activelist?: Map<string, Addon>;
+    shufflelist?: Map<string, Addon>;
+    whitelist?: Map<string, Addon>;
+    loadorder?: string[];
+  }, addonStorage: AddonStorage) {
     const getAllAddons = () => {
       return addonStorage.idmap;
     };
@@ -54,5 +62,15 @@ export class Profile {
       id: Profiles.Default,
       name: 'Default',
     }, addonStorage);
+  }
+
+  adapt_loadorder(idmap: Map<string, Addon>) {
+    const draft: Addon[] = [];
+    this.loadorder?.forEach(x => {
+      const addon = idmap.get(x);
+      if (addon === undefined) return;
+      draft.push(addon);
+    })
+    return draft;
   }
 }

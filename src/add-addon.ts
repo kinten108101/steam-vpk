@@ -35,12 +35,11 @@ export class AddAddon extends GObject.Object {
   constructor(param: {
     application: Application;
     window: Window;
-    downloader: Downloader;
   }) {
     super({});
     this.application = param.application;
     this.mainWindow = param.window;
-    this.downloader = param.downloader;
+    this.downloader = param.application.downloader;
     this.actionGroup = new Gio.SimpleActionGroup();
     this.mainWindow.insert_action_group('add-addon', this.actionGroup);
     this.setupActions();

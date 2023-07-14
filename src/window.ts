@@ -1,9 +1,9 @@
+import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 import * as Adw1 from './utils/adw1.js';
 import * as Gio1 from './utils/gio1.js';
-import { gobjectClass } from './utils/decorator.js';
 import './utils/revealer.js';
 
 import './download-page.js';
@@ -17,56 +17,84 @@ import './profile-bar.js';
 import { ProfileBar } from './profile-bar.js';
 import { Config } from './config.js'
 import { PreferencesWindow } from './preferences-window.js';
-import { LateBindee } from './mvc.js';
+import { LateBindee, Model } from './mvc.js';
 import { Application } from './application.js';
-import { SessionData } from './session-data.js';
+import { AddonStorage } from './addon-storage.js';
+import { Profile } from './profiles.js';
+import { AddAddon } from './add-addon.js';
 import { BUILD_TYPE, BuildTypes } from './const.js';
 
 export interface MainWindowContext { application: Application, main_window: Window }
 
-@gobjectClass({
-  GTypeName: 'StvpkWindow',
-  Template: `resource://${Config.config.app_rdnn}/ui/window.ui`,
-  Children: [
-    'launchpadPage',
-    'downloadPage',
-    'profileBar',
-    'toastOverlay',
-  ],
-})
 export class Window
 extends Adw.ApplicationWindow
-implements Adw1.Toaster {
+implements Adw1.Toaster, Model {
+  static Signals = {
+    first_flush: 'first_flush',
+  }
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'StvpkWindow',
+      Properties: {
+        'current-profile': GObject.ParamSpec.string(
+          'current-profile', 'current-profile', 'current-profile',
+          GObject.ParamFlags.READWRITE, ''),
+      },
+      Signals: {
+        [Window.Signals.first_flush]: {},
+      },
+      Template: `resource://${Config.config.app_rdnn}/ui/window.ui`,
+      Children: [
+        'launchpadPage',
+        'downloadPage',
+        'profileBar',
+        'toastOverlay',
+      ],
+    }, this);
+  }
+
   launchpadPage!: LaunchpadPage;
   profileBar!: ProfileBar;
   downloadPage!: DownloadPage;
   toastOverlay!: Adw.ToastOverlay;
 
-  session: SessionData;
+  profiles: Map<string, Profile>;
+  currentProfile: Profile | null;
+  application: Application;
 
-  constructor(params: Adw.ApplicationWindow.ConstructorProperties & {
-    session: SessionData,
-  }) {
-    const {session, ..._params} = params;
-    super(_params);
-    this.session = session;
-
-    if (Config.config.build_type === 'debug')
+  constructor(params: Adw.ApplicationWindow.ConstructorProperties & { application: Application }) {
+    super(params);
+    this.application = params.application;
     if (BUILD_TYPE === BuildTypes.debug)
       this.get_style_context().add_class('devel');
-  }
 
-  onBind(application: Application) {
+    this.profiles = new Map();
+    //const defaultProfile = Profile.makeDefault(this.application.addonStorage);
+    this.currentProfile = null;
+    //this.profiles.set(defaultProfile.id, defaultProfile);
+
+    const context: MainWindowContext = { application: this.application, main_window: this };
     [
+      this.downloadPage,
       this.launchpadPage.model,
+      this.launchpadPage,
       this.profileBar.profilePopover,
       this.profileBar.mux,
       this.profileBar,
     ].forEach((x: LateBindee<MainWindowContext>) => {
-      const context: MainWindowContext = { application, main_window: this };
       x.onBind(context);
     });
     this.setupWindowActions();
+    // should have been just an initializing function
+    new AddAddon({
+      application: this.application,
+      window: this,
+    });
+  }
+
+  async start() {
+    this.emit(Window.Signals.first_flush);
   }
 
   displayToast(toast: Adw.Toast) {
@@ -118,7 +146,30 @@ implements Adw1.Toaster {
       })
       .build();
     this.add_action(reloadData);
+  }
 
+  updateCurrentProfileCb() {
+    // fit test
+    this.notify('current-profile');
+  }
+
+  manualUpdateCurrentProfileWithId(val: string) {
+    const profile = this.profiles.get(val);
+    if (profile === undefined) {
+      // fit test
+      return;
+    }
+    this.currentProfile = profile;
+    this.notify('current-profile');
+  }
+
+  manualUpdateCurrentProfile(val: Profile) {
+    if (!this.profiles.has(val.id)) {
+      // fit test
+      return;
+    }
+    this.currentProfile = val;
+    this.notify('current-profile');
   }
 
   vfunc_close_request() {

@@ -9,11 +9,9 @@ import * as Gio1 from './utils/gio1.js';
 import * as Utils from './utils.js';
 
 import { Window } from './window.js';
-import { SessionData } from './session-data.js';
 import { Downloader } from './downloader.js';
 import { ActionSynthesizer } from './addon-action.js';
 import { AddonStorage } from './addon-storage.js';
-import { AddAddon } from './add-addon.js';
 import {
   APP_FULLNAME,
   APP_ID,
@@ -108,22 +106,15 @@ export class Application extends Adw.Application {
 
   vfunc_activate() {
     super.vfunc_activate();
-    const sessionData = new SessionData({
-      application: this,
-    });
     const mainWindow = new Window({
       application: this,
       title: GLib.get_application_name(),
       icon_name: 'addon-box',
-      session: sessionData,
     });
-    new AddAddon({
-      application: this,
-      window: mainWindow,
-      downloader: this.downloader,
-    });
-    mainWindow.onBind(this);
-    sessionData.start();
+    new Gtk.WindowGroup()
+      .add_window(mainWindow);
+
+    mainWindow.start();
     mainWindow.present();
   }
 }

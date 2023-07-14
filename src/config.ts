@@ -19,6 +19,7 @@ export interface Configs {
   addon_info?: string,
   addon_index?: string,
   addon_dir?: string,
+  profile_default_info?: string,
 }
 
 /**
@@ -53,6 +54,7 @@ export class Config {
       addon_index: 'addons.json',
       addon_dir: 'addons',
       addon_info: 'metadata.json',
+      profile_default_info: 'config.metadata.json',
       ...param,
     };
   }

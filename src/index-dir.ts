@@ -27,6 +27,9 @@ export enum WriteOrders {
   Reset,
   DeleteEntry,
   AddEntry,
+  DeleteEntryTmp,
+  AddEntryTmp,
+  Save,
 }
 
 export type WriteOrder = WriteOrderReset | WriteOrderDeleteEntry | WriteOrderAddEntry;
@@ -208,6 +211,7 @@ implements Model {
   subdirs: Readonly<Map<string, Subdir>>;
   comment?: string;
   isRunning: boolean;
+  monitor: Gio.FileMonitor;
 
   constructor(param: { file: Gio.File }) {
     super({});
@@ -215,8 +219,13 @@ implements Model {
     this.index = param.file;
     console.info(`index: ${this.index.get_path()}`);
     this.subdirs = new Map;
+
     this.writeable = new DirectoryWriter({ index: this.index, readable: this });
     this.writeable.connect('index-written', this.readIndexFile);
+
+    this.monitor = this.index.monitor_file(Gio.FileMonitorFlags.WATCH_MOVES, null);
+    this.monitor.connect('changed', this.readIndexFile);
+
     this.isRunning = false;
   }
 
@@ -224,12 +233,42 @@ implements Model {
     this.emit('force-read');
   }
 
-  readIndexFile = () => {
+  readIndexFile = (_: unknown, __: unknown, ___: unknown, _____: Gio.FileMonitorEvent | undefined): symbol => {
+    const exit = () => {
+      this.isRunning = false;
+      return Symbol('exit');
+    };
+
     if (this.isRunning) {
-      return;
       console.warn('readIndexFile is busy...');
+      return exit();
     }
+
     this.isRunning = true;
+    /*
+    if (eventType !== undefined) {
+      switch (eventType) {
+      case Gio.FileMonitorEvent.CREATED:
+      case Gio.FileMonitorEvent.MOVED_IN:
+      case Gio.FileMonitorEvent.CHANGED:
+        break;
+      case Gio.FileMonitorEvent.MOVED_OUT:
+        console.warn('Index file has been moved out. Must be resolved manually.');
+        return exit();
+      case Gio.FileMonitorEvent.RENAMED:
+        console.warn('Index file has been renamed. Must be resolved manually.');
+        return exit();
+      case Gio.FileMonitorEvent.DELETED:
+        console.warn('Index file is gone. Must be resolved manually.');
+        return exit();
+      default:
+        console.warn(`Unhandled file monitor change event. Details: ${eventType}`);
+        return exit();
+      }
+    }
+    */
+
+
     console.debug('Index is being read...');
     /*
     switch (event) {
@@ -248,7 +287,7 @@ implements Model {
       if (error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
         console.warn('Index file not found! Requested a reset.');
         this.writeable.order({ code: WriteOrders.Reset });
-        return;
+        return exit();
       }
       else throw error;
     }
@@ -256,31 +295,27 @@ implements Model {
 
     const decoding = Utils.Decoder.decode(bytes);
     if (decoding.code !== Results.OK) {
-      this.writeable.order({ code: WriteOrders.Reset });
-      return;
       console.warn('Index file could not be decoded! Must be resolved manually.');
+      return exit();
     }
     const strbuf = decoding.data;
 
     const parsing = JSON1.parse(strbuf);
     if (parsing.code !== Results.OK) {
-      this.writeable.order({ code: WriteOrders.Reset });
-      return;
       console.warn('Index file has JSON syntax error! Must be resolved manually.');
+      return exit();
     }
 
     const obj = parsing.data;
     // validation
     const subdirs = obj['subdirs'];
     if (subdirs === undefined) {
-      this.writeable.order({ code: WriteOrders.Reset });
-      return;
       console.warn('Index file lacks required fields! Must be resolved manually.')
+      return exit();
     }
     if (!Array.isArray(subdirs)) {
-      this.writeable.order({ code: WriteOrders.Reset });
-      return;
       console.warn('Should be an array!')
+      return exit();
     }
 
     const map = new Map<string, Subdir>();
@@ -300,6 +335,6 @@ implements Model {
           return arr;
         })()}`)
     this.emit('subdirs-changed');
-    this.isRunning = false;
+    return exit();
   }
 }
