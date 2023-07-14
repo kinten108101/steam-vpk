@@ -1,5 +1,3 @@
-import GObject from 'gi://GObject';
-
 export interface Configs {
   app_id: string,
   app_rdnn: string,
