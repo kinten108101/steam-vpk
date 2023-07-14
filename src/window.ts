@@ -20,6 +20,7 @@ import { PreferencesWindow } from './preferences-window.js';
 import { LateBindee } from './mvc.js';
 import { Application } from './application.js';
 import { SessionData } from './session-data.js';
+import { BUILD_TYPE, BuildTypes } from './const.js';
 
 export interface MainWindowContext { application: Application, main_window: Window }
 
@@ -51,6 +52,7 @@ implements Adw1.Toaster {
     this.session = session;
 
     if (Config.config.build_type === 'debug')
+    if (BUILD_TYPE === BuildTypes.debug)
       this.get_style_context().add_class('devel');
   }
 
