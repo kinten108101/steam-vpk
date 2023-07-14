@@ -27,6 +27,7 @@ script = [
   'id.ts',
   'index-dir.ts',
   'launchpad.ts',
+  'logger.ts',
   'main.ts',
   'mvc.ts',
   'preferences-window.ts',
