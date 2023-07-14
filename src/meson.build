@@ -15,6 +15,8 @@ script = [
   'add-addon-window.ts',
   'add-addon.ts',
   'addon-action.ts',
+  'addon-details.ts',
+  'addon-storage-controls.ts',
   'addon-storage.ts',
   'addons.ts',
   'application.ts',

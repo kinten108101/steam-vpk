@@ -1,3 +1,4 @@
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Gio from 'gi://Gio';
@@ -80,11 +81,19 @@ export class LaunchpadRow extends Adw.ExpanderRow {
     this.itemk.bind_property('enabled', this.toggle, 'active', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     this.itemk.bind_property('description', this.description_field, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
     this.itemk.bind_property('last_update', this.last_update_field, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
+    const id = new GLib.Variant('s', this.itemk.id);
+    this.seeDetails.set_action_target_value(id);
+    this.removeAddon.set_action_target_value(id);
+
     this.moveUp = new Gio.MenuItem();
     this.moveUp.set_label('Move Up');
+    this.moveUp.set_action_and_target_value('addons.move-up', id);
     this.moveSection.append_item(this.moveUp);
+    // why couldnt i set action and target value outside of constructor
+
     this.moveDown = new Gio.MenuItem();
     this.moveDown.set_label('Move Down');
+    this.moveDown.set_action_and_target_value('addons.move-down', id);
     this.moveSection.append_item(this.moveDown);
   }
 }
@@ -290,6 +299,11 @@ export class LaunchpadPage extends Gtk.Box implements LateBindee<MainWindowConte
       // @ts-ignore
       logError(error);
     }
+
+    this.enable_addon.connect('notify::active', (button) => {
+      // target value must be the next state to the current state aka the inverse
+      button.set_action_target_value(GLib.Variant.new_boolean(!button.get_active()));
+    });
   }
 
   onBind(source: MainWindowContext): void {

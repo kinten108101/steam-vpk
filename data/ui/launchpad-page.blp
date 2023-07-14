@@ -33,6 +33,8 @@ template $StvpkLaunchpadPage : Gtk.Box {
 
             Gtk.Switch enable-addon {
               valign: center;
+              action-name: 'addons.enabled';
+              action-target: 'true'; // placeholder - see implementation
             }
         }}
       }

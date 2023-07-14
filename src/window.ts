@@ -20,8 +20,10 @@ import { PreferencesWindow } from './preferences-window.js';
 import { LateBindee, Model } from './mvc.js';
 import { Application } from './application.js';
 import { AddonStorage } from './addon-storage.js';
+import { addon_details_implement } from './addon-details.js';
 import { Profile } from './profiles.js';
 import { AddAddon } from './add-addon.js';
+import implementAddonStorageControls from './addon-storage-controls.js';
 import { BUILD_TYPE, BuildTypes } from './const.js';
 
 export interface MainWindowContext { application: Application, main_window: Window }
@@ -91,6 +93,8 @@ implements Adw1.Toaster, Model {
       application: this.application,
       window: this,
     });
+    addon_details_implement(context);
+    implementAddonStorageControls(context);
   }
 
   async start() {

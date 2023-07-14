@@ -1,0 +1,20 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkAddonDetailsLozenge : Gtk.Box {
+  halign: center;
+  valign: center;
+  styles ["lozenge"] // grey is not default. Please remove this.
+
+  Gtk.Image icon {
+    visible: false;
+    icon-name: bind template.icon-iconname as <string>;
+    // should be bigger
+  }
+
+  Gtk.Label text {
+    visible: true;
+    use-markup: true;
+    label: bind template.text-label as <string>;
+  }
+}

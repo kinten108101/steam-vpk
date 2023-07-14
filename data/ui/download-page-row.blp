@@ -4,6 +4,8 @@ using Adw 1;
 template $StvpkDownloadPageRow: Gtk.ListBoxRow {
   styles ["search-row", "download-page-row"]
   activatable: true;
+  action-name: 'addon.see-details';
+  action-target: '"s"'; // placeholder - see app code
 
   Gtk.Box {
     styles ["header"]
@@ -58,6 +60,8 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
 
     // button goes here
     $StvpkUseButton use_button {
+      action-name: 'addons.box';
+      action-target: '"where we met i was watching conan"'; // placeholder - see download-page-row implementation
     }
 
     Gtk.Image {

@@ -1,0 +1,230 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window window {
+  //default-width: 800;
+
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {
+        styles ["flat"]
+        title-widget:
+          Adw.WindowTitle title {
+            title: '<b>广州增城 （Zengcheng）Lv7.3</b>'; // placeholder
+            subtitle: '爱都有罪love'; // placeholder
+          };
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          Gtk.Box addon-context {
+            homogeneous: true;
+            spacing: 0;
+            styles ["card"]
+
+            Gtk.Button file-size {
+              styles ["flat", "context-tile"]
+
+              Gtk.Box {
+                orientation: vertical;
+                spacing: 8;
+
+                $StvpkAddonDetailsLozenge file-size-lozenge {
+                  style: 'text';
+                  text-label: 'afdds';
+                  styles ["grey"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Disk Space');
+                  styles ["heading"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Including metatext and archive and other'); // placeholder
+                  styles ["caption"]
+                }
+              }
+
+              action-name: 'details.file-status';
+              action-target: '"s"';
+            }
+
+            Gtk.Button cloud-enabled {
+              visible: false; // placeholder
+              styles ["flat", "context-tile"]
+
+              Gtk.Box {
+                orientation: vertical;
+                spacing: 8;
+
+                $StvpkAddonDetailsLozenge {
+                  style: 'icon';
+                  icon-iconname: 'cloud-filled-symbolic';
+                  styles ["blue"]
+                }
+
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Online Database');
+                  styles ["heading"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Synchronized with Steam Workshop'); // placeholder
+                  styles ["caption"]
+                }
+              }
+
+              action-name: 'details.cloud-status';
+            }
+
+            Gtk.Button cloud-disabled {
+              visible: true; // placeholder
+              styles ["flat", "context-tile"]
+
+              Gtk.Box {
+                orientation: vertical;
+                spacing: 8;
+
+                $StvpkAddonDetailsLozenge {
+                  style: 'icon';
+                  icon-iconname: 'cloud-disabled-symbolic';
+                  styles ["grey"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Local');
+                  styles ["heading"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Add-on not available on the Internet'); // placeholder
+                  styles ["caption"]
+                }
+              }
+
+              action-name: 'details.cloud-status';
+            }
+
+            Gtk.Button {
+              styles ["flat", "context-tile"]
+
+              Gtk.Box {
+                orientation: vertical;
+                spacing: 8;
+
+                $StvpkAddonDetailsLozenge {
+                  style: 'text';
+                  text-label: '11 / 12 / 2022';
+                  styles ["grey"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Last Update');
+                  styles ["heading"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Click to see history');
+                  styles ["caption"]
+                }
+              }
+            }
+
+            Gtk.Button {
+              styles ["flat", "context-tile"]
+
+              Gtk.Box {
+                orientation: vertical;
+                spacing: 8;
+
+                $StvpkAddonDetailsLozenge {
+                  style: 'text';
+                  text-label: 'Alex MVP et al'; // placeholder
+                  styles ["grey"]
+                }
+
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Creators');
+                  styles ["heading"]
+                }
+
+                $StvpkAddonDetailsContextLabel {
+                  label: _('Alex MVP, mav, and someone');
+                  styles ["caption"]
+                }
+              }
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          Adw.Carousel infoCarousel {}
+
+          Adw.CarouselIndicatorDots {
+            carousel: infoCarousel;
+          }
+        }
+
+        Adw.PreferencesGroup {
+          visible: false;
+
+          Adw.ActionRow {
+            activatable-widget: view-source;
+            title: _('View on Steam Workshop');
+            subtitle: _('https://steamcommunity.com/sharedfiles/filedetails/?id=2957661874'); /* Placeholder text */
+
+            Gtk.Button view-source {
+              icon-name: 'step-out-symbolic';
+              valign: center;
+              styles ["flat"]
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          visible: false;
+
+          Adw.ActionRow {
+            activatable-widget: view-metadata;
+            title: _('View All Metadata');
+            subtitle: 'file:///~/addons/lockdown-chapter-2@alex_MVP'; // placeholder
+
+            Gtk.Button view-metadata {
+              icon-name: 'step-out-symbolic';
+              valign: center;
+              styles ["flat"]
+            }
+          }
+        }
+      }
+    };
+  }
+
+Adw.PreferencesGroup description {
+  title: _('Description');
+  Gtk.Label description-label {
+    margin-bottom: 12;
+    margin-top: 12;
+    use-markup: true;
+    label: "人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命和全回部精力都献给了人生最答宝贵的事业——为人类的解放而奋斗。"; // placeholder
+    wrap: true;
+  }
+
+  Gtk.Button {
+    margin-top: 12;
+    margin-bottom: 12;
+    valign: center;
+    halign: center;
+    label: _('Show more');
+    styles ["pill"]
+  }
+}
+
+Adw.PreferencesGroup tags {
+
+}

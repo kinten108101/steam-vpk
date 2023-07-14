@@ -119,10 +119,14 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
         halign: end;
         label: _('Remove');
         styles ['destructive-action']
+        action-name: 'addon.remove';
+        // action-target set in app code
       }
 
       Gtk.Button seeDetails {
         label: _('See Details');
+        action-name: 'addon.see-details';
+        // action-target set in app code
       }
     }
   }

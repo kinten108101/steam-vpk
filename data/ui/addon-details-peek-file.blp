@@ -1,0 +1,65 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window peek-file-window {
+  default-width: 600; // whats the unit
+  content:
+    Gtk.Box {
+      orientation: vertical;
+      Adw.HeaderBar {
+        title-widget: Gtk.Label {}; // means empty
+        decoration-layout: 'icon:close';
+        styles ['flat']
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          $StvpkAddonDetailsLozenge title-lozenge {
+            style: 'text';
+            text-label: '123 MB';
+            styles ['grey']
+          }
+
+          Gtk.Label {
+            use-markup: true;
+            label: _('<b>Disk Space Occupied</b>');
+          }
+        }
+
+        Adw.PreferencesGroup {
+          Adw.ActionRow {
+            title: 'Archive';
+            subtitle: 'Game resources in the add-on';
+
+            [prefix]
+            $StvpkAddonDetailsLozenge archive-lozenge {
+              style: 'text';
+              styles ['grey']
+            }
+          }
+
+          Adw.ActionRow {
+            title: 'Cache';
+            subtitle: 'Preview images, API responses, etc';
+
+            [prefix]
+            $StvpkAddonDetailsLozenge cache-lozenge {
+              style: 'text';
+              styles ['grey']
+            }
+          }
+
+          Adw.ActionRow {
+            title: 'Manifest File';
+            subtitle: 'Metadata for the add-on';
+
+            [prefix]
+            $StvpkAddonDetailsLozenge manifest-lozenge {
+              style: 'text';
+              styles ['grey']
+            }
+          }
+        }
+      }
+    };
+}
