@@ -1,0 +1,146 @@
+[
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/adw-1/-/adw-1-1.3.3-3.2.0.tgz#16af714abe20f894bdb2ce9f66f0c73f6ab3a2d3",
+        "sha512": "ec1de58e1c5716a7b2d00e0b9afb645dfae112b3d960ce3616fa0ea10c61ba328266ddb155933acb850e75bacb100240fbb2d1a9b7ea83cc6ab656d03d457952",
+        "dest-filename": "@girs-adw-1-1.3.3-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/cairo-1.0/-/cairo-1.0-1.0.0-3.2.0.tgz#1020a5f43f085278b2a636b68586c698b7966a3b",
+        "sha512": "10b1585df03df08ddad6719e21528c176ab7deaf74db5aa9590eb7a5c8576edb6ce217a70c1c3e367b4b63fc52bfdb9f326b815149e7ebfe7dee490e75231e73",
+        "dest-filename": "@girs-cairo-1.0-1.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/freetype2-2.0/-/freetype2-2.0-2.0.0-3.2.0.tgz#53afede48fe21aa9d073a02dfec50610d5d9e6b6",
+        "sha512": "67d45e6fc8b5bbdf53b002855e1a72d6df4706cbd429cfd688f6a405f0012bd1791146448d31af36ebf9983c86347de137fa9d43ad1bf30ee8b8e04556ac2da8",
+        "dest-filename": "@girs-freetype2-2.0-2.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gdk-4.0/-/gdk-4.0-4.0.0-3.2.0.tgz#c208f3f13d057d8d8b10fb93cefe85bebcbfd85a",
+        "sha512": "d87098a1447200d075305b0a914b847af871771ad634de05e2dc155bd8e6d9daaba84b422f8b741e7618df9f424fffd7d636576d3b3e9d558b374d258a6b44b6",
+        "dest-filename": "@girs-gdk-4.0-4.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gdkpixbuf-2.0/-/gdkpixbuf-2.0-2.0.0-3.2.0.tgz#8da26ec302186ab48ab1e9ea8ef6055db0c4738d",
+        "sha512": "836881d23f32b9c38d883d1eb326a6e148965e96b3da00e7cbd6f1692d826492c03b155968e02ab733a51cc9ed008c5605e651eb6a55d0d62948007f412f4906",
+        "dest-filename": "@girs-gdkpixbuf-2.0-2.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gio-2.0/-/gio-2.0-2.76.1-3.2.0.tgz#08b433bd3a45948995771cb30856421f92e0fc33",
+        "sha512": "8eef53fa9f9e81f7366f95abdfe6e0354901b94af2c722a5291e60a0295c0b4a6861a9103e85c01f72771bc679ff7218d9611407af7a001d64b25b813ed2e6fe",
+        "dest-filename": "@girs-gio-2.0-2.76.1-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gjs/-/gjs-3.2.0.tgz#985ce2aa3da19b71b59568d289ba50937aae3e75",
+        "sha512": "a499133cc56cabbdf5460fe035fa369cb5f8688d0d078dee640cb51ffd7887a00a721815dd7a270d7eba020b2ea419ad79e14d98ad8006fd32f3a3cb1adc8fbf",
+        "dest-filename": "@girs-gjs-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/glib-2.0/-/glib-2.0-2.76.1-3.2.0.tgz#81b25e5091bf12937e15d930b1b1ba1f53d2c091",
+        "sha512": "abc21c16a08aca0b8c62fd1292fd57c304638f58dfc78b1e173dd323e0aa7f523f0282dd988f395b51efc1987dfc16656327e785eabe60b0bceea34e5c35f90f",
+        "dest-filename": "@girs-glib-2.0-2.76.1-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gmodule-2.0/-/gmodule-2.0-2.0.0-3.2.0.tgz#7bd13cc9bcab201b4398a62d1fec05444d3ab1ca",
+        "sha512": "476768ba133a6c525d57630f554f653fe89e0fc76ecd1d04c71db3e81b26b89e5ae06085b5d55cc0d4a856798a3884b358ccf4cf66a40959d5570c5e2bbcd1fb",
+        "dest-filename": "@girs-gmodule-2.0-2.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gobject-2.0/-/gobject-2.0-2.76.1-3.2.0.tgz#798bd096a8bb9d5d7f520d39821c2c609b4add30",
+        "sha512": "2cb75369f94eeec129aeda5088fa06332ec29eea2da463bba5a71b3f9c2fddc0ece336a7f5004ed7ca76aab54096dfe4c6f6ce7b957794e82bd5f120ff94d78d",
+        "dest-filename": "@girs-gobject-2.0-2.76.1-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/graphene-1.0/-/graphene-1.0-1.0.0-3.2.0.tgz#43980c2d342dfbc7bf4171de40e0e3758254268f",
+        "sha512": "fda8e6435179149c1fe2a0f13718d8110855a0a8ee6c775be0fb74bcef0ef91b832bd77efc7f26ece96e03d608c6261a9c7f2f93dbfcdba073890e47834335b7",
+        "dest-filename": "@girs-graphene-1.0-1.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gsk-4.0/-/gsk-4.0-4.0.0-3.2.0.tgz#fd845cd0cb79a43831c56595a1e4f870bbd0f65f",
+        "sha512": "ec3af5b7ba4ab444286eddef3ddc7e8507c9dc7fcf85d0a4d29f4d6691b84d934f3538e1bc3b99e3451692e59b4a00fad30bf11839cddd5ffa7092fc4d879ff5",
+        "dest-filename": "@girs-gsk-4.0-4.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/gtk-4.0/-/gtk-4.0-4.10.4-3.2.0.tgz#70af5a673d6cf4c2a8a2722e0225910da7a199c7",
+        "sha512": "fca0782c843df98fa1583fd912a39d05e970a7ae9d37d8d326e9a8ca0e14415408ab787f734a17ffeba5dcc7049e9a8daaaebb185e449bafd85e404f65622941",
+        "dest-filename": "@girs-gtk-4.0-4.10.4-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/harfbuzz-0.0/-/harfbuzz-0.0-7.1.0-3.2.0.tgz#4cfe45d3061581280733a9e8a1dc1c0a0c7ff5d4",
+        "sha512": "1a20855bead289fc198f9fe5dec422d0721d1336c0fdf18c07b7507f69ea3f233597176c83514c71dc5894ebc5bb09ea5d7dab1d76ea4e85449b6fa05425ffa8",
+        "dest-filename": "@girs-harfbuzz-0.0-7.1.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/pango-1.0/-/pango-1.0-1.50.14-3.2.0.tgz#3e31008a64d7cbed6f54dcf845c19bb6c618e752",
+        "sha512": "ddbed37f4745de6cccf59fd820d314dcfdffbdd75ed0781fa287c2135f236600bfa4f8f91ae05babe9b6f495034dfda2aaaf066552332c7d1e9736b30d95a8ce",
+        "dest-filename": "@girs-pango-1.0-1.50.14-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/pangocairo-1.0/-/pangocairo-1.0-1.0.0-3.2.0.tgz#33976339df3ff4e4ef858f818bfa51f080c03f77",
+        "sha512": "ac865a479fa78c0de3e59846bda406e4f7684cbbd79d3eff53a4985069675ee2982c9ce7f8452017c8cde57e4ea69eda57e5e00914dcbcf5fcfdae3292e37890",
+        "dest-filename": "@girs-pangocairo-1.0-1.0.0-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/@girs/soup-3.0/-/soup-3.0-3.4.2-3.2.0.tgz#90c08d3110c84b9e3b658c779f22e0c601e10e85",
+        "sha512": "aa9f65965a0cf90bc5a337f20ddd83696c8cefaefe8d3763e21e30018ad4c445602f60656070a3d5d08f872e9947242b22024f5568323e7a03a2506aa9b8f625",
+        "dest-filename": "@girs-soup-3.0-3.4.2-3.2.0.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "file",
+        "url": "https://registry.yarnpkg.com/typescript/-/typescript-5.1.6.tgz#02f8ac202b6dad2c0dd5e0913745b47a37998274",
+        "sha512": "cda582a33459e832c4580585ad50f3d47e85557cd449f4f2e4550c5ac42553c626e493fd78ee31913211385090be141feb5cfa3bf1baba0c374a0027bef9be1c",
+        "dest-filename": "typescript-5.1.6.tgz",
+        "dest": "flatpak-node/yarn-mirror"
+    },
+    {
+        "type": "script",
+        "commands": [
+            "version=$(node --version | sed \"s/^v//\")",
+            "nodedir=$(dirname \"$(dirname \"$(which node)\")\")",
+            "mkdir -p \"flatpak-node/cache/node-gyp/$version\"",
+            "ln -s \"$nodedir/include\" \"flatpak-node/cache/node-gyp/$version/include\"",
+            "echo 9 > \"flatpak-node/cache/node-gyp/$version/installVersion\""
+        ],
+        "dest-filename": "setup_sdk_node_headers.sh",
+        "dest": "flatpak-node"
+    },
+    {
+        "type": "shell",
+        "commands": [
+            "bash flatpak-node/setup_sdk_node_headers.sh"
+        ]
+    }
+]

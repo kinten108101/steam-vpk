@@ -1,8 +1,10 @@
 {
   "type": "module",
   "scripts": {
-    "meson:install": "rm -rf _build && meson setup --reconfigure _build && sudo meson install -C _build && /usr/local/bin/com.github.kinten108101.SteamVpk.Dev",
-    "flatpak:install": "flatpak run org.flatpak.Builder --force-clean --user --install build build-aux/com.github.kinten108101.AddonBox.yml --disable-updates",
+    "meson:install": "rm -rf build-meson && meson setup --reconfigure build-meson -Dbuildtype=debug && sudo meson install -C build-meson && yarn run meson:run",
+    "meson:run": "com.github.kinten108101.SteamVpk.Dev",
+    "flatpak:install": "flatpak run org.flatpak.Builder --force-clean --user --install build-flatpak build-aux/com.github.kinten108101.SteamVpk.Dev.yml --disable-updates && yarn run flatpak:run",
+    "flatpak:run": "flatpak run com.github.kinten108101.SteamVpk.Dev",
     "typecheck": "tsc"
   },
   "dependencies": {
