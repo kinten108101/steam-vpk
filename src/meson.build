@@ -19,6 +19,7 @@ script = [
   'addons.ts',
   'application.ts',
   'config.ts',
+  'const.ts',
   'create-profile.ts',
   'download-page.ts',
   'downloader.ts',

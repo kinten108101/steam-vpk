@@ -39,6 +39,28 @@ import('resource://@APP_RDNN@/js/config.js')
   }).catch(logError);
 getConfig.run();
 
+const getConst = new GLib.MainLoop(null, false);
+import('resource://@APP_RDNN@/js/const.js')
+  .then(mod => {
+    GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+      const { default: Const } = mod;
+      Const.init({
+        app_id: '@APP_ID@',
+        app_rdnn: '@APP_RDNN@',
+        app_fullname: '@APP_FULLNAME@',
+        app_shortname: '@APP_SHORTNAME@',
+        version: '@VERSION@',
+        prefix: '@PREFIX@',
+        lib_dir: '@LIBDIR@',
+        data_dir: '@DATADIR@',
+        build_type: '@BUILD_TYPE@',
+      });
+      getConst.quit();
+      return GLib.SOURCE_REMOVE;
+    });
+  }).catch(logError);
+getConst.run();
+
 const getMain = new GLib.MainLoop(null, false);
 import('resource://@APP_RDNN@/js/main.js')
   .then(mod => {
