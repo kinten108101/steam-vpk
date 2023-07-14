@@ -47,7 +47,6 @@ lib = [
   'utils/glib1.ts',
   'utils/gtk1.ts',
   'utils/json1.ts',
-  'utils/log.ts',
   'utils/message-dialog.ts',
   'utils/result.ts',
   'utils/revealer.ts',
