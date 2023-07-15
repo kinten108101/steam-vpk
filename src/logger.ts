@@ -56,7 +56,7 @@ function _sgr(param: number) {
 }
 
 function customLogWrite(log_level: GLib.LogLevelFlags, data: { MESSAGE: Uint8Array }) {
-  if (!GLib.log_get_debug_enabled() && (log_level == 1<<6 || log_level == 1<<7)) return GLib.LogWriterOutput.HANDLED;
+  if (!GLib.log_get_debug_enabled() && (log_level == 1<<7)) return GLib.LogWriterOutput.HANDLED;
   const date = new Date;
   const msg_jsstr = decoder.decode(data.MESSAGE);
   if (msg_jsstr.includes('corner->class == &GTK_CSS_VALUE_CORNER')) return GLib.LogWriterOutput.HANDLED;
