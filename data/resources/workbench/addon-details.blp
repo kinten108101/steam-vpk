@@ -1,0 +1,279 @@
+  using Gtk 4.0;
+  using Adw 1;
+
+  Adw.ApplicationWindow {
+  default-width: 800;
+  default-height: 800;
+
+  content:
+    Gtk.Box {
+      orientation: vertical;
+      Adw.HeaderBar {
+        styles ["flat"]
+        
+        title-widget:
+          Gtk.Box {
+            margin-top: 4;
+            margin-bottom: 8;
+            orientation: vertical;
+            Gtk.Label {
+              use-markup: true;
+              label: '<b>Lockdown Chapter 2</b>';
+            }
+            Gtk.Label {
+              use-markup: true;
+              label: 'lockdown-chapter-2@alex_MVP';
+              styles ["dim-label"]
+            }
+          };
+        
+      }
+
+      
+      
+      Adw.PreferencesPage {
+
+        Adw.PreferencesGroup {
+          visible: false;
+          Gtk.Label {
+            use-markup: true;
+            label: '<span size=\'x-large\' weight=\'heavy\'>Lockdown: Chapter Two</span>';
+            xalign: 0;
+          }
+          Gtk.Label {
+            use-markup: true;
+            label: '<span>alex MVP</span>';
+            xalign: 0;
+            styles ["dim-label"]
+          }
+        }
+        
+        
+        
+        Adw.PreferencesGroup {
+          Gtk.Box addon-controls {
+            homogeneous: true;
+            spacing: 0;
+            styles ["card"]
+            
+
+              Gtk.Button {
+                styles ["flat", "context-tile"]
+                
+                Gtk.Box {
+                  orientation: vertical;
+                  spacing: 8;
+                  
+                  Gtk.Box lozenge {
+                    halign: center;
+                    valign: center;
+                    styles ["lozenge", "grey"]
+                    
+                    Gtk.Label {
+                      use-markup: true;
+                      label: '132.0 <span size=\'small\'>MB</span>';
+                    }
+                  }
+                  
+                  Gtk.Label {
+                    label: _('Disk Space');
+                    wrap: true;
+                    halign: center;
+                    styles ["heading"]
+                  }
+                  
+                  Gtk.Label {
+                    visible: true;
+                    label: _('Including metatext and archive and other');
+                    wrap: true;
+                    justify: center;
+                    lines: 3;
+                    ellipsize: end;
+                    styles ["caption"]
+                  }
+                }
+              }
+
+              Gtk.Button {
+                styles ["flat", "context-tile"]
+                
+                Gtk.Box {
+                  orientation: vertical;
+                  spacing: 8;
+                  
+                  Gtk.Box {
+                    halign: center;
+                    valign: center;
+                    styles ["lozenge", "blue"]
+                    
+                    Gtk.Image {
+                      icon-name: 'cloud-filled-symbolic';
+                    }
+                  }
+                  
+                  Gtk.Label {
+                    justify: center;
+                    label: _('Online Database');
+                    wrap: true;
+                    halign: center;
+                    styles ["heading"]
+                  }
+                  
+                  Gtk.Label {
+                    visible: true;
+                    label: _('Synchronized with Steam Workshop');
+                    wrap: true;
+                    justify: center;
+                    lines: 3;
+                    ellipsize: end;
+                    styles ["caption"]
+                  }
+                }
+              }
+              
+              Gtk.Button {
+                styles ["flat", "context-tile"]
+                
+                Gtk.Box {
+                  orientation: vertical;
+                  spacing: 8;
+                  
+                  Gtk.Box {
+                    halign: center;
+                    valign: center;
+                    styles ["lozenge", "grey"]
+                    
+                    Gtk.Label {
+                      use-markup: true;
+                      label: '11 / 12 / 2022';
+                      styles ["circular"]
+                    }
+                  }
+                  
+                  Gtk.Label {
+                    label: _('Last Update');
+                    wrap: true;
+                    halign: center;
+                    styles ["heading"]
+                  }
+                  
+                  Gtk.Label {
+                    visible: true;
+                    label: _('Click to see history');
+                    wrap: true;
+                    justify: center;
+                    lines: 3;
+                    ellipsize: end;
+                    styles ["caption"]
+                  }
+                }
+              }
+
+              Gtk.Button {
+                styles ["flat", "context-tile"]
+                
+                Gtk.Box {
+                  orientation: vertical;
+                  spacing: 8;
+                  
+                  Gtk.Box {
+                    halign: center;
+                    valign: center;
+                    styles ["lozenge", "grey"]
+                    
+                    Gtk.Label {
+                      use-markup: true;
+                      label: 'Alex MVP et al';
+                    }
+                  }
+                  
+                  Gtk.Label {
+                    label: _('Creators');
+                    wrap: true;
+                    halign: center;
+                    styles ["heading"]
+                  }
+                  
+                  Gtk.Label {
+                    visible: true;
+                    label: _('Alex MVP, mav, and someone');
+                    wrap: true;
+                    justify: center;
+                    lines: 3;
+                    ellipsize: end;
+                    styles ["caption"]
+                  }
+                }
+              }
+              
+          }
+        }
+
+        Adw.PreferencesGroup {
+          Adw.Carousel carousel {
+            
+          }
+
+          Adw.CarouselIndicatorDots {
+            carousel: carousel;
+          }
+        }
+        
+        Adw.PreferencesGroup {
+          visible: false;
+
+          Adw.ActionRow {
+            activatable-widget: view-source;
+            title: _('View on Steam Workshop');
+            subtitle: _('https://steamcommunity.com/sharedfiles/filedetails/?id=2957661874');
+            
+            Gtk.Button view-source {
+              icon-name: 'step-out-symbolic';
+              valign: center;
+              styles ["flat"]
+            }
+          }
+        }
+        
+        
+        
+        Adw.PreferencesGroup {
+          visible: false;
+          
+          Adw.ActionRow {
+            activatable-widget: view-metadata;
+            title: _('View All Metadata');
+            subtitle: _('file:///~/addons/lockdown-chapter-2@alex_MVP');
+            
+            Gtk.Button view-metadata {
+              icon-name: 'step-out-symbolic';
+              valign: center;
+              styles ["flat"]
+            }
+          }
+        }     
+        
+        
+      }
+    };
+  }
+
+Adw.PreferencesGroup description {
+  title: _('Description');
+  Gtk.Label {
+    margin-bottom: 12;
+    margin-top: 12;
+    use-markup: true;
+    label: "人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命和全回部精力都献给了人生最答宝贵的事业——为人类的解放而奋斗。";
+    wrap: true;
+  }
+
+  Gtk.Button {
+    margin-top: 12;
+    margin-bottom: 12;
+    valign: center;
+    halign: center;
+    label: _('Show more');
+    styles ["pill"]
+  }
+}

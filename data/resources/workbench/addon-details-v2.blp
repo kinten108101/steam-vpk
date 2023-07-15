@@ -1,0 +1,169 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow {
+  default-width: 500; // whats the unit
+  content:
+    Gtk.Box {
+      orientation: vertical;
+      Adw.HeaderBar {
+        title-widget:
+          Adw.WindowTitle {
+            title: '广州增城 （Zengcheng）Lv7.3';
+            subtitle: 'zengcheng-lv7-3@爱都有罪love';
+          };
+        decoration-layout: 'icon:close';
+//        styles ['flat']
+        
+        [end]
+        Gtk.Button {
+          icon-name: 'update-symbolic';
+        }
+
+        [start]
+        Gtk.Button {
+          visible: false;
+          label: _('Edit');
+        }
+      }
+
+
+
+      Adw.PreferencesPage {
+
+        Adw.PreferencesGroup {
+          title: 'Steam VPK Keys';
+          description: 'Keys for add-on management.';
+
+          Adw.ActionRow {
+            title: _('Add-on ID');
+
+            [suffix]
+            Gtk.Label {
+              use-markup: true;
+              label: '<tt>zengcheng-lv7-3@爱都有罪love</tt>';
+              styles ['dim-label']
+              ellipsize: end;
+              wrap: true;
+              lines: 3;
+              justify: right;
+              margin-top: 8;
+              margin-bottom: 4;
+              selectable: true;
+            }
+          }
+          Adw.ActionRow {
+            icon-name: 'build-alt-symbolic';
+            title: _('Refactor...');
+            subtitle: _('Change current add-on ID and resolve its references.');
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: 'Content Keys';
+          description: 'Keys for game resources and vanity data.';
+        
+          Adw.ActionRow {
+            title: _('Published File ID');
+            
+            [suffix]
+            Gtk.Label {
+              use-markup: true;
+              label: '<tt>2396847377</tt>';
+              styles ['dim-label']
+              ellipsize: end;
+              wrap: true;
+              lines: 3;
+              justify: right;
+              margin-top: 8;
+              margin-bottom: 4;
+              selectable: true;
+            }
+          }
+           
+          Adw.ActionRow {
+            icon-name: 'step-out-symbolic';
+            title: 'Visit website';
+            subtitle: 'https://steamcommunity.com/sharedfiles/filedetails/?id=3002696689';
+          }
+        }
+        
+        Adw.PreferencesGroup {
+        
+          Adw.ActionRow {
+            title: _('Preview &amp; Description');
+            
+            Gtk.Image {
+              styles ["expander-row-arrow"]
+
+              valign: center;
+              halign: end;
+              
+              icon-name: "go-next-symbolic";
+            }
+          }
+          
+          Adw.ActionRow {
+            title: 'Storage';
+            
+            [suffix]
+            Gtk.Box {
+              spacing: 16;
+              Gtk.Box {
+                orientation: vertical;
+                Gtk.Label {
+                  use-markup: true;
+                  label: '1.287 KB Used';
+                  ellipsize: end;
+                  halign: end;
+                  selectable: true;
+                }
+                Gtk.Label {
+                  use-markup: true;
+                  label: '<span size=\'small\'>5.0 MB Total</span>';
+                  styles ['dim-label']
+                  ellipsize: end;
+                  halign: end;
+                  selectable: true;
+                }
+              }
+              
+              Gtk.Image {
+                styles ["expander-row-arrow"]
+
+                valign: center;
+                halign: end;
+
+                icon-name: "go-next-symbolic";
+              }
+            }
+          }
+          
+          Adw.ActionRow {
+            icon-name: 'step-out-symbolic';
+            title: 'Open in Explorer';
+          }
+          
+        }
+
+      }
+    };
+}
+
+Gtk.Box {
+  orientation: vertical;
+  Adw.ActionRow {
+    title: 'Archive';
+    subtitle: 'Game resources in the add-on';
+  }
+
+  Adw.ActionRow {
+    title: 'Cache';
+    subtitle: 'Preview images, API responses, etc';
+  }
+  
+  Adw.ActionRow {
+    title: 'Manifest File';
+    subtitle: 'Metadata for the add-on';
+  }
+}

@@ -1,0 +1,30 @@
+.context-tile {
+  border: 1px solid @card_shade_color;
+  /*	background-color: transparent; */
+  border-radius: 0;
+  padding: 24px 12px 21px 12px;
+  outline-offset: 5px;
+  /*	transition-property: outline, outline-offset, background-image; */
+  border-bottom: none;
+  border-right: none;
+}
+
+.lozenge {
+  font-size: 18px;
+  font-weight: bold;
+  border-radius: 99999px;
+  padding: 9px 11px;
+  min-width: 18px; /* 40px minus the left and right padding */
+  min-height: 22px; /* 40px minus the top and bottom padding */
+}
+
+.lozenge.grey {
+  color: alpha(@window_fg_color, 0.75);
+  background-color: alpha(@window_fg_color, 0.15);
+}
+
+.lozenge.blue {
+  color: @blue_4;
+  background-color: alpha(@blue_3, 0.25);
+}
+
