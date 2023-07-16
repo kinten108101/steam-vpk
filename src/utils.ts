@@ -23,7 +23,30 @@ export function g_variant_unpack<T>(variant: GLib.Variant | null, type: typeofVa
   return val as T;
 }
 
+/**
+ * Extend a class's feature set without overriding old ones.
+ */
+export class Wrapper<T> {
+  /**
+   * Direct readwrite reference to the child instance of this wrapper.
+   * You should not use this.
+   */
+  _child: T;
 
+  /**
+   * @param instance The child instance to be wrapped.
+   */
+  constructor(instance: T) {
+    this._child = instance;
+  }
+
+  /**
+   * @return The child instance held by this wrapper.
+   */
+  unwrap() {
+    return this._child;
+  }
+}
 
 /**
  * @param info GObject Class manifest. Mostly borrowed from {@link GObject.registerClass}, with some important changes:

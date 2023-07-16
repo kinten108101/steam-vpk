@@ -6,6 +6,8 @@ import { Errors } from './errors.js';
 
 /**
  * Extend a class's feature set without overriding old ones.
+ *
+ * @deprecated Moved to utils.js
  */
 export class Wrapper<T> {
   /**
