@@ -5,14 +5,14 @@ const DefaultDecoder = new TextDecoder('utf8');
 const DefaultEncoder = new TextEncoder();
 
 export function bytes2humanreadable(bytes: number): string {
-  const kbs = bytes / 1000;
   if (kbs < 0.6) return `${bytes} B`;
+  const kbs = bytes / 1024;
 
-  const mbs = kbs / 1000;
   if (mbs < 0.6) return `${kbs} KB`;
+  const mbs = kbs / 1024;
 
-  const gbs = mbs / 1000;
   if (gbs < 0.6) return `${mbs} MB`;
+  const gbs = mbs / 1024;
 
   return `${gbs} GB`;
 }
