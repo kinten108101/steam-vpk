@@ -1,19 +1,17 @@
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
-import { gobjectClass } from "./decorator.js";
+import * as Utils from './utils.js';
 
-/**
- * @deprecated Use ../spinning-button.js instead.
- */
-@gobjectClass({
-  GTypeName: 'Gtk1SpinningButton',
-  Properties: {
-    'is-spinning': GObject.ParamSpec.boolean(
-      'is-spinning', 'is-spinning', 'is-spinning',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
-  },
-})
-export class SpinningButton extends Gtk.Button {
+export default class SpinningButton extends Gtk.Button {
+  static {
+    Utils.registerClass({
+      Properties: {
+        'is-spinning': GObject.ParamSpec.boolean(
+          'is-spinning', 'is-spinning', 'is-spinning',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
+      },
+    }, this)
+  }
   private spinner: Gtk.Spinner;
   private label_saved: string;
   is_spinning!: boolean;
@@ -22,7 +20,10 @@ export class SpinningButton extends Gtk.Button {
   constructor(param = {}) {
     super(param);
     this.spinner = new Gtk.Spinner({ spinning: true });
-    this.label_saved = this.get_label() || 'aaaaaa'; // FIXME(kinten): Why is this.label empty!?
+    this.label_saved = 'aaaaaa'; // FIXME(kinten): Why is this.label empty!?
+    this.connect('notify::label', () => { // workaround
+      this.label_saved = this.get_label() || 'bbbbbb';
+    });
   }
 
   set_spinning(val: boolean) {

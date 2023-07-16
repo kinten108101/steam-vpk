@@ -36,6 +36,7 @@ script = [
   'preferences-window.ts',
   'profile-bar.ts',
   'profiles.ts',
+  'spinning-button.ts',
   'utils.ts',
   'window.ts',
 ]
