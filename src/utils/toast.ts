@@ -1,6 +1,9 @@
 import Adw from 'gi://Adw';
 import { Wrapper } from './glib1.js';
 
+/**
+ * @deprecated Use {@link Adw.ToastOverlay} interface instead.
+ */
 export interface Toaster {
   displayToast(toast: Adw.Toast): void;
 }
@@ -41,6 +44,9 @@ class ToastBuilder {
   }
 }
 
+/**
+ * @deprecated {@link Adw.Toast.ConstructorProperties} already provides enough facility to create a desired toast without further configuration.
+ */
 export const Toast = {
   builder() {
     return new ToastBuilder();

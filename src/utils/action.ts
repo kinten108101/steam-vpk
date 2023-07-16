@@ -107,6 +107,9 @@ export class SimpleActionBuilder {
   }
 }
 
+/**
+ * @deprecated Current implementation of the builder pattern is not any more advantageous.
+ */
 export const SimpleAction = {
   builder: SAbuilder,
 }
