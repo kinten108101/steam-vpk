@@ -5,6 +5,7 @@ import { Error as GError } from './glib1.js';
 
 import { Result } from './result.js';
 import type { SignalMethods } from '@girs/gjs';
+import type NewWindowPromiser from '../window-promiser.js';
 
 export type PromiseResolve<T = void> = (value: T | PromiseLike<T>) => void;
 export type PromiseReject = (reason?: any) => void;
@@ -23,6 +24,9 @@ export class WindowPromiser<T> {
     this.window = window;
   }
 
+  /**
+   * @deprecated Use {@link NewWindowPromiser|../window-promiser.js} instead.
+   */
   promise() {
     const promise = new Promise<T>((resolve, reject) => {
       const handleCloseWindow = this.window.connect('close-request', () => {

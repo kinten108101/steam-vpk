@@ -38,6 +38,7 @@ script = [
   'profiles.ts',
   'spinning-button.ts',
   'utils.ts',
+  'window-promiser.ts',
   'window.ts',
 ]
 script_files = files(script)
