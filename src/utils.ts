@@ -22,17 +22,33 @@ export function g_variant_unpack<T>(variant: GLib.Variant | null, type: typeofVa
   return val as T;
 }
 
-/*
 
-if (error instanceof GLib.Error) {
-  // ...
-}
-else {
-  console.error('Detected an uncaught error in an attempt to Result-ize function:');
-  console.error(error);
+
+/**
+ * @param info GObject Class manifest. Mostly borrowed from {@link GObject.registerClass}, with some important changes:
+ *
+ * - Class registrations are verbalized as debug logs;
+ * - Default GTypeName is Stvpk[class name] instead of Gjs_[class name].
+ */
+export function registerClass
+<Props extends { [key: string]: GObject.ParamSpec },
+ Interfaces extends { $gtype: GObject.GType }[],
+ Sigs extends {
+        [key: string]: {
+            param_types?: readonly GObject.GType[];
+            [key: string]: any;
+        };
+    }>
+(info: GObject.MetaInfo<Props, Interfaces, Sigs> = {}, constructor: Function) {
+  const GTypeName = `Stvpk${constructor.name}`;
+  const klass = GObject.registerClass({
+    GTypeName,
+    ...info,
+  }, constructor);
+  console.debug(`Registered ${GTypeName}`);
+  return klass;
 }
 
-*/
 /**
  * @deprecated Use {@link File.make_dir_nonstrict} instead.
  */

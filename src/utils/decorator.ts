@@ -1,4 +1,5 @@
 import GObject from 'gi://GObject';
+import type * as Utils from '../utils.js';
 
 /**
  * Some parts of the decorator feature use the Metadata library
@@ -7,6 +8,8 @@ import GObject from 'gi://GObject';
  * bundle up foreign libraries. We will do this later.
  *
  * Here's a preview of decorator as a concept.
+ *
+ * @deprecated Use {@link Utils.registerClass} instead.
  */
 export function gobjectClass
 <Props extends { [key: string]: GObject.ParamSpec },
