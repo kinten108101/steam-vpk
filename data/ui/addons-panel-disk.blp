@@ -26,6 +26,7 @@ Gtk.Box page {
 
   Adw.PreferencesPage {
     Adw.PreferencesGroup {
+      title: _('Usage');
       $StvpkFieldRow current-allocation {
         title: _('Current Allocation');
         value: '512 Mb'; // placeholder
@@ -40,6 +41,20 @@ Gtk.Box page {
           label: _('Reallocate...');
           valign: center;
           action-name: 'addons-panel-disk.allocate';
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      title: _('Customization');
+
+      Adw.ActionRow {
+        title: _('Change Repository Avatar');
+
+        [suffix]
+        Gtk.Button {
+          label: _('Pick...');
+          valign: center;
         }
       }
     }
