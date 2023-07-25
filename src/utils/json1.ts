@@ -1,7 +1,6 @@
 import GLib from 'gi://GLib';
 
 import * as GLib1 from './glib1.js';
-
 import { Result } from "./result.js"
 
 /**

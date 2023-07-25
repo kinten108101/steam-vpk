@@ -36,7 +36,7 @@ template $StvpkProfileBarPopover : Gtk.Popover {
         Gtk.Label {
           label: _("Profile ID");
           xalign: 1;
-          styles ["mori3112"]
+          styles ["dim-label"]
           layout {
             row: 0;
             column: 0;
@@ -44,8 +44,9 @@ template $StvpkProfileBarPopover : Gtk.Popover {
         }
 
         Gtk.Label profileId {
-          label: "kintenAddons";
-          hexpand: true;
+          label: "mori3112";
+          halign: start;
+          valign: center;
           xalign: 1;
           layout {
             row: 0;
@@ -54,7 +55,7 @@ template $StvpkProfileBarPopover : Gtk.Popover {
         }
 
         Gtk.Label {
-          label: _("Add-on count");
+          label: _("Active Add-ons\");
           xalign: 1;
           styles ["dim-label"]
           layout {
@@ -65,7 +66,8 @@ template $StvpkProfileBarPopover : Gtk.Popover {
 
         Gtk.Label addonCount {
           label: "15";
-          hexpand: true;
+          halign: start;
+          valign: center;
           xalign: 1;
           layout {
             row: 1;

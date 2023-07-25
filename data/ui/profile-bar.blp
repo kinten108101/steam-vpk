@@ -1,22 +1,19 @@
 using Gtk 4.0;
+using Adw 1;
 using Panel 1;
 
 menu profilebarMenu {
   section {
     submenu activeProfileMenu {
       label: _("Active Profile");
-      item (_("New profile..."), "profile.new-profile")
-      item (_("Delete current profile..."), "profile.delete-profile")
-      item (_("Manage Profiles"), "profile.manage")
+      item (_("Manage Profiles"), "profiles.manage")
     }
-    item (_("Import add-ons..."), "profile.import")
-    item (_("Export add-ons..."), "profile.export")
   }
 }
 
 template $StvpkProfileBar : Panel.OmniBar {
   icon-name: 'build-alt-symbolic';
-  width-request: 386;
+  width-request: 100;
   popover: $StvpkProfileBarPopover profilePopover {};
   action-name: "app.placeholder-command";
   menu-model: profilebarMenu;
@@ -39,11 +36,14 @@ template $StvpkProfileBar : Panel.OmniBar {
     }
   }
 
+
   Gtk.Label label {
-    label: "I'm scared of drawing...";
+    label: "I\'m scared of drawing...";
     hexpand: true;
     xalign: 0;
+    ellipsize: end;
   }
+
 
 
 }

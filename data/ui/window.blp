@@ -6,15 +6,19 @@ menu add_menu {
   section {
     label: _("Add-on");
     item (_("New..."), "add-addon.add-manual")
-    item (_("Detect..."), "add-addon.add-name")
-    item (_("New from Steam Workshop URL..."), "add-addon.add-url")
-    item (_("New from archive..."), "add-addon.add-archive")
+    item (_("Detect add-on..."), "add-addon.add-name")
+    item (_("Retrieve from Steamworks..."), "add-addon.add-url")
+    item (_("Import archive..."), "add-addon.add-archive")
   }
 }
 
-menu win_menu {
+menu primary-menu {
   section {
-    item (_("Placeholder command"), "app.placeholder-command")
+    item (_("Reload"), "win.reload-data")
+  }
+
+  section {
+    item (_("Downloads"), "download.manage")
   }
 
   section {
@@ -34,99 +38,133 @@ menu run_menu {
 
 template $StvpkWindow : Adw.ApplicationWindow {
   resizable: true;
-  default-width: 869;
-  default-height: 700;
+  default-width: 800;
+  default-height: 600;
 
   Gtk.GestureClick {
     button: 8;
   }
 
-  Gtk.Box {
-    orientation: vertical;
+  Adw.Leaflet leaflet {
+    can-unfold: false;
 
-    Adw.HeaderBar {
-      centering-policy: strict;
-      title-widget:
-        Adw.ViewSwitcher {
-          stack: win-view-stack;
-          policy: wide;
+    Adw.LeafletPage {
+      name: 'addons-page';
+      child:
+        Gtk.Box {
+          orientation: vertical;
+
+          Adw.HeaderBar {
+            centering-policy: strict;
+            show-start-title-buttons: false;
+            show-end-title-buttons: false;
+            title-widget:
+              Gtk.CenterBox {
+                [center]
+                Adw.Clamp profile-bar-clamp {
+                  margin-start: 8;
+                  margin-end: 8;
+                  Gtk.Box {
+                    orientation: vertical;
+
+                    Adw.ViewSwitcher view-switcher {
+                      stack: win-view-stack;
+                      policy: wide;
+                    }
+
+                    $StvpkProfileBar profileBar {
+                      hexpand: true;
+                      halign: fill;
+                    }
+                  }
+                }
+
+                [end]
+                Gtk.Button {
+                  icon-name: 'play-large-symbolic';
+                  valign: end;
+                }
+              };
+
+            [start]
+            Gtk.MenuButton {
+              label: _("Add");
+              icon-name: "list-add-symbolic";
+              always-show-arrow: true;
+              menu-model: add_menu;
+              valign: start;
+            }
+
+            [end]
+            Gtk.WindowControls {
+              valign: start;
+              side: end;
+            }
+
+            [end]
+            Gtk.Box {
+              valign: start;
+              orientation: horizontal;
+
+              Gtk.ToggleButton {
+                can-focus: true;
+                icon-name: "system-search-symbolic";
+              }
+
+              Gtk.MenuButton {
+                icon-name: "open-menu-symbolic";
+                popover:
+                  Gtk.PopoverMenu {
+                    menu-model: primary-menu;
+                  };
+              }
+            }
+          }
+
+          Gtk.SearchBar secondary-bar {
+            search-mode-enabled: false;
+
+
+          }
+
+          Adw.ToastOverlay toastOverlay {
+            vexpand: true;
+              Adw.ViewStack win-view-stack {
+                vexpand: true;
+
+                Adw.ViewStackPage {
+                  name: "main-page";
+                  title: _("Blueprint");
+                  icon-name: "map-symbolic";
+                  child: $StvpkLaunchpadPage launchpadPage {};
+                }
+
+                Adw.ViewStackPage {
+                  name: "download-page";
+                  title: _("Repository");
+                  icon-name: "harddisk-symbolic";
+                  child: $StvpkDownloadPage downloadPage {};
+                }
+              }
+          }
+
+          Adw.ViewSwitcherBar {
+            stack: win-view-stack;
+            reveal: false;
+          }
         };
+    } // adwleafletpage
 
-      [start]
-      Gtk.MenuButton {
-        label: _("Add");
-        icon-name: "list-add-symbolic";
-        always-show-arrow: true;
-        menu-model: add_menu;
-      }
-
-
-      [end]
-      Gtk.Box {
-        orientation: horizontal;
-
-        Gtk.Button {
-          icon-name: "refresh-large-symbolic";
-          action-name: "win.reload-data";
-        }
-
-        Gtk.ToggleButton {
-          can-focus: true;
-          icon-name: "system-search-symbolic";
-        }
-
-        Gtk.MenuButton {
-          icon-name: "open-menu-symbolic";
-          menu-model: win_menu;
-        }
-      }
+    Adw.LeafletPage {
+      name: 'addon-details-page';
+      child: Adw.Bin {};
+      // will expand in code
     }
 
-    Gtk.SearchBar secondary-bar {
-      search-mode-enabled: true;
-      height-request: 5;
-
-      Gtk.CenterBox {
-
-        [center]
-        $StvpkProfileBar profileBar {}
-
-        [end]
-        Adw.SplitButton run-button-with-options {
-            action-name: "app.placeholder-command";
-            icon-name: "play-large-symbolic";
-            menu-model: run_menu;
-            styles ["run-button"]
-        }
-      }
-    }
-
-    Adw.ToastOverlay toastOverlay {
-      vexpand: true;
-
-      Adw.ViewStack win-view-stack {
-        vexpand: true;
-
-        Adw.ViewStackPage {
-          name: "main-page";
-          title: _("Launch Box");
-          icon-name: "puzzle-piece-symbolic";
-          child: $StvpkLaunchpadPage launchpadPage {};
-        }
-
-        Adw.ViewStackPage {
-          name: "download-page";
-          title: _("Storage");
-          icon-name: "folder-download-symbolic";
-          child: $StvpkDownloadPage downloadPage {};
-        }
-      }
-    }
-    Adw.ViewSwitcherBar {
-      stack: win-view-stack;
-      reveal: false;
-
+    Adw.LeafletPage tertiary-page {
+      name: 'addons-panel-disk-page';
+      child: Adw.Bin {};
+      // will expand in code
     }
   }
 }
-

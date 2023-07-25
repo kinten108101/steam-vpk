@@ -9,7 +9,6 @@ export let PREFIX = '/usr';
 export let LIB_DIR = 'lib';
 export let DATA_DIR = 'share';
 
-
 export enum BuildTypes { debug = 'debug',
                          release = 'release' }
 export let BUILD_TYPE: BuildTypes = BuildTypes.release;
@@ -23,6 +22,8 @@ export const ADDON_INFO = 'metadata.json';
 export const ADDON_INDEX = 'addons.json';
 export const ADDON_DIR = 'addons';
 export const PROFILE_DEFAULT_INFO = 'config.metadata.json';
+export const ADDON_ARCHIVE = 'main.vpk';
+export const DOWNLOAD_DIR = 'downloads';
 
 export default {
   init(vals: Partial<{

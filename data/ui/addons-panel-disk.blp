@@ -1,0 +1,44 @@
+using Gtk 4.0;
+using Adw 1;
+
+Gtk.Box page {
+  orientation: vertical;
+  Adw.HeaderBar {
+    title-widget:
+      Adw.WindowTitle {
+        title: _('Repository Usage');
+      };
+
+    [start]
+    Gtk.Button {
+      icon-name: 'left-large-symbolic';
+      action-name: 'win.back';
+    }
+
+    [end]
+    Gtk.Button {
+      icon-name: "folder-symbolic";
+      action-name: "addons-panel-disk.explore";
+    }
+  }
+
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      $StvpkFieldRow {
+        title: _('Current Allocation');
+        value: '512 Mb'; // placeholder
+      }
+
+      Adw.ActionRow {
+        title: _('Allocate Size');
+        subtitle: _('Set maximum disk occupation for add-on repository');
+
+        [suffix]
+        Gtk.Button {
+          label: _('Reallocate...');
+          valign: center;
+        }
+      }
+    }
+  }
+}

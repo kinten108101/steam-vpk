@@ -2,34 +2,31 @@ using Gtk 4.0;
 using Adw 1;
 
 template $StvpkDownloadPage : Adw.PreferencesPage {
-  vexpand: true;
-  hexpand: true;
-
-Adw.PreferencesGroup localRepoSection {
-  title: _('From disk');
-  header-suffix: Gtk.Label { label: _('Unknown disk space'); styles ["dim-label"] };
-  hexpand: true; vexpand: true;
-
-  Gtk.ListBox localRepoList {
-    selection-mode: none;
-    valign: start;
-
-    styles ["boxed-list", "localRepoList"]
+  Adw.PreferencesGroup {
+    Adw.Bin builder-entry {
+      // addons-panel
+    }
   }
-}
 
-Adw.PreferencesGroup remoteRepoSection {
-  title: _('From remote locations');
-  header-suffix: Gtk.Label { label: _('Unknown disk space'); styles ["dim-label"] };
-  hexpand: true; vexpand: true;
+  Adw.PreferencesGroup localRepoSection {
+    title: _('Manually Installed');
 
-  Gtk.ListBox remoteRepoList {
-    selection-mode: none;
-    valign: start;
+    Gtk.ListBox localRepoList {
+      selection-mode: none;
+      valign: start;
 
-    styles ["boxed-list"]
+      styles ["boxed-list", "localRepoList"]
+    }
   }
-}
 
+  Adw.PreferencesGroup remoteRepoSection {
+    title: _('From Steam Workshop');
 
+    Gtk.ListBox remoteRepoList {
+      selection-mode: none;
+      valign: start;
+
+      styles ["boxed-list"]
+    }
+  }
 }

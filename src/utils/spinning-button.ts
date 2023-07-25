@@ -15,7 +15,7 @@ import { gobjectClass } from "./decorator.js";
 })
 export class SpinningButton extends Gtk.Button {
   private spinner: Gtk.Spinner;
-  private label_saved: string;
+  label_saved: string;
   is_spinning!: boolean;
   post_spinning_sensitivity_getter_override: (() => boolean) | undefined;
 
@@ -27,18 +27,10 @@ export class SpinningButton extends Gtk.Button {
 
   set_spinning(val: boolean) {
     if (val) {
-      this.spinner.set_parent(this);
-      this.set_label('');
-      this.set_sensitive(false);
+      this.child = this.spinner;
       return;
     }
-    this.spinner.unparent();
-    if (this.label_saved !== 'aaaaaa') this.set_label(this.label_saved);
-    this.set_sensitive((() => {
-          if (this.post_spinning_sensitivity_getter_override) {
-            return this.post_spinning_sensitivity_getter_override();
-          }
-          return true;
-        })());
+    // @ts-ignore
+    this.child = null;
   }
 }

@@ -1,0 +1,32 @@
+.tag {
+  border-radius: 99999px;
+  padding: 4px 12px;
+  font-size: 20px;
+  font-weight: bold;
+  /*
+  text-transform: uppercase;
+  */
+}
+
+.green {
+  color: #57e389;
+}
+
+.lighter-green {
+  color: lighter(#57e389);
+}
+
+.tile {
+}
+
+.red trough > progress {
+  background-color: #e01b24;
+}
+
+.yellow trough > progress {
+  background-color: #f6d32d;
+}
+
+preferencesgroup.danger-zone list {
+  border: 2px solid #e01b24;
+}

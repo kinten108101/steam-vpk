@@ -6,8 +6,9 @@
 - [ ] Add and remove profiles
 - [ ] Modify profiles
 - [ ] Import and export add-ons into profile
-- [ ] Add and remove add-on entries
+- [x] Add and remove add-on entries
 - [ ] Modify add-on entries
+- [x] Move add-on entries
 - [ ] Create and remove symlinks to game folder
 - [ ] Install local archive
 - [ ] Download add-ons from the Internet
@@ -39,14 +40,14 @@
 
 (addons)
 - [x] (enabled) Deactivation override for all add-ons
-- [ ] (enable) Activate add-on
+- [x] (active) Activate add-on
 - [x] (box) Include add-on into loadorder
 - [x] (remove) Remove add-on from loadorder
-- [ ] (delete) Delete/trash add-on from disk
+- [x] (delete) Delete/trash add-on from disk
 - [x] (move-up, move-down) Move add-on entry by one step
-- [ ] (insert) Move add-on entry to arbitrary position
+- [x] (insert) Move add-on entry to arbitrary position
 - [ ] (sort) Sort loadorder
-- [ ] (new) Add add-on from scratch
+- [ ] (new) Add add-on to loadorder without data
 - [ ] (separator) Add a separator
 
 (addon-details)
@@ -58,3 +59,13 @@
 (download)
 
 (linker)
+
+(cedapack)
+
+shutdown js callback
+drop target js callback
+do not show this again
+bind item id-gvariant
+gc sweep AsyncReadyCallback
+.log files
+auto focus field when enter Detect and Url

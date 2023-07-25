@@ -5,38 +5,89 @@ menu move-row-menu {
   section moveSection {
     // There are items here but due to API constraints, they must be added programmatically. Just know that there are the move-up and move-down buttons here.
   }
-  section {
-    item (_("Configure"), "row.config")
+}
+
+Gtk.Box enterPosition {
+  orientation: vertical;
+  spacing: 8;
+  margin-top: 4;
+  margin-bottom: 4;
+  margin-start: 4;
+  margin-end: 4;
+
+  Gtk.Label {
+    label: _('Position');
+    xalign: 0;
+  }
+
+  Gtk.Box {
+    orientation: horizontal;
+    spacing: 8;
+
+    Gtk.Entry {
+      max-length: 3;
+    }
+
+    Gtk.Button {
+      label: _('Move');
+      valign: center;
+      halign: center;
+      styles ['suggested-action']
+    }
   }
 }
 
 template $StvpkLaunchpadRow: Adw.ExpanderRow {
-  activatable: true;
   // title: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).name as <string>;
+  title-lines: 1;
   // subtitle: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).id as <string>;
-  icon-name: "list-drag-handle-symbolic";
-  width-request: 200;
+  subtitle-lines: 1;
+  //icon-name: "list-drag-handle-symbolic";
 
-  [action]
-  Gtk.MenuButton {
-    valign: center;
-    menu-model: move-row-menu;
-    icon-name: "view-more-symbolic";
-    tooltip-text: "Options";
 
-    styles ["flat"]
+  [prefix]
+  Gtk.Image {
+    icon-name: "list-drag-handle-symbolic";
+    styles ['drag-handle']
   }
 
   [action]
-  Gtk.Switch toggle {
-    valign: center;
-    halign: center;
-    // active: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).enabled as <string>;
-  }
-
   Gtk.Box {
-    orientation: vertical;
-    vexpand: true; hexpand: true;
+    spacing: 8;
+
+    Gtk.Button warning {
+      visible: false;
+      icon-name: 'warning-symbolic';
+      valign: center;
+      halign: center;
+      styles ['lozenge', 'grey']
+    }
+
+    Gtk.Switch toggle {
+      valign: center;
+      halign: center;
+      // active: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).enabled as <string>;
+      action-name: 'addons.active';
+      action-target: '(\"addon id\", false)';
+      // action-target is set in code
+    }
+
+    Gtk.MenuButton {
+      visible: false;
+      valign: center;
+      popover:
+        Gtk.PopoverMenu popoverMenu {
+          menu-model: move-row-menu;
+        };
+      icon-name: "view-more-symbolic";
+      tooltip-text: "Options";
+
+      styles ["flat"]
+    }
+  }
+
+  Gtk.ListBoxRow { // by default the expansion menu is activatable no matter the row?? A workaround is to use listboxrow and disable activatable there.
+    activatable: false;
 
     Gtk.Grid {
       styles ["row-content"]
@@ -46,7 +97,7 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
       Gtk.Label {
         styles ["dim-label"]
-        label: _("Description");
+        label: _("Title");
 
         xalign: 0;
         yalign: 0;
@@ -56,15 +107,39 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
         }
       }
 
-      Gtk.ScrolledWindow {
-        min-content-width: 400;
-        max-content-width: 400;
-        min-content-height: 200;
-        max-content-height: 400;
-        vexpand: true; hexpand: true;
+      Gtk.Label title_field {
+        // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).last_update as <string>;
+        wrap: true;
+        wrap-mode: word;
+        selectable: true;
 
+        xalign: 0;
         layout {
           row: 0;
+          column: 1;
+        }
+      }
+
+      Gtk.Label {
+        styles ["dim-label"]
+        label: _("Description");
+
+        xalign: 0;
+        yalign: 0;
+        layout {
+          row: 1;
+          column: 0;
+        }
+      }
+
+      Gtk.ScrolledWindow {
+        hexpand: true;
+        vexpand: true;
+        min-content-height: 200;
+        max-content-height: 600;
+
+        layout {
+          row: 1;
           column: 1;
         }
 
@@ -75,19 +150,21 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
           wrap: true;
           wrap-mode: word;
           selectable: true;
-          halign: center;
+          halign: start;
           valign: start;
+          margin-start: 4;
+          margin-end: 4;
         }
       }
 
       Gtk.Label {
         styles ["dim-label"]
-        label: _("Last Update");
+        label: _("Last Updated");
 
         xalign: 0;
         yalign: 0;
         layout {
-          row: 1;
+          row: 2;
           column: 0;
         }
       }
@@ -100,32 +177,36 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
         xalign: 0;
         layout {
-          row: 1;
+          row: 2;
           column: 1;
         }
       }
 
     }
+  }
+
+  Gtk.ListBoxRow {
 
     Gtk.Box {
       halign: end;
       spacing: 8;
-      margin-top: 4;
-      margin-bottom: 4;
-      margin-start: 4;
-      margin-end: 4;
-
-      Gtk.Button removeAddon {
-        halign: end;
-        label: _('Remove');
-        styles ['destructive-action']
-        action-name: 'addon.remove';
-        // action-target set in app code
-      }
+      margin-top: 8;
+      margin-bottom: 8;
+      margin-start: 8;
+      margin-end: 8;
 
       Gtk.Button seeDetails {
         label: _('See Details');
-        action-name: 'addon.see-details';
+        styles ['flat']
+        action-name: 'addon-details.see-details';
+        // action-target set in app code
+      }
+
+      Gtk.Button removeAddon {
+        halign: end;
+        label: _('Disuse...');
+        styles ['destructive-action']
+        action-name: 'addons.remove';
         // action-target set in app code
       }
     }

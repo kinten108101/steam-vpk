@@ -1,0 +1,37 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 600;
+  default-height: 500;
+  modal: true;
+
+  content:
+    Adw.StatusPage {
+      title: _('Injecting Add-ons...');
+      description: _('This could take a while.');
+      child:
+        Gtk.Box {
+          orientation: vertical;
+          Gtk.ScrolledWindow {
+            hexpand: true;
+            vexpand: true;
+            margin-start: 50;
+            margin-end: 50;
+            min-content-height: 150;
+            styles ['terminal', 'card']
+            Gtk.Label {
+              margin-top: 12;
+              halign: start;
+              valign: fill;
+              justify: left;
+              use-markup: true;
+              hexpand: true;
+              label: 'Setting up win32api...\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
+              wrap: true;
+              styles ['monospace']
+            }
+          }
+        };
+    };
+}

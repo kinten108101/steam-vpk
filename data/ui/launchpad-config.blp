@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window window {
+  default-width: 600;
+
+  content:
+    Adw.PreferencesPage {
+      Adw.PreferencesGroup {
+        $StvpkFieldRow {
+          title: _('Add-on ID');
+          value: '239180048'; // placeholder
+        }
+      }
+
+      Adw.PreferencesGroup {
+        Adw.ActionRow {
+          title: 'Active';
+        }
+      }
+
+      Adw.PreferencesGroup {
+        title: _('Color');
+      }
+
+      Adw.PreferencesGroup {
+        title: _('Icon');
+      }
+    };
+}

@@ -13,7 +13,7 @@ export default class SpinningButton extends Gtk.Button {
     }, this)
   }
   private spinner: Gtk.Spinner;
-  private label_saved: string;
+  label_saved: string;
   is_spinning!: boolean;
   post_spinning_sensitivity_getter_override: (() => boolean) | undefined;
 
@@ -25,8 +25,10 @@ export default class SpinningButton extends Gtk.Button {
       this.label_saved = this.get_label() || 'bbbbbb';
     });
   }
+  /*
 
   set_spinning(val: boolean) {
+    // here we're mutating gtkbutton to get the desired appearance. Instead we can create another button for different state, then its just turning on and off.
     if (val) {
       this.spinner.set_parent(this);
       this.set_label('');
@@ -41,5 +43,16 @@ export default class SpinningButton extends Gtk.Button {
           }
           return true;
         })());
+  }
+
+  */
+
+  set_spinning(val: boolean) {
+    if (val) {
+      this.child = this.spinner;
+      return;
+    }
+    // @ts-ignore
+    this.child = null;
   }
 }

@@ -15,7 +15,8 @@ import * as Utils from './utils.js';
 import * as JSON1 from './utils/json1.js';
 
 import { Config } from './config.js';
-import { MainWindowContext, Window } from './window.js';
+import { MainWindowContext } from './window.js';
+import Window from './window.js';
 import { CreateProfileDialog } from './create-profile.js';
 import { LateBindee } from './mvc.js';
 

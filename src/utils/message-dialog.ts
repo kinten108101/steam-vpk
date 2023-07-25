@@ -20,6 +20,7 @@ export namespace MessageDialog {
   export interface Response {
     id: string,
     label: string,
+    appearance?: Adw.ResponseAppearance,
   }
 }
 
@@ -39,21 +40,22 @@ class MessageDialogBuilder {
   }
 
   response(response: MessageDialog.Response) {
-    const { id, label } = response;
+    const { id, label, appearance } = response;
     this.instance.add_response(id, label);
+    if (appearance) {
+      this.instance.set_response_appearance(id, appearance);
+    }
     return this;
   }
 
   /**
    * {@link Adw.MessageDialog.ConstructorProperties.body}
    */
-  body(val: string | null) {
+  body(val: string | null, config: { use_markup?: boolean } = {}) {
     this.instance.set_body(val);
-    return this;
-  }
-
-  bodyUseMarkup(val: boolean) {
-    this.instance.set_body_use_markup(val);
+    if (config.use_markup) {
+      this.instance.set_body_use_markup(config.use_markup);
+    }
     return this;
   }
 
@@ -72,13 +74,11 @@ class MessageDialogBuilder {
     return this;
   }
 
-  heading(val: string | null) {
+  heading(val: string | null, config: { use_markup?: boolean } = {}) {
     this.instance.set_heading(val);
-    return this;
-  }
-
-  headingUseMarkup(val: boolean) {
-    this.instance.set_heading_use_markup(val);
+    if (config.use_markup) {
+      this.instance.set_heading_use_markup(config.use_markup);
+    }
     return this;
   }
 
@@ -88,6 +88,9 @@ class MessageDialogBuilder {
   }
 }
 
+/**
+ * @deprecated See {@link Result}. Use ../message-dialog.js instead.
+ */
 export const MessageDialog = {
   builder() {
     return new MessageDialogBuilder();

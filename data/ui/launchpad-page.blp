@@ -3,22 +3,15 @@ using Adw 1;
 
 template $StvpkLaunchpadPage : Gtk.Box {
   orientation: vertical;
-  vexpand: true;
-  hexpand: true;
 
   Gtk.ScrolledWindow {
     vexpand: true;
     hexpand: true;
-
     Adw.Clamp {
-      vexpand: true;
-      hexpand: true;
-      maximum-size: 300;
+      maximum-size: 600;
 
       Gtk.Box contentArea {
         styles ["content"]
-        vexpand: true;
-        hexpand: true;
         margin-top: 24;
         margin-bottom: 24;
         margin-start: 16;
@@ -37,6 +30,11 @@ template $StvpkLaunchpadPage : Gtk.Box {
               action-target: 'true'; // placeholder - see implementation
             }
         }}
+
+        $StvpkLaunchpadSection defaultSection {
+          title: _('Add-ons to Link');
+          subtitle: _('Only add-ons listed below are available for linking');
+        }
       }
     }
   }

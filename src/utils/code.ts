@@ -4,7 +4,9 @@ import * as GLib1 from './glib1.js';
 
 import { Result } from "./result.js"
 
-
+/**
+ * @deprecated See {@link Result}.
+ */
 export class TextDecoderWrap {
   decoder: TextDecoder;
 

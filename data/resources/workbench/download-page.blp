@@ -1,0 +1,115 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 784;
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {
+        title-widget:
+          Adw.WindowTitle {
+            title: 'Add-on';
+          };
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          Adw.PreferencesRow {
+            child:
+              Gtk.Box {
+                spacing: 8;
+                margin-start: 12;
+                margin-end: 12;
+                margin-top: 8;
+                margin-bottom: 8;
+                Gtk.Image {
+                  icon-name: 'drive-removable-media';
+                  pixel-size: 64;
+                }
+                Gtk.Box {
+                  margin-top: 4;
+                  orientation: vertical;
+                  halign: center;
+                  Gtk.Box {
+                    halign: center;
+
+                    Gtk.Box {
+
+                      orientation: vertical;
+                      Gtk.Label {
+                        halign: start;
+                        use-markup: true;
+                        label: _('<span weight=\'bold\' size=\'small\'>Add-on Directory</span>');
+                        ellipsize: end;
+                        lines: 1;
+                      }
+                      Gtk.Label {
+                        halign: start;
+                        use-markup: true;
+                        label: _('<span size=\'small\'>~/.local/share/steam-vpk/addons</span>');
+                        ellipsize: end; lines: 1;
+                        styles ['dim-label']
+                      }
+                    }
+
+                    Gtk.Box {
+                      visible: true;
+                      margin-start: 8;
+                      orientation: vertical;
+                      halign: end;
+                      Gtk.Label {
+                        halign: end;
+                        justify: right;
+                        label: '824.618 MB Used';
+                        ellipsize: start; lines: 1;
+                      }
+                      Gtk.Label {
+                        halign: end;
+                        justify: right;
+                        use-markup: true;
+                        label: '<span size=\'small\'>3.5 GB Allowed</span>';
+                        styles ['dim-label']
+                        ellipsize: start; lines: 1;
+                      }
+                    }
+                  }
+
+                  Gtk.ProgressBar{
+                    visible: true;
+                    margin-top: 12;
+                    fraction: 0.2;
+                  }
+
+                  Gtk.Box {
+                    visible: false;
+                    margin-top: 4;
+                    margin-bottom: 4;
+                    Gtk.Button {
+                      label: _('NEW VERSION');
+                      styles ['tag']
+                    }
+                  }
+                }
+              };
+          } // preferences row
+
+          Adw.ActionRow {
+            title: _('New Versions Available');
+            subtitle: _('Click to update all');
+            styles ['suggested-action']
+
+            [prefix]
+            Gtk.Image {
+              icon-name: 'update-symbolic';
+            }
+          }
+
+        }
+
+
+      }
+
+    };
+}

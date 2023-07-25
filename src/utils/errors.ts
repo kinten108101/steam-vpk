@@ -1,5 +1,8 @@
 type FlatErrorCode = Errors;
 
+/**
+ * @deprecated See {@link FlatError}.
+ */
 export enum Errors {
   UNSPECIFIED,
   INCLUSION_CHECK_FAILED,
@@ -46,6 +49,9 @@ const FlatErrorConfigructorDefault = {
   code: Errors.UNSPECIFIED,
 };
 
+/**
+ * @deprecated Use domain-specific subclasses of {@link Error} instead.
+ */
 export class FlatError extends Error {
   readonly code?: FlatErrorCode;
   readonly cause?: string;

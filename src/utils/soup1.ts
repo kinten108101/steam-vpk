@@ -43,7 +43,8 @@ export class SessionWrap {
    * @param msg a `SoupMessage`
    * @param io_priority the I/O priority of the request
    * @param cancellable a `GCancellable`
-   * @returns A promise for a `GBytes` on good result, or a `GError` on bad result.
+   * @returns A promise for a `GBytes` on good result, or a `GError` on bad result, wrapped in Result.
+   * @deprecated See {@link Result}.
    */
   async send_and_read_async(msg: Soup.Message, io_priority: number, cancellable: Gio.Cancellable | null): Promise<Result<GLib.Bytes, GLib.Error>> {
     return this.session.send_and_read_async(msg, io_priority, cancellable)

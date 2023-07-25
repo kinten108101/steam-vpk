@@ -1,16 +1,18 @@
-import GObject from 'gi://GObject';
+import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-
-import * as JSON1 from './utils/json1.js';
-import { Results } from './utils/result.js';
+const Signals = imports.signals;
+import type { SignalMethods } from '@girs/gjs';
+import * as File from './file.js';
 import * as Utils from './utils.js';
-import { Errors, FlatError } from './utils/errors.js';
-import { gobjectClass } from './utils/decorator.js';
 
 import { Model } from './mvc.js';
 
-export interface Subdir {
-  id: string,
+export class Subdir {
+  id: string;
+
+  constructor(id: string) {
+    this.id = id;
+  }
 }
 
 export class IndexFile {
@@ -23,299 +25,77 @@ export class IndexFile {
   }
 }
 
-export enum WriteOrders {
-  Reset,
-  DeleteEntry,
-  AddEntry,
-  DeleteEntryTmp,
-  AddEntryTmp,
-  Save,
-}
+export default interface IndexDirectory extends SignalMethods {}
 
-export type WriteOrder = WriteOrderReset | WriteOrderDeleteEntry | WriteOrderAddEntry;
-
-export const WriteOrder = {
-  compose: {
-    Reset() {
-      return new WriteOrderReset();
-    },
-    DeleteEntry(param: Subdir) {
-      return new WriteOrderDeleteEntry(param);
-    },
-    AddEntry(param: Subdir) {
-      return new WriteOrderAddEntry(param);
-    },
-  },
-}
-
-export class WriteOrderReset {
-  readonly code = WriteOrders.Reset;
-}
-
-export class WriteOrderDeleteEntry {
-  readonly code = WriteOrders.DeleteEntry;
-  readonly param: Subdir;
-
-  constructor(param: Subdir) {
-    this.param = param;
-  }
-}
-
-export class WriteOrderAddEntry {
-  readonly code = WriteOrders.AddEntry;
-  readonly param: Subdir;
-
-  constructor(param: Subdir) {
-    this.param = param;
-  }
-}
-
-@gobjectClass({
-  Signals: {
-    'queue-changed': {},
-    'index-written': {},
-  },
-})
-export class DirectoryWriter extends GObject.Object {
-  queue: WriteOrder[] = [];
-  index: Gio.File;
-  readable: IndexDirectory;
-  isRunning = false; // currently no multithreaded writing
-
-  constructor(param: { readable: IndexDirectory, index: Gio.File }) {
-    super({});
-    this.readable = param.readable;
-    this.index = param.index;
-    this.connect('queue-changed', this.updateQueue);
-  }
-
-  order(order: WriteOrder): void;
-  order(orders: WriteOrder[]): void;
-  order(arg: WriteOrder | WriteOrder[]) {
-    if (Array.isArray(arg)) {
-      arg.forEach(x => this.queue.push(x));
-    } else {
-      this.queue.push(arg);
-    }
-    this.emit('queue-changed');
-  }
-
-  updateQueue = () => {
-    if (this.isRunning)
-      return;
-    this.isRunning = true;
-    const queue = this.queue;
-    this.queue = [];
-    let order = queue.pop();
-    while (order !== undefined) {
-      console.log('Handling a WriteOrder:')
-      console.log(order);
-      switch (order.code) {
-      case WriteOrders.Reset:
-        {
-          const content: IndexFile = new IndexFile({
-            subdirs: [],
-            comment:  this.readable.comment,
-          });
-
-          const writejson = Utils.replaceJSONResult(content, this.index);
-          if (writejson.code !== Results.OK) {
-            const error = writejson.data;
-            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
-            break;
-          }
-          break;
-        }
-      case WriteOrders.DeleteEntry:
-        {
-          const id = order.param;
-          if (id === undefined) {
-            console.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
-            break;
-          }
-          const subdirs = new Map(this.readable.subdirs);
-          const deletion = subdirs.delete(id.id);
-          if (!deletion) {
-            console.warn('Tried to delete a non-existent subdir. Skipping...');
-            break;
-          }
-
-          const content: IndexFile = new IndexFile({
-            subdirs: (() => {
-                      const arr: Subdir[] = [];
-                      subdirs.forEach(x => { arr.push(x) });
-                      return arr;
-                    })(),
-            comment:  this.readable.comment,
-          });
-          const writejson = Utils.replaceJSONResult(content, this.index);
-          if (writejson.code !== Results.OK) {
-            const error = writejson.data;
-            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
-            break;
-          }
-          break;
-        }
-      case WriteOrders.AddEntry:
-        {
-          const id = order.param;
-          if (id === undefined) {
-            console.warn('Did not pass in parameter for WriteOrder, this is a programming mistake');
-            break;
-          }
-          const subdirs = new Map(this.readable.subdirs);
-          if (subdirs.has(id.id)) {
-            console.warn('Add-on already exists. Skipping...');
-            break;
-          }
-          subdirs.set(id.id, id);
-
-          const content: IndexFile = new IndexFile({
-            subdirs: (() => {
-                      const arr: Subdir[] = [];
-                      subdirs.forEach(x => { arr.push(x) });
-                      return arr;
-                    })(),
-            comment:  this.readable.comment,
-          });
-          const writejson = Utils.replaceJSONResult(content, this.index);
-          if (writejson.code !== Results.OK) {
-            const error = writejson.data;
-            console.warn(`Couldn\'t write index file. Must be resolved manually. Detail: ${error.message}`);
-            break;
-          }
-          break;
-        }
-      default:
-        throw new FlatError({ code: Errors.BAD_SWITCH_CASE });
-        break;
-      }
-      order = queue.pop();
-    }
-    this.isRunning = false;
-    this.emit('index-written');
-  }
-}
-
-@gobjectClass({
-  Signals: {
-    'subdirs-changed': {},
-    'force-read': {},
-  },
-})
-export class IndexDirectory extends GObject.Object
+export default class IndexDirectory
 implements Model {
+  static {
+    Signals.addSignalMethods(IndexDirectory.prototype);
+  }
+
   index: Gio.File;
 
-  writeable: DirectoryWriter;
   subdirs: Readonly<Map<string, Subdir>>;
   comment?: string;
-  isRunning: boolean;
   monitor: Gio.FileMonitor;
+  save_ready: boolean;
 
   constructor(param: { file: Gio.File }) {
-    super({});
-    this.connect('force-read', this.readIndexFile);
     this.index = param.file;
-    console.info(`index: ${this.index.get_path()}`);
     this.subdirs = new Map;
-
-    this.writeable = new DirectoryWriter({ index: this.index, readable: this });
-    this.writeable.connect('index-written', this.readIndexFile);
-
     this.monitor = this.index.monitor_file(Gio.FileMonitorFlags.WATCH_MOVES, null);
-    this.monitor.connect('changed', this.readIndexFile);
-
-    this.isRunning = false;
+    this.save_ready = false;
   }
 
   async start() {
-    this.emit('force-read');
+    this.connect('save-ready', () => {
+      if (this.save_ready !== true) return;
+      this.on_save().catch(error => {
+        console.log('Could not save index file.', error, 'Quitting...');
+        return;
+      });
+    });
+    this.load_file().catch(error => {
+      console.error('Could not load index file. Quitting...');
+      logError(error);
+      return;
+    })
   }
 
-  readIndexFile = (_: unknown, __: unknown, ___: unknown, _____: Gio.FileMonitorEvent | undefined): symbol => {
-    const exit = () => {
-      this.isRunning = false;
-      return Symbol('exit');
-    };
-
-    if (this.isRunning) {
-      console.warn('readIndexFile is busy...');
-      return exit();
-    }
-
-    this.isRunning = true;
-    /*
-    if (eventType !== undefined) {
-      switch (eventType) {
-      case Gio.FileMonitorEvent.CREATED:
-      case Gio.FileMonitorEvent.MOVED_IN:
-      case Gio.FileMonitorEvent.CHANGED:
-        break;
-      case Gio.FileMonitorEvent.MOVED_OUT:
-        console.warn('Index file has been moved out. Must be resolved manually.');
-        return exit();
-      case Gio.FileMonitorEvent.RENAMED:
-        console.warn('Index file has been renamed. Must be resolved manually.');
-        return exit();
-      case Gio.FileMonitorEvent.DELETED:
-        console.warn('Index file is gone. Must be resolved manually.');
-        return exit();
-      default:
-        console.warn(`Unhandled file monitor change event. Details: ${eventType}`);
-        return exit();
-      }
-    }
-    */
-
-
+  load_file = async () => {
     console.debug('Index is being read...');
-    /*
-    switch (event) {
-    case Gio.FileMonitorEvent.CHANGED:
-    case Gio.FileMonitorEvent.CREATED:
-      break;
-    default:
-      console.warn('Index file changed in unexpected ways. Skipping...');
-      return;
-    }
-    */
 
-    const readbytes = Utils.loadContentsResult(this.index, null);
-    if (readbytes.code !== Results.OK) {
-      const error = readbytes.data;
-      if (error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
-        console.warn('Index file not found! Requested a reset.');
-        this.writeable.order({ code: WriteOrders.Reset });
-        return exit();
+    let obj: any;
+    try {
+      obj = await File.read_json_async(this.index);
+    } catch (error) {
+      if (error instanceof GLib.Error) {
+        if (error.matches(error.domain, Gio.IOErrorEnum.NOT_FOUND)) {
+          console.warn('Index file not found! Requested a reset.');
+          this.create_file().catch(error => {
+            console.error('Could not create index file. Quitting...');
+            logError(error);
+          });
+          return;
+        }
+      } else if (error instanceof TypeError) {
+        console.warn('Index file could not be decoded! Must be resolved manually.');
+        return;
+      } else if (error instanceof SyntaxError) {
+        console.warn('Index file has JSON syntax error! Must be resolved manually.');
+        return;
       }
-      else throw error;
-    }
-    const [, bytes, ] = readbytes.data;
-
-    const decoding = Utils.Decoder.decode(bytes);
-    if (decoding.code !== Results.OK) {
-      console.warn('Index file could not be decoded! Must be resolved manually.');
-      return exit();
-    }
-    const strbuf = decoding.data;
-
-    const parsing = JSON1.parse(strbuf);
-    if (parsing.code !== Results.OK) {
-      console.warn('Index file has JSON syntax error! Must be resolved manually.');
-      return exit();
     }
 
-    const obj = parsing.data;
     // validation
     const subdirs = obj['subdirs'];
     if (subdirs === undefined) {
       console.warn('Index file lacks required fields! Must be resolved manually.')
-      return exit();
+      return;
     }
     if (!Array.isArray(subdirs)) {
       console.warn('Should be an array!')
-      return exit();
+      return;
     }
 
     const map = new Map<string, Subdir>();
@@ -335,6 +115,92 @@ implements Model {
           return arr;
         })()}`)
     this.emit('subdirs-changed');
-    return exit();
+    return;
+  }
+
+  async save_file () {
+    const content: IndexFile = new IndexFile({
+      subdirs: (() => {
+        const arr: Subdir[] = [];
+        this.subdirs.forEach(x => {
+          arr.push(new Subdir(x.id));
+        });
+        return arr;
+      })(),
+      comment:  this.comment,
+    });
+
+    try {
+      await File.replace_json_async(content, this.index);
+    } catch (error) {
+      Utils.log_error(error, 'Quitting...');
+      return;
+    }
+  }
+
+  async create_file() {
+    const content: IndexFile = new IndexFile({
+      subdirs: [],
+      comment:  this.comment,
+    });
+
+    try {
+      await File.create_json_async(content, this.index);
+    } catch (error) {
+      logError(error)
+      console.error('Quitting...');
+      return;
+    }
+  }
+
+  delete_entry(id: string) {
+    const deletion = this.subdirs.delete(id);
+    if (!deletion) {
+      console.warn(`Tried to delete a non-existent subdir with id ${id}. Quitting...`);
+      return;
+    }
+
+    this.mark_state_modified();
+  }
+
+  add_entry(id: string) {
+    if (this.subdirs.has(id)) {
+      console.warn(`Add-on ${id} already exists. Quitting...`);
+      return;
+    }
+    this.subdirs.set(id, new Subdir(id));
+
+    this.mark_state_modified();
+  }
+
+  add_entry_full(val: Subdir): never {
+    throw new Error(`Method not implemented. Received ${val}`);
+  }
+
+  mark_file_modified() {
+
+  }
+
+  mark_state_modified() {
+    this.set_save_ready(true);
+    this.emit('subdirs-changed');
+  }
+
+  set_save_ready(val: boolean) {
+    if (this.save_ready === val) return;
+    this.save_ready = val;
+    this.emit('save-ready');
+  }
+
+  async on_save() {
+    try {
+      await this.save_file();
+    } catch (error) {
+      logError(error);
+      console.error('Quitting...');
+      return;
+    }
+
+    this.set_save_ready(false);
   }
 }

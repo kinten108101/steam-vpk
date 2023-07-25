@@ -1,0 +1,241 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 784;
+  default-height: 600;
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {
+        title-widget:
+          Adw.WindowTitle {
+            title: 'Add-on';
+          };
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          Adw.PreferencesRow {
+            child:
+              Gtk.Box {
+                spacing: 8;
+                margin-start: 12;
+                margin-end: 12;
+                margin-top: 8;
+                margin-bottom: 8;
+                Gtk.Image {
+                  valign: start;
+                  icon-name: 'media-flash';
+                  pixel-size: 64;
+                }
+                Gtk.Box {
+                  margin-top: 4;
+                  orientation: vertical;
+                  halign: center;
+                  Gtk.Box {
+                    halign: center;
+
+                    Gtk.Box {
+
+                      orientation: vertical;
+                      Gtk.Label {
+                        halign: start;
+                        use-markup: true;
+                        label: _('<span weight=\'bold\' size=\'small\'>广州增城 （Zengcheng）Lv7.3</span>');
+                        ellipsize: end;
+                        lines: 1;
+                      }
+                      Gtk.Label {
+                        halign: start;
+                        use-markup: true;
+                        label: _('<span size=\'small\'>zengcheng-lv7-3@爱都有罪love</span>');
+                        ellipsize: end; lines: 1;
+                        styles ['dim-label']
+                      }
+                    }
+
+                    Gtk.Box {
+                      visible: true;
+                      margin-start: 8;
+                      orientation: vertical;
+                      halign: end;
+                      Gtk.Label {
+                        halign: end;
+                        justify: right;
+                        label: '824.618 MB Used';
+                        ellipsize: start; lines: 1;
+                      }
+                      Gtk.Label {
+                        halign: end;
+                        justify: right;
+                        use-markup: true;
+                        label: '<span size=\'small\'>31.5 GB Total</span>';
+                        styles ['dim-label']
+                        ellipsize: start; lines: 1;
+                      }
+                    }
+                  }
+
+                  Gtk.ProgressBar{
+                    visible: true;
+                    margin-top: 12;
+                    fraction: 0.2;
+                    styles ['yellow']
+                  }
+
+                  Gtk.Box {
+                    visible: true;
+                    margin-top: 12;
+                    margin-bottom: 4;
+                    Gtk.Button {
+                      label: _('NEW VERSION');
+                      styles ['tag']
+                    }
+                  }
+                }
+              };
+          } // preferences row
+
+          Adw.ActionRow {
+            title: _('In-app ID');
+            subtitle: _('For add-on management.');
+
+            [suffix]
+            Gtk.Label {
+              use-markup: true;
+              label: '<tt>zengcheng-lv7-3@爱都有罪love</tt>';
+              styles ['dim-label']
+              ellipsize: end;
+              wrap: true;
+              lines: 3;
+              justify: right;
+              margin-top: 8;
+              margin-bottom: 4;
+              selectable: true;
+            }
+
+            [suffix]
+            Gtk.Button {
+              icon-name: 'build-alt-symbolic';
+              valign: center;
+              styles ['flat']
+            }
+          }
+
+          Adw.ActionRow {
+            title: _('Steam ID');
+            subtitle: _('For vanity data and other resources.');
+
+            [suffix]
+            Gtk.Label {
+              use-markup: true;
+              label: '<tt>2396847377</tt>';
+              styles ['dim-label']
+              ellipsize: end;
+              wrap: true;
+              lines: 3;
+              justify: right;
+              margin-top: 8;
+              margin-bottom: 4;
+              margin-start: 8;
+              selectable: true;
+            }
+
+            [suffix]
+            Gtk.Button {
+              icon-name: 'build-alt-symbolic';
+              valign: center;
+              styles ['flat']
+            }
+          }
+
+        }
+
+        Adw.PreferencesGroup {
+          title: _('Archives');
+          header-suffix:
+            Gtk.Box {
+              spacing: 8;
+              margin-bottom: 4;
+              Gtk.Button {
+                icon-name: 'plus-large-symbolic';
+              }
+            };
+
+          Gtk.ListBox {
+            styles ['boxed-list']
+            Adw.ActionRow {
+              icon-name: 'list-drag-handle';
+              title: 'l4d2.vpk';
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          visible: false;
+
+          Adw.PreferencesRow {
+            child:
+              Adw.ViewSwitcher {
+                stack: info-stack;
+                policy: narrow;
+              };
+          }
+
+
+
+          Adw.PreferencesRow {
+            child:
+              Gtk.ScrolledWindow {
+                min-content-height: 300;
+                Adw.ViewStack info-stack {
+                  Adw.ViewStackPage {
+                    title: 'Description';
+                    child:
+                      Gtk.Box{
+                        Gtk.Label {
+                          visible: false;
+                          label: '人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命和全回部精力都献给了人生最答宝贵的事业——为人类的解放而奋斗。\r\n\r\nzc_m1\r\nzc_m2\r\nzc_m3\r\nzc_m4\r\nzc_m5\r\n\r\nBGM：海阔天空、迎春花、今年胜旧年、十五的月亮（潮汕版）、Fell for U\r\n\r\n解决闪退问题：1，选项视频使用推荐设置，2，取消订阅个别导致闪退mod\r\n\r\n\r\n\r\n\r\n[h1]\r\n用爱发电，喜欢的话可以滑到下面支持一下[/h1]\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n\r\n\r\n\r\n[img]https://steamuserimages-a.akamaihd.net/ugc/1835783016842632429/F12AB8102EFBFE245D75EAF600CF0283F49D1874/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]';
+                          wrap: true;
+                          ellipsize: end;
+
+                        }
+                      };
+                  }
+                  Adw.ViewStackPage {
+                    icon-name: 'package-x-generic-symbolic';
+                    title: _('Archives');
+                    child: Gtk.Box{};
+                  }
+                  Adw.ViewStackPage {
+                    title: _('Note');
+                    child: Gtk.Box{};
+                  }
+                }
+              };
+          } // stackview preferencesrow
+        }
+
+        Adw.PreferencesGroup {
+          title: _('Danger Zone');
+          styles ['danger-zone']
+
+          Adw.ActionRow {
+            title: _('Delete this add-on');
+            subtitle: _('Add-on content will be moved to Trash.');
+
+            [suffix]
+            Gtk.Button {
+              valign: center;
+              label: _('Delete');
+              styles ['destructive-action']
+            }
+          }
+        }
+      } // preferencespage
+
+    };
+}
+

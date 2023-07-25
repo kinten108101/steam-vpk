@@ -1,6 +1,8 @@
+import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 
 import { gobjectClass } from './utils/decorator.js';
+import Archive, { ArchiveManifest } from './archive.js';
 
 export interface StorageExport {
   addondetails: {
@@ -13,11 +15,6 @@ export interface StorageExport {
   }
 }
 
-export enum AddonFlag {
-  INSTALLED,
-  UNKNOWN,
-}
-
 export interface AddonManifest {
   stvpkid: string,
   publishedfileid?: string,
@@ -27,6 +24,7 @@ export interface AddonManifest {
   tags?: { tag: string }[],
   comment?: string,
   creators?: { creator: string }[],
+  archives?: ArchiveManifest[],
 }
 
 export const AddonManifest = {
@@ -66,9 +64,29 @@ export const AddonManifest = {
   },
 }
 
+/**
+ * @bitfield
+ */
+export enum AddonFlags {
+  NONE     = 1<<0,
+  DUMMY    = 1<<1,
+}
+
+export namespace AddonFlags {
+  export const count = Object.keys(AddonFlags).length;
+  export const max = Math.pow(2, count) - 1;
+  export function includes(ref: number, val: number) {
+    if ((ref & val) > 0) {
+      return true;
+    }
+    return false;
+  }
+  export const valid = (val: number) => includes(max, val);
+}
+
 @gobjectClass()
 export class Addon extends GObject.Object {
-  static new_from_manifest(manifest: AddonManifest) {
+  static new_from_manifest(manifest: AddonManifest, flags: AddonFlags = AddonFlags.NONE) {
     return new Addon({
       vanityId: manifest.stvpkid,
       steamId: manifest.publishedfileid,
@@ -100,6 +118,7 @@ export class Addon extends GObject.Object {
               });
               return map;
             })(),
+      flags,
     });
   }
 
@@ -131,26 +150,39 @@ export class Addon extends GObject.Object {
     return manifest;
   }
 
+  id: string;
+  /** @deprecated */
   vanityId: string;
   steamId?: string;
   title?: string;
   description?: string;
-  categories: Map<string, {}>;
+  categories?: Map<string, {}>;
   timeUpdated?: Date;
   comment?: string;
   creators?: Map<string, {}>;
+  flags: AddonFlags;
+
+  // these props only available when registered with addonStorage or its divisions
+  subdir?: Gio.File;
 
   constructor(param: {
+    id?: string;
+    /** @deprecated */
     vanityId: string;
     steamId?: string;
     title?: string;
     description?: string;
-    categories: Map<string, {}>;
+    categories?: Map<string, {}>;
     timeUpdated?: Date;
     comment?: string;
     creators?: Map<string, {}>;
+    flags: AddonFlags;
+    subdir?: Gio.File;
+    archives?: Map<string, Archive>;
+    archiveorder?: string[];
   }) {
     super({});
+    this.id = param.vanityId;
     this.vanityId = param.vanityId;
     this.steamId = param.steamId;
     this.title = param.title;
@@ -159,6 +191,8 @@ export class Addon extends GObject.Object {
     this.timeUpdated = param.timeUpdated;
     this.comment = param.comment;
     this.creators = param.creators;
+    this.flags = param.flags;
+    this.subdir = param.subdir;
   }
 }
 

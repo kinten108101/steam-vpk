@@ -20,7 +20,24 @@ export function SteamMd2Pango(text: string) {
     a = replaceTag(a, x, y);
   });
 
-  a = replaceTagWithSpan(a, 'h1', { size: 'x-large' });
+  a = replaceTagWithSpan(a, 'h1', { size: 'x-large', weight: 'heavy' });
+  a = replaceTagWithSpan(a, 'h2', { size: 'large', weight: 'heavy' });
+  a = replaceTagWithSpan(a, 'h3', { size: 'medium', weight: 'heavy' });
+  a = replaceTagWithSpan(a, 'h4', { size: 'medium', weight: 'bold' });
+  a = replaceTagWithSpan(a, 'h5', { size: 'medium', weight: 'bold' });
+  a = replaceTagWithSpan(a, 'h6', { size: 'medium', weight: 'bold' });
+
+  a = a.replaceAll('[/url]', '</a>');
+  a = a.replaceAll(/\[url=(.*?)\]/gm, '<a href=\"$1\">');
+
+  a = a.replaceAll('[/img]', '</a>');
+  a = a.replaceAll(/\[img=(.*?)\]/gm, '<a href=\"$1\">');
+
+  a = replaceTagWithSpan(a, 'list', {});
+
+  a = a.replaceAll('[*]', ' - ');
+  a = a.replaceAll(/(\\n\\n)[\\n]*\\n/gm, '$1');
+  a = a.replaceAll(/(\\r\\n)[\\r\\n]*\\n/gm, '$1');
   return a;
 }
 

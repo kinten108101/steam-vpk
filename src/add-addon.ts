@@ -13,15 +13,14 @@ import { gobjectClass } from './utils/decorator.js';
 import { Result, Results } from './utils/result.js';
 
 import { Config } from './config.js';
-import { Window } from './window.js';
-import { Downloader } from './downloader.js';
+import Window from './window.js';
+import Downloader from './downloader.js';
 import { generateAddonName, generateAuthor, generateName } from './id.js';
 import { AddonManifest } from './addons.js';
 import { AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
 import { ActionOrder } from './addon-action.js';
-import { Application } from './application.js';
+import { Stvpk as Application } from './application.js';
 import { AddAddonPreviewDownload, AddAddonWindow, AddAddonWizard } from './add-addon-window.js';
-import { WriteOrders } from './index-dir.js';
 
 @gobjectClass({
   GTypeName: 'StvpkAddAddon',
@@ -102,7 +101,7 @@ export class AddAddon extends GObject.Object {
       const requested_subdir = this.application.addonStorage.subdirFolder.get_child(id);
       var file_type = requested_subdir.query_file_type(Gio.FileQueryInfoFlags.NONE, null)
       if (file_type !== Gio.FileType.DIRECTORY) {
-        console.warn('Not a subdirectory');
+        console.debug('Not a subdirectory');
         namePage.showErrorMsg('Not a subdirectory');
         return [wizard.navigation.RETRY];
       }
@@ -110,12 +109,13 @@ export class AddAddon extends GObject.Object {
       const info = requested_subdir.get_child(Config.config.addon_info);
       var file_type = info.query_file_type(Gio.FileQueryInfoFlags.NONE, null);
       if (file_type !== Gio.FileType.REGULAR) {
-        console.warn('Not a subdirectory');
+        console.debug('Not a subdirectory');
         namePage.showErrorMsg('Subdirectory has no manifest file');
         return [wizard.navigation.RETRY];
       }
 
-      this.application.addonStorage.indexer.writeable.order({ code: WriteOrders.AddEntry, param: { id } });
+      // TODO(kinten): Make this async so that we can do some post procedures (include in profile)
+      this.application.addonStorage.indexer.add_entry(id);
       addAddonWindow.close();
       return [wizard.navigation.QUIT];
     })
@@ -154,13 +154,16 @@ export class AddAddon extends GObject.Object {
       const [url] = urlPresent.data;
       const idxParam = url.indexOf('?id=', 0);
       if (idxParam === undefined) {
-        console.warn('ID extraction algorithm failed');
+        console.debug('Could not find ID parameter in URL');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
+      // FIXME(kinten):
+      // Apparently some id can be length 9 instead of 10.
+      // Need more robust extraction method
       const fileId = url.substring(idxParam + 4, idxParam + 14);
-      if (fileId.length !== 10 || !Utils.isNumberString(fileId)) {
-        console.warn('ID extraction algorithm failed');
+      if (!Utils.isNumberString(fileId)) {
+        console.debug('Supposed ID part is not all numbers');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -168,7 +171,7 @@ export class AddAddon extends GObject.Object {
 
       const parseUri = GLib1.Uri.parse('https://api.steampowered.com/ISteamRemoteStorage/GetPublishedFileDetails/v1/', GLib.UriFlags.NONE);
       if (parseUri.code !== Results.OK) {
-        console.warn('API method no longer valid');
+        console.debug('API method no longer valid');
         showErrorMsg('Internal Error');
         return [wizard.navigation.RETRY];
       }
@@ -188,7 +191,7 @@ export class AddAddon extends GObject.Object {
       if (readGbytes.code !== Results.OK) {
         const error = readGbytes.data;
         if (error.matches(Gio.resolver_error_quark(), Gio.ResolverError.TEMPORARY_FAILURE)) {
-          console.warn('Couldn\'t resolve IP');
+          console.debug('Couldn\'t resolve IP');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -198,7 +201,7 @@ export class AddAddon extends GObject.Object {
 
       const bytes = readGbytes.data.get_data();
       if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
-        console.warn('Not OK response');
+        console.debug('Not OK response');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -206,7 +209,7 @@ export class AddAddon extends GObject.Object {
       const readjson = Utils.readJSONBytesResult(bytes);
       if (readjson.code !== Results.OK) {
         const error = readjson.data;
-        console.error(error);
+        console.debug(error);
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -214,7 +217,7 @@ export class AddAddon extends GObject.Object {
       const response = readjson.data;
       const fileDetails = response['response']?.['publishedfiledetails']?.[0];
       if (typeof fileDetails === undefined) {
-        console.warn('Wrong object structure');
+        console.debug('Wrong object structure');
         showErrorMsg('Incorrect Workshop Item URL');
         return [wizard.navigation.RETRY];
       }
@@ -223,7 +226,7 @@ export class AddAddon extends GObject.Object {
 
       const appid = fileDetails['consumer_app_id'];
       if (appid !== 550) {
-        console.warn('Only L4D2 add-ons are allowed');
+        console.debug('Only L4D2 add-ons are allowed');
         showErrorMsg('Only L4D2 add-ons are allowed');
         return [wizard.navigation.RETRY];
       }
@@ -236,7 +239,7 @@ export class AddAddon extends GObject.Object {
         const webapi = Config.config.oauth;
         const uriParse = GLib1.Uri.parse(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?access_token=${webapi}&steamids=${creator}&key=`, GLib.UriFlags.NONE);
         if (uriParse.code !== Results.OK) {
-          console.warn('Bad URL');
+          console.debug('Bad URL');
           showErrorMsg('Programming Error');
           return [wizard.navigation.RETRY];
         }
@@ -249,14 +252,14 @@ export class AddAddon extends GObject.Object {
 
         const creatorRequestResult = await this.downloader.session.send_and_read_async(getDetails, GLib.PRIORITY_DEFAULT, null);
         if (creatorRequestResult.code !== Results.OK) {
-          console.warn('Request error')
+          console.debug('Request error')
           showErrorMsg('Bad Connection');
           return [wizard.navigation.RETRY];
         }
 
         const bytes = creatorRequestResult.data.get_data();
         if (getDetails.status_code !== Soup.Status.OK || bytes == null) {
-          console.warn('Not OK response');
+          console.debug('Not OK response');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -264,7 +267,7 @@ export class AddAddon extends GObject.Object {
         const readjson = Utils.readJSONBytesResult(bytes);
         if (readjson.code !== Results.OK) {
           const error = readjson.data;
-          console.error(error);
+          console.debug(error);
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -272,7 +275,7 @@ export class AddAddon extends GObject.Object {
         const response = readjson.data;
         playerDetails = response['response']?.['players']?.[0];
         if (typeof playerDetails === undefined) {
-          console.warn('Wrong object structure');
+          console.debug('Wrong object structure');
           showErrorMsg('Incorrect Workshop Item URL');
           return [wizard.navigation.RETRY];
         }
@@ -329,7 +332,7 @@ export class AddAddon extends GObject.Object {
         return [wizard.navigation.QUIT];
       }
 
-      const [addonName, addonId,] = infoPresent.data;
+      const [addonName, addonId, includeInProfile] = infoPresent.data;
 
       const manifest = AddonManifest.new_from_published_file_details({
         ...sharedFileDetails,
@@ -341,6 +344,7 @@ export class AddAddon extends GObject.Object {
       if (createAddon.code !== Results.OK) {
         const error = createAddon.data;
         if (error.matches(addon_storage_error_quark(), AddonStorageError.ADDON_EXISTS)) {
+          console.debug('Add-on already exists');
           Adw1.Toast.builder()
             .title('Add-on already exists')
             .wrap().build().present(addAddonWindow);
@@ -349,7 +353,20 @@ export class AddAddon extends GObject.Object {
         console.error(error);
         return [wizard.navigation.RETRY];
       }
-      console.log('hi!');
+
+      if (includeInProfile) {
+        const result = (() => {
+          this.application.addonStorage.loadorder_push(addonId)
+          const action = this.mainWindow.lookup_action('box');
+          if (action === null) {
+            console.warn('Could not find action addons.box. Must manually include in profile. Skipping')
+            return null;
+          }
+          action.activate(GLib.Variant.new_string(addonId));
+          return null;
+        })();
+        if (typeof result === 'symbol') return [result];
+      }
       // Request a download
       addAddonWindow.close();
       return [wizard.navigation.QUIT];

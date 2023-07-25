@@ -5,6 +5,20 @@ import type { SignalMethods } from '@girs/gjs';
 
 export default interface WindowPromiser<T> extends SignalMethods {}
 
+/**
+ * A helper component for creating Promise wrappers for asynchronous presentation methods
+ * in some window implementations. The goal is to help implement methods similar
+ * to {@link Gtk.FileDialog.open} or {@link Gtk.FileDialog.save}.
+ *
+ * This component should be saved in the windowing object.
+ * When the object's presentation method is invoked, the method should call
+ * {@link WindowPromiser.promise} and return the resulting promise to the client. This
+ * promise can then be remote-controlled via {@link WindowPromiser.resolve} and
+ * {@link WindowPromiser.reject} respectively.
+ *
+ * @see add-addon-window.js
+ *
+ */
 export default class WindowPromiser<T> {
   static {
     imports.signals.addSignalMethods(this.prototype);

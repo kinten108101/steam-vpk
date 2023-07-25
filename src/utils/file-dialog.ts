@@ -73,6 +73,9 @@ class FileFilterBuilder {
   }
 }
 
+/**
+ * @deprecated
+ */
 export const FileFilter = {
     builder() {
     return new FileFilterBuilder();
@@ -207,6 +210,9 @@ class FileDialogBuilder {
 }
 
 export const FileDialog = {
+  /**
+   * @deprecated
+   */
   builder(param: FileDialogBuilderConstructor = {}) {
     return new FileDialogBuilder(param);
   }

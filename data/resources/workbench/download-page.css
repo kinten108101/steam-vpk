@@ -1,0 +1,21 @@
+ .tag {
+  border-radius: 99999px;
+  padding: 4px 12px;
+  font-size: 20px;
+  font-weight: bold;
+  /*
+  text-transform: uppercase;
+  */
+ }
+
+ .green {
+  color: #57e389;
+ }
+
+ .lighter-green {
+  color: lighter(#57e389);
+ }
+
+ .tile {
+
+ }

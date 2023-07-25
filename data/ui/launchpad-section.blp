@@ -4,7 +4,7 @@ using Adw 1;
 
 template $StvpkLaunchpadSection : Gtk.Box {
   orientation: vertical;
-  spacing: 10;
+  spacing: 4;
   model: Gio.ListStore {
     item-type: typeof <$StvpkAddonlistPageItem>;
   };
@@ -13,6 +13,14 @@ template $StvpkLaunchpadSection : Gtk.Box {
     label: bind template.title;
     xalign: 0;
     styles ["heading"]
+  }
+
+  Gtk.Label section_subtitle {
+    label: bind template.subtitle;
+    xalign: 0;
+    margin-top: 4;
+    margin-bottom: 8;
+    styles ["dim-label"]
   }
 
   Gtk.ListBox section_list {

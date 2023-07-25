@@ -1,0 +1,15 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkNavigateRow : Adw.ActionRow {
+  title: _('Preview and Description'); // placeholder
+
+  Gtk.Image {
+    styles ["expander-row-arrow"]
+
+    valign: center;
+    halign: end;
+
+    icon-name: "go-next-symbolic";
+  }
+}

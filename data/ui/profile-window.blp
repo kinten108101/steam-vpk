@@ -1,0 +1,50 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window window {
+  title: _("Profiles");
+  default-width: 500;
+  default-height: 500;
+
+  Gtk.Box {
+    orientation: vertical;
+
+    Adw.HeaderBar {
+      [start]
+      Gtk.Button {
+        label: _("New");
+        styles ['suggested-action']
+      }
+
+      [end]
+      Gtk.MenuButton {
+        icon-name: 'open-menu-symbolic';
+      }
+
+      [end]
+      Gtk.Button {
+        icon-name: "folder-symbolic";
+        action-name: "profile-window.open-profile-folder";
+      }
+    }
+
+    Gtk.ScrolledWindow {
+      vexpand: true;
+      hexpand: true;
+
+      Adw.Clamp {
+        vexpand: true;
+
+        Gtk.Box profile-list-content {
+          vexpand: true;
+          hexpand: true;
+          margin-top: 20;
+          margin-start: 16;
+          margin-end: 16;
+          orientation: vertical;
+          spacing: 10;
+        }
+      }
+    }
+  }
+}

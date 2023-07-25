@@ -1,0 +1,160 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 764;
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          title: _('Downloading');
+
+          Gtk.ListBox {
+            selection-mode: none;
+            styles ['boxed-list']
+
+            Gtk.ListBoxRow {
+              child:
+                Gtk.Box {
+                  spacing: 12;
+                  margin-top: 12;
+                  margin-bottom: 12;
+                  margin-start: 12;
+                  margin-end: 12;
+                  Gtk.Button {
+                    icon-name: 'pause-large-symbolic';
+                    valign: center; halign: center;
+                    styles ['circular']
+                  }
+                  Gtk.Box {
+                    orientation: vertical;
+                    valign: center;
+                    Gtk.Label {
+                      label: '<span weight=\'bold\' size=\'small\'>Fallout - New Vegas [FitGirl Repack]</span>';
+                      use-markup: true;
+                      halign: start;
+                      ellipsize: end;
+                      hexpand: true;
+                      lines: 1;
+                    }
+
+                    Gtk.Box {
+                      hexpand: true;
+                      Gtk.Label {
+                        valign: center;
+                        halign: start;
+                        use-markup: true;
+                        label: '<span size=\'small\'>9.8 kB of 14.6 GB · 192 bytes/s</span>';
+                        justify: left;
+                        lines: 1;
+                        ellipsize: end;
+                      }
+
+                      Gtk.Label {
+                        visible: false;
+                        justify: right;
+                        halign: end;
+                        use-markup: true;
+                        label: '<span size=\'small\'>Paused</span>';
+                        lines: 1;
+                        ellipsize: end;
+                      }
+                    }
+
+                    Gtk.ProgressBar {
+                    }
+                  }
+                  Gtk.Button {
+                    icon-name: 'pause-large-symbolic';
+                    valign: center; halign: end;
+                  }
+                };
+            }
+          }
+        }
+        Adw.PreferencesGroup {
+          title: _('Queued');
+          sensitive: true;
+
+          Gtk.ListBox {
+            selection-mode: none;
+            styles ['boxed-list']
+
+            Gtk.ListBoxRow {
+              child:
+                Gtk.Box {
+                  spacing: 12;
+                  margin-top: 12;
+                  margin-bottom: 12;
+                  margin-start: 12;
+                  margin-end: 12;
+                  Gtk.Button {
+                    icon-name: 'pause-large-symbolic';
+                    valign: center; halign: center;
+                    styles ['circular']
+                  }
+                  Gtk.ListBoxRow {
+                    sensitive: false;
+                    hexpand: true;
+                    child:
+                      Gtk.Box {
+                        orientation: vertical;
+                        valign: center;
+                        Gtk.Label {
+                          label: '<span weight=\'bold\' size=\'small\'>Fallout - New Vegas [FitGirl Repack]</span>';
+                          use-markup: true;
+                          halign: start;
+                          ellipsize: end;
+                          hexpand: true;
+                          lines: 1;
+                        }
+
+                        Gtk.Box {
+                          hexpand: true;
+                          Gtk.Label {
+                            valign: center;
+                            halign: start;
+                            use-markup: true;
+                            label: '<span size=\'small\'>9.8 kB of 14.6 GB</span>';
+                            justify: left;
+                            lines: 1;
+                            ellipsize: end;
+                            hexpand: true;
+                          }
+
+                          Gtk.Label {
+                            justify: right;
+                            halign: end;
+                            use-markup: true;
+                            label: '<span size=\'small\'>Paused</span>';
+                            lines: 1;
+                            ellipsize: end;
+                          }
+                        }
+
+                        Gtk.ProgressBar {
+                        }
+                      };
+                  }
+                  Gtk.Button {
+                    icon-name: 'play-large-symbolic';
+                    valign: center; halign: end;
+                  }
+                };
+            }
+
+
+          }
+        }
+        Adw.PreferencesGroup {
+          title: _('Completed');
+        }
+      }
+    };
+
+}

@@ -9,33 +9,36 @@ import { Result, Results } from './utils/result.js';
 import { Errors, FlatError } from './utils/errors.js';
 import { PromiseReject, PromiseResolve } from './utils/window-promiser.js';
 
-import { DirectoryWriter, IndexDirectory, WriteOrders } from './index-dir.js';
+import type IndexDirectory from './index-dir.js';
 import { AddonStorage, AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
 import { AddonManifest } from './addons.js';
 import { Config } from './config.js';
+import { Model } from './mvc.js';
 
 
 @gobjectClass({
   Signals: { 'queue-changed': [] },
 })
-export class ActionSynthesizer extends GObject.Object {
+export class ActionSynthesizer extends GObject.Object
+implements Model {
   queue: ActionOrder[];
-  writeable: DirectoryWriter;
   readable: {
     storage: AddonStorage;
     index: IndexDirectory;
   }
   isRunning: boolean;
 
-  constructor(param: { writeable: DirectoryWriter, storage: AddonStorage, index: IndexDirectory }) {
+  constructor(param: { storage: AddonStorage, index: IndexDirectory }) {
     super({});
     this.queue = [];
-    this.writeable = param.writeable;
     this.readable  = {
       storage: param.storage,
       index: param.index,
     };
     this.isRunning = false;
+  }
+
+  async start() {
     this.connect('queue-changed', this.updateQueue);
   }
 
@@ -84,47 +87,7 @@ export class ActionSynthesizer extends GObject.Object {
             break;
           }
 
-          this.writeable.order({ code: WriteOrders.AddEntry, param: { id: addon.stvpkid }});
-          order.finish(undefined);
-          break;
-        }
-      case Actions.Delete:
-        {
-          const id = order.param;
-
-          if (!this.readable.storage.idmap.has(id)) {
-            console.warn('Add-on does not exists. Quitting...');
-            const error = new GLib.Error(
-              addon_storage_error_quark(),
-              AddonStorageError.ADDON_NOT_EXISTS,
-              'Add-on does not exist.');
-            order.quit(error);
-            break;
-          }
-
-          const subdir = this.readable.storage.subdirFolder.get_child(id);
-          const listFilesResult = Utils.listFilesResult(subdir);
-          if (listFilesResult.code !== Results.OK) {
-            const error = listFilesResult.data;
-            order.quit(error);
-            break;
-          }
-
-          const files = listFilesResult.data;
-          files.push(subdir);
-          files.forEach(x => {
-            try {
-              x.delete(null);
-            } catch (error) {
-              console.error(`Could not remove file. Details:`);
-              console.error(error);
-              return;
-            }
-          })
-
-          // TODO(kinten): Recursive deletion
-
-          this.writeable.order({ code: WriteOrders.DeleteEntry, param: { id } });
+          this.readable.index.add_entry(addon.stvpkid);
           order.finish(undefined);
           break;
         }

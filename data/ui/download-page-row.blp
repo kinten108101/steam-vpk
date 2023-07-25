@@ -4,8 +4,8 @@ using Adw 1;
 template $StvpkDownloadPageRow: Gtk.ListBoxRow {
   styles ["search-row", "download-page-row"]
   activatable: true;
-  action-name: 'addon.see-details';
-  action-target: '"s"'; // placeholder - see app code
+  action-name: 'addon-details.see-details';
+  action-target: bind (template.item as <$StvpkDownloadPageRowItem>).id-gvariant;
 
   Gtk.Box {
     styles ["header"]
@@ -58,10 +58,19 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
       }
     }
 
-    // button goes here
     $StvpkUseButton use_button {
+      label: _('RAM-7');
       action-name: 'addons.box';
-      action-target: '"where we met i was watching conan"'; // placeholder - see download-page-row implementation
+      action-target: bind (template.item as <$StvpkDownloadPageRowItem>).id-gvariant;
+    }
+
+    Gtk.Button trash {
+      visible: false;
+      icon-name: 'user-trash-symbolic';
+      valign: center;
+      halign: center;
+      action-name: 'addons.trash';
+      action-target: bind (template.item as <$StvpkDownloadPageRowItem>).id-gvariant;
     }
 
     Gtk.Image {

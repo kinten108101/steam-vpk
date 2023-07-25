@@ -13,6 +13,7 @@ import { Result } from './utils/result.js';
 import { Config } from './config.js';
 import { isValidAddonId, isValidAddonName } from './id.js';
 import { LateBindee, LateBinder } from './mvc.js';
+import SpinningButton from './spinning-button.js';
 
 interface StackPage {
   readonly stackPageId: string;
@@ -158,11 +159,11 @@ class ErrorPainter extends GObject.Object {
     'switch-to-here': {},
   },
 })
-export class AddAddonName extends Gtk.Box
+class AddAddonName extends Gtk.Box
 implements StackPage, LateBindee<AddAddonWindow> {
   readonly stackPageId = 'namePage';
 
-  scanButton!: Gtk1.SpinningButton;
+  scanButton!: SpinningButton;
   stvpkid!: Adw.EntryRow;
 
   toaster!: Adw1.Toaster;
@@ -267,7 +268,7 @@ export namespace AddAddonPreviewDownload {
     'switch-to-here': [],
   }
 })
-export class AddAddonPreviewDownload extends Gtk.Box
+class AddAddonPreviewDownload extends Gtk.Box
 implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
   readonly stackPageId = 'previewDownload';
 
@@ -443,7 +444,7 @@ implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
     'switch-to-here': {},
   },
 })
-export class AddAddonUrl extends Gtk.Box
+class AddAddonUrl extends Gtk.Box
 implements StackPage, LateBindee<AddAddonWindow>, InputState, ErrorState {
   readonly stackPageId = 'url';
 
@@ -600,7 +601,7 @@ export class AddAddonWizard {
       const page = next;
       const [decision, ...nextargs] = await page.action(...args).catch(error => {
         console.error('Caught a loose error in AddAddonWizard::run:');
-        console.error(error);
+        logError(error);
         return [this.navigation.QUIT];
       });
       if (decision === this.navigation.QUIT) {

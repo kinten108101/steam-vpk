@@ -1,6 +1,6 @@
 project(
 	'stvpk',
-	version: '0.5.0',
+	version: 'pre-release',
 	meson_version: '>= 0.63.0',
 	license: ['GPL-3.0-or-later'],
 )
@@ -20,8 +20,8 @@ fs = import('fs')
 
 app_id = 'com.github.kinten108101.SteamVpk'
 app_rdnn = '/com/github/kinten108101/SteamVpk'
-app_fullname = 'Add-on Box'
-app_shortname = 'addon-box'
+app_fullname = 'Steam VPK'
+app_shortname = 'steam-vpk'
 if get_option('buildtype') == 'debug'
 	app_id = ''.join([app_id, '.Dev'])
 	app_rdnn = ''.join([app_rdnn, '/Dev'])
@@ -42,4 +42,5 @@ subdir('src')
 gnome.post_install(
   glib_compile_schemas: true,
   gtk_update_icon_cache: true,
+  update_desktop_database: true,
 )

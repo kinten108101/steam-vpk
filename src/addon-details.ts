@@ -1,250 +1,162 @@
-import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
+import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
+import * as Adw1 from './utils/adw1.js';
 
-import * as Gio1 from './utils/gio1.js';
-import { Wrapper } from './utils/glib1.js';
+import * as Consts from './const.js';
 import * as Utils from './utils.js';
-import * as File from './file.js';
+import { AddonStorage } from './addon-storage.js';
+import TypedBuilder from './typed-builder.js';
+import DiskCapacity from './disk-capacity.js';
+import * as Files from './file.js';
 
-import { Config } from './config.js';
-import { MainWindowContext } from './window.js';
-import { gobjectClass } from './utils/decorator.js';
-//import { SteamMd2Pango } from './steam-markup.js';
-
-enum LozengeStyles {
-  text = 'text',
-  icon = 'icon',
-};
-
-@gobjectClass({
-  GTypeName: 'StvpkAddonDetailsLozenge',
-  Properties: {
-    style: GObject.ParamSpec.string('style', 'style', 'style', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, null),
-    'icon-iconname': GObject.ParamSpec.string('icon-iconname', 'icon-iconname', 'icon-iconname', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, ''),
-    'text-label': GObject.ParamSpec.string('text-label', 'text-label', 'text-label', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, ''),
-  },
-  Template: `resource://${Config.config.app_rdnn}/ui/addon-details-lozenge.ui`,
-  Children: [ 'text', 'icon' ],
-})
-class AddonDetailsLozenge extends Gtk.Box {
-  style!: string;
-  iconIconname!: string;
-  textLabel!: string;
-  text!: Gtk.Label;
-  icon!: Gtk.Image;
-
-  constructor(param = {}) {
-    super(param);
-    switch (this.style) {
-    case LozengeStyles.text:
-      this.icon.set_visible(false);
-      this.text.set_visible(true);
-      break;
-    case LozengeStyles.icon:
-      this.icon.set_visible(true);
-      this.text.set_visible(false);
-      break;
-    default:
-      console.warn(`Unexpected LozengeStyles. Details: ${this.style}`);
-      break;
-    }
+class BuilderData extends GObject.Object {
+  static {
+    Utils.registerClass({
+      Properties: {
+        id: GObject.param_spec_variant('id', 'id', 'id', GLib.VariantType.new('s'), GLib.Variant.new_string('s'), Utils.g_param_default),
+      }
+    }, this);
   }
 
-  set_text_label(val: string) {
-    this.textLabel = val;
-  }
-};
+  id!: GLib.Variant;
 
-GObject.registerClass({
-  GTypeName: `StvpkAddonDetailsContextLabel`,
-  Template: `resource://${Config.config.app_rdnn}/ui/addon-details-context-label.ui`,
-}, class extends Gtk.Label {})
-
-class BuilderObjectNotFound extends Error {
-  constructor(prop: string) {
-    super(`${prop} not found, bad XML`);
+  constructor(params: { id: GLib.Variant }) {
+    super(params);
   }
 }
 
-class BuilderWrap extends Wrapper<Gtk.Builder> {
-  constructor(builder: Gtk.Builder) {
-    super(builder);
+class FieldRow extends Adw.ActionRow {
+  static {
+    Utils.registerClass({
+      Properties: {
+        value: GObject.ParamSpec.string('value', 'value', 'value', Utils.g_param_default, null),
+      },
+      Template: `resource://${Consts.APP_RDNN}/ui/field-row.ui`,
+    }, this);
   }
 
-  get_object<T extends GObject.Object>(name: string) {
-    const obj = this.unwrap().get_object(name);
-    if (obj === null) throw new BuilderObjectNotFound(name);
-    return obj as T;
+  value!: string;
+
+  set_value(val: string) {
+    this.value = val;
   }
 }
 
-export function addon_details_implement(context: MainWindowContext) {
+Utils.registerClass({
+  GTypeName: 'StvpkNavigateRow',
+  Template: `resource://${Consts.APP_RDNN}/ui/navigate-row.ui`,
+}, class extends Adw.ActionRow {});
+
+/**
+ * Implement the addon-details group of actions.
+ */
+export default function
+addon_details_implement(
+{ main_window,
+  leaflet,
+  page_slot,
+  addonStorage,
+  toaster,
+  diskCapacity,
+  action_map,
+}:
+{ main_window: Gtk.Window,
+  leaflet: Adw.Leaflet,
+  page_slot: Adw.Bin,
+  addonStorage: AddonStorage,
+  toaster: Adw.ToastOverlay,
+  diskCapacity: DiskCapacity,
+  action_map: Gio.ActionMap,
+}) {
   const addonActionGroup = new Gio.SimpleActionGroup();
-  context.main_window.insert_action_group('addon', addonActionGroup);
+  main_window.insert_action_group('addon-details', addonActionGroup);
 
-  const seeDetails = Gio1.SimpleAction
-    .builder({ name: 'see-details', parameterType: new GLib.VariantType('s') })
-    .activate((_: unknown, parameter: GLib.Variant | null) => {
-      if (!(parameter instanceof GLib.Variant)) throw new Error();
-      const id = parameter.deepUnpack();
-      if (typeof id !== 'string') throw new Error();
-      const addon = context.application.addonStorage.idmap.get(id);
-      if (addon === undefined) {
-        console.warn('Add-on doesn\'t exist. Quitting...');
-        return;
-      }
-      /*
-      const window = new AddonDetailsWindow();
+  const builder = new TypedBuilder();
+  builder.add_from_resource(`${Consts.APP_RDNN}/ui/addon-details.ui`);
+  const page = builder.get_typed_object<Gtk.Box>('page');
+  page_slot.child = page;
 
-      const builder = new Gtk.Builder();
-      const template = Gio.File.new_for_uri(`resource://${Config.config.app_rdnn}/ui/addon-details.ui`);
-      const [, bytes] = template.load_contents(null);
-      const jsstr = Utils.Decoder.unwrap().decode(bytes);
-      builder.extend_with_template(window, AddonDetailsWindow.$gtype, jsstr, -1);
+  let currentAddon: string | undefined;
 
-      */
-      const builder = new BuilderWrap(new Gtk.Builder());
-      builder.unwrap().add_from_resource(`${Config.config.app_rdnn}/ui/addon-details.ui`);
+  const seeDetails = new Gio.SimpleAction({
+    name: 'see-details',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  seeDetails.connect('activate', (_action, parameter) => {
+    console.debug('<<addons.see-details>>');
+    const id = Utils.g_variant_unpack<string>(parameter, 'string');
+    const addon = addonStorage.get(id);
+    if (addon === undefined) {
+      console.warn(`Coulnd\'t find add-on \"${id}\". Refuse to navigate. Quitting...`);
+      toaster.add_toast(
+        Adw1.Toast.builder()
+        .title('Add-on data cannot be found!')
+        .build());
+      return;
+    }
+    currentAddon = id;
+    const isRemote = addon.steamId !== undefined;
 
-      const window = builder.get_object<Adw.Window>('window');
-      context.main_window.get_group().add_window(window);
-
-      const title = builder.get_object<Adw.WindowTitle>('title');
-      if (addon.title !== undefined) {
-        title.set_title(addon.title);
-        title.set_subtitle(addon.vanityId);
-      } else {
-        title.set_title(addon.vanityId);
-        title.set_subtitle('');
-      }
-
-      const addonId = GLib.Variant.new_string(addon.vanityId);
-
-      const file_size = builder.get_object<Gtk.Button>('file-size');
-      file_size.set_action_target_value(addonId);
-
-      const fileStatusMem = new class {
-        archive: number = NaN;
-        cache: number = NaN;
-        manifest: number = NaN;
-        total: number = NaN;
-
-        calculate() {
-          this.archive = (() => {
-            return 0;
-          })();
-          this.cache = (() => {
-            return 0;
-          })();
-          this.manifest = (() => {
-            const info_file = context.application.addonStorage.subdirFolder.get_child(addon.vanityId).get_child(Config.config.addon_info);
-            const qinfo = info_file.query_info(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, null);
-            return qinfo.get_size();
-          })();
-          this.total = this.archive + this.cache + this.manifest;
-        }
-      };
-      fileStatusMem.calculate();
-
-      const file_size_lozenge = builder.get_object<AddonDetailsLozenge>('file-size-lozenge');
-      file_size_lozenge.set_text_label(File.bytes2humanreadable(fileStatusMem.total));
-
-      const cloudEnabled = builder.get_object<Gtk.Button>('cloud-enabled');
-      cloudEnabled.set_action_target_value(addonId);
-
-      const cloudDisabled = builder.get_object<Gtk.Button>('cloud-disabled');
-      cloudDisabled.set_action_target_value(addonId);
-
-      if (addon.steamId !== undefined) {
-        cloudEnabled.set_visible(true);
-        cloudDisabled.set_visible(false);
-      } else {
-        cloudEnabled.set_visible(false);
-        cloudDisabled.set_visible(true);
-      }
-
-      const detailsActionGroup = new Gio.SimpleActionGroup;
-      window.insert_action_group('details', detailsActionGroup);
-
-      const fileStatus = Gio1.SimpleAction
-        .builder({ name: 'file-status', parameterType: GLib.VariantType.new('s')})
-        .activate(() => {
-          const peek_builder = new BuilderWrap(new Gtk.Builder);
-          peek_builder.unwrap().add_from_resource(`${Config.config.app_rdnn}/ui/addon-details-peek-file.ui`);
-
-          fileStatusMem.calculate();
-
-          [
-            ['title-lozenge', fileStatusMem.total] as [string, number],
-            ['archive-lozenge', fileStatusMem.archive] as [string, number],
-            ['cache-lozenge', fileStatusMem.cache] as [string, number],
-            ['manifest-lozenge', fileStatusMem.manifest] as [string, number],
-          ].forEach(([obj_id, data]) => {
-            peek_builder.get_object<AddonDetailsLozenge>(obj_id).set_text_label(File.bytes2humanreadable(data));
-          });
-
-          const peek_window = peek_builder.get_object<Adw.Window>('peek-file-window');
-          peek_window.set_transient_for(window);
-          peek_window.set_modal(true);
-          peek_window.present();
-        })
-        .build();
-      detailsActionGroup.add_action(fileStatus);
-
-      const cloudStatus = Gio1.SimpleAction
-        .builder({ name: 'cloud-status', parameterType: GLib.VariantType.new('s') })
-        .activate(() => {
-
-        })
-        .build();
-      detailsActionGroup.add_action(cloudStatus);
-
-      /*
-
-      const carousel = builder.get_object<Adw.Carousel>('infoCarousel');
-      const description = addon.description;
-      if (description !== undefined) {
-        const describeLabel = builder.get_object<Gtk.Label>('description-label');
-        describeLabel.set_label(SteamMd2Pango(description));
-        const describePage = builder.get_object<Adw.PreferencesGroup>('description');
-        carousel.append(describePage);
-      }
-
-      const tags = builder.get_object<Adw.PreferencesGroup>('tags');
-      carousel.append(tags);
-
-      */
+    const data = builder.get_typed_object<BuilderData>('data');
+    if (parameter !== null) {
+      data.id = parameter;
+    }
+    const title = builder.get_typed_object<Gtk.Label>('title');
+    title.set_label(addon.title || 'Untitled add-on');
+    const subtitle = builder.get_typed_object<Gtk.Label>('subtitle');
+    subtitle.set_label(addon.vanityId);
+    const size = (() => {
+      if (addon.subdir)
+        return diskCapacity.eval_size(addon.subdir);
+      return null;
+    })();
+    console.debug('Size is', size);
+    const used_label = builder.get_typed_object<Gtk.Label>('used');
+    used_label.set_label((() => {
+          if (size !== null)
+            return `${Files.bytes2humanreadable(size)} Used`;
+          return 'Unknown size';
+        })());
 
 
-      console.time('present');
-      window.set_transient_for(context.main_window);
-      window.set_modal(true);
-      window.present();
-      console.timeEnd('present');
-      const a = Gtk.Window.list_toplevels();
-      console.log(a.length);
+    const stvpkid = builder.get_typed_object<FieldRow>('stvpkid');
+    stvpkid.set_value(addon.vanityId);
 
-  /*
-      builder.add_from_resource(`${Config.config.app_rdnn}/ui/addon-details.ui`);
+    const steamid = builder.get_typed_object<FieldRow>('steamid');
+    if (isRemote) {
+      steamid.set_value((() => {
+        if (addon.steamId)
+          return addon.steamId;
+        console.warn(`Add-on ${addon.vanityId} declared as remote despite having no steam id?`);
+        return 'Unknown';
+      })());
+      steamid.set_visible(true);
+    } else {
+      steamid.set_visible(false);
+    }
 
-      const carousel = builder.get_object('info-carousel') as Adw.Carousel | null;
-      if (carousel === null) throw new Error('Could not find carousel. XML was written incorrectly?');
 
 
-      */
-    })
-    .build();
+    leaflet.navigate(Adw.NavigationDirection.FORWARD);
+    console.debug('>>addons.see-details<<');
+  });
   addonActionGroup.add_action(seeDetails);
 
-  const removeAddon = Gio1.SimpleAction
-    .builder({ name: 'remove', parameterType: GLib.VariantType.new('s') })
-    .activate((_, parameter) => {
-      const id = Utils.g_variant_unpack<string>(parameter, 'string');
-      context.application.addonStorage.loadorder_remove(id);
-    })
-    .build();
-  addonActionGroup.add_action(removeAddon);
+  addonStorage.connect(AddonStorage.Signals.addons_changed, () => {
+    if (currentAddon === undefined) return;
+    if (addonStorage.idmap.has(currentAddon)) return;
+
+    const back = action_map.lookup_action('back');
+    if (back === null) {
+      console.warn('Back action is not implemented!');
+      return;
+    }
+    // FIXME(kinten): Also check if we're still at this page
+    if (leaflet.get_visible_child() !== page) return;
+    back.activate(null);
+  });
+
 }

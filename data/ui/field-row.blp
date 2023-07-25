@@ -1,0 +1,21 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkFieldRow : Adw.ActionRow {
+  title: _('File ID'); // placeholder
+  value: '2396847377'; // placeholder
+
+  [suffix]
+  Gtk.Label {
+    use-markup: true;
+    label: bind template.value as <string>;
+    styles ['dim-label', 'monospace']
+    ellipsize: end;
+    wrap: true;
+    lines: 3;
+    justify: right;
+    margin-top: 8;
+    margin-bottom: 4;
+    selectable: true;
+  }
+}

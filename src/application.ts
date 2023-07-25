@@ -1,97 +1,60 @@
-import GLib from 'gi://GLib';
+import Gtk from 'gi://Gtk';
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
-import Gtk from 'gi://Gtk';
+import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
-
-import { gobjectClass } from './utils/decorator.js';
 import * as Gio1 from './utils/gio1.js';
-import * as Utils from './utils.js';
-
-import { Window } from './window.js';
-import { Downloader } from './downloader.js';
-import { ActionSynthesizer } from './addon-action.js';
+import * as File from './file.js';
+import * as Consts from './const.js'
+import Downloader from './downloader.js';
 import { AddonStorage } from './addon-storage.js';
-import {
-  APP_FULLNAME,
-  APP_ID,
-  APP_RDNN,
-  APP_SHORTNAME,
-  BUILD_TYPE,
-  USER_DATA_DIR,
-  USER_STATE_DIR,
-  VERSION
-} from './const.js';
+import { ActionSynthesizer } from './addon-action.js';
+import Window from './window.js';
+import DiskCapacity from './disk-capacity.js';
 
-@gobjectClass()
-export class Application extends Adw.Application {
-  settings: Gio.Settings;
+export type Stvpk = {
+  pkg_user_data_dir: Gio.File;
+  pkg_user_state_dir: Gio.File;
+  addons_dir: Gio.File;
   addonStorage: AddonStorage;
   addonSynthesizer: ActionSynthesizer;
   downloader: Downloader;
+  settings: Gio.Settings;
+  diskCapacity: DiskCapacity;
+}
 
-  pkg_user_data_dir: Gio.File;
-  pkg_user_state_dir: Gio.File;
+export default function application_implement() {
+  const application = new Adw.Application({
+    application_id: Consts.APP_ID,
+  });
+  GLib.set_application_name(Consts.APP_FULLNAME);
+  application.add_main_option('new-window', 'n'.charCodeAt(0), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, 'Open a new window', null);
+  application.add_main_option('version', 'v'.charCodeAt(0), GLib.OptionFlags.NONE, GLib.OptionArg.NONE, 'Print current product version', null);
 
-  constructor(params: Adw.Application.ConstructorProperties = {}) {
-    super(params);
-    GLib.set_application_name(APP_FULLNAME);
-    this.settings = new Gio.Settings({
-      schema_id: APP_ID,
-    })
-    this.downloader = new Downloader();
-    console.info(`${APP_FULLNAME} (${APP_ID})`);
-    console.info(`build-type: ${BUILD_TYPE}`);
-    console.info(`version: ${VERSION}`);
+  const pkg_user_data_dir = Gio.File.new_for_path(
+    GLib.build_filenamev([Consts.USER_DATA_DIR, Consts.APP_SHORTNAME]),
+  );
+  const pkg_user_state_dir = Gio.File.new_for_path(
+    GLib.build_filenamev([Consts.USER_STATE_DIR, Consts.APP_SHORTNAME]),
+  );
+  const addons_dir = pkg_user_data_dir.get_child(Consts.ADDON_DIR);
 
-    this.pkg_user_data_dir = Gio.File.new_for_path(
-      GLib.build_filenamev([USER_DATA_DIR, APP_SHORTNAME]),
-    );
-    Utils.makeDirectory(this.pkg_user_data_dir);
-    console.info(`pkg-user-data-dir: ${this.pkg_user_data_dir.get_path()}`);
+  const settings = new Gio.Settings({ schema_id: Consts.APP_ID });
+  const downloader = new Downloader({ download_dir: pkg_user_state_dir.get_child(Consts.DOWNLOAD_DIR) });
+  const addonStorage = new AddonStorage({ subdir_folder: addons_dir, pkg_user_state_dir });
+  const addonSynthesizer = new ActionSynthesizer({
+    storage: addonStorage,
+    index: addonStorage.indexer,
+  });
+  const diskCapacity = new DiskCapacity();
 
-    this.pkg_user_state_dir = Gio.File.new_for_path(
-      GLib.build_filenamev([USER_STATE_DIR, APP_SHORTNAME]),
-    );
-    Utils.makeDirectory(this.pkg_user_state_dir);
-    console.info(`pkg-user-state-dir: ${this.pkg_user_state_dir.get_path()}`);
+  application.connect('startup', () => {
+    console.info(`${Consts.APP_FULLNAME} (${Consts.APP_ID})`);
+    console.info(`build-type: ${Consts.BUILD_TYPE}`);
+    console.info(`version: ${Consts.VERSION}`);
 
-    this.addonStorage = new AddonStorage({ application: this });
-    this.addonSynthesizer = new ActionSynthesizer({
-      writeable: this.addonStorage.indexer.writeable,
-      storage: this.addonStorage,
-      index: this.addonStorage.indexer,
-    });
-  }
-
-  vfunc_startup() {
-    super.vfunc_startup();
-    this.setStylesheet();
-    this.setAppActions();
-    this.setAppAccels();
-    this.addonStorage.start();
-  }
-
-  setAppActions() {
-    const quit = Gio1.SimpleAction
-      .builder({ name: 'quit' })
-      .activate(() => {
-        this.get_windows().forEach(win => {
-          win.close();
-        });
-      })
-      .build();
-    this.add_action(quit);
-  }
-
-  setAppAccels() {
-    this.set_accels_for_action('app.quit', ['<Control>q']);
-    this.set_accels_for_action('win.close', ['<Control>w']);
-  }
-
-  setStylesheet() {
     const provider = new Gtk.CssProvider();
-    provider.load_from_resource(`${APP_RDNN}/css/style.css`);
+    provider.load_from_resource(`${Consts.APP_RDNN}/css/style.css`);
 
     const defaultDisplay: Gdk.Display | null = Gdk.Display.get_default();
     if (!defaultDisplay) {
@@ -102,19 +65,86 @@ export class Application extends Adw.Application {
       provider,
       Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
     );
-  }
 
-  vfunc_activate() {
-    super.vfunc_activate();
+    const quit = Gio1.SimpleAction
+      .builder({ name: 'quit' })
+      .activate(() => {
+        application.get_windows().forEach(win => {
+          win.close();
+        });
+      })
+      .build();
+    application.add_action(quit);
+    application.set_accels_for_action('app.quit', ['<Control>q']);
+
+    const new_window = new Gio.SimpleAction({ name: 'new-window' });
+    new_window.connect('activate', create_new_window);
+    application.add_action(new_window);
+    application.set_accels_for_action('app.new-window', ['<Control>n']);
+
+    application.set_accels_for_action('win.close', ['<Control>w']);
+
+    try {
+      File.make_dir_nonstrict(pkg_user_data_dir);
+      console.info(`pkg-user-data-dir: ${pkg_user_data_dir.get_path()}`);
+    } catch (error) {
+      logError(error);
+      console.error('Quitting...');
+      return;
+    }
+
+    try {
+      File.make_dir_nonstrict(pkg_user_state_dir);
+      console.info(`pkg-user-state-dir: ${pkg_user_data_dir.get_path()}`);
+    } catch (error) {
+      logError(error)
+      console.error('Quitting...');
+      return;
+    }
+
+    downloader.start();
+    addonStorage.start();
+    addonSynthesizer.start();
+  });
+
+  const create_new_window = () => {
     const mainWindow = new Window({
-      application: this,
+      application,
       title: GLib.get_application_name(),
-      icon_name: 'addon-box',
+      stvpk: {
+        pkg_user_data_dir,
+        pkg_user_state_dir,
+        addons_dir,
+        addonStorage,
+        addonSynthesizer,
+        downloader,
+        settings,
+        diskCapacity,
+      },
     });
     new Gtk.WindowGroup()
       .add_window(mainWindow);
-
     mainWindow.start();
     mainWindow.present();
-  }
+  };
+
+  application.connect('handle-local-options', (_application, options: GLib.VariantDict): number => {
+    const new_window = options.lookup_value('new-window', GLib.VariantType.new('b'));
+    if (new_window !== null) {
+      console.log('New Window:', new_window.deepUnpack());
+      create_new_window();
+      return -1;
+    }
+    if (options.contains('version')) {
+      print(`version ${Consts.VERSION}`);
+      return 0;
+    }
+    return -1;
+  });
+
+  application.connect('activate', () => {
+    create_new_window();
+  });
+
+  return application;
 }
