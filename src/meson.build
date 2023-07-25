@@ -31,6 +31,7 @@ script = [
   'downloader.ts',
   'file-dialog.ts',
   'file.ts',
+  'gtk.ts',
   'id.ts',
   'index-dir.ts',
   'launchpad.ts',

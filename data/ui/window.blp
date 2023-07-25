@@ -14,10 +14,6 @@ menu add_menu {
 
 menu primary-menu {
   section {
-    item (_("Reload"), "win.reload-data")
-  }
-
-  section {
     item (_("Downloads"), "download.manage")
   }
 
@@ -38,7 +34,7 @@ menu run_menu {
 
 template $StvpkWindow : Adw.ApplicationWindow {
   resizable: true;
-  default-width: 800;
+  default-width: 869;
   default-height: 600;
 
   Gtk.GestureClick {
@@ -60,64 +56,131 @@ template $StvpkWindow : Adw.ApplicationWindow {
             show-end-title-buttons: false;
             title-widget:
               Gtk.CenterBox {
+                margin-top: 4;
+                margin-bottom: 4;
+
                 [center]
                 Adw.Clamp profile-bar-clamp {
                   margin-start: 8;
                   margin-end: 8;
+                  maximum-size: 100;
                   Gtk.Box {
                     orientation: vertical;
+
+
+
+                    Gtk.Box {
+                      spacing: 8;
+
+                      $StvpkProfileBar profileBar {
+                        hexpand: true;
+                        halign: fill;
+                      }
+
+                      Gtk.Button {
+                        valign: end;
+                        styles ['inject-button', 'opaque']
+
+                        Gtk.Box {
+                          spacing: 8;
+
+                          Gtk.Image {
+                            icon-name: 'play-large-symbolic';
+                          }
+
+                          Gtk.Label {
+                            visible: true;
+                            label: 'Inject';
+                          }
+                        }
+                      }
+
+                    }
+
+                    Gtk.ScrolledWindow {
+                      visible: bind console-test.active;
+                      hexpand: true;
+                      vexpand: true;
+                      min-content-height: 150;
+                      styles ['terminal', 'card']
+                      Gtk.Label {
+                        margin-top: 12;
+                        halign: start;
+                        valign: fill;
+                        justify: left;
+                        use-markup: true;
+                        hexpand: true;
+                        label: 'Setting up win32api...\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
+                        wrap: true;
+                        styles ['monospace']
+                      }
+                    }
 
                     Adw.ViewSwitcher view-switcher {
                       stack: win-view-stack;
                       policy: wide;
                     }
 
-                    $StvpkProfileBar profileBar {
-                      hexpand: true;
-                      halign: fill;
-                    }
+
+
                   }
                 }
 
-                [end]
-                Gtk.Button {
-                  icon-name: 'play-large-symbolic';
-                  valign: end;
-                }
               };
 
             [start]
             Gtk.MenuButton {
-              label: _("Add");
-              icon-name: "list-add-symbolic";
-              always-show-arrow: true;
+              margin-top: 4;
+              margin-start: 4;
+              always-show-arrow: false;
               menu-model: add_menu;
               valign: start;
+              styles ['new-button', 'flat']
+
+              Gtk.Box {
+                spacing: 8;
+
+                Gtk.Image {
+                  icon-name: "list-add-symbolic";
+                }
+
+                Gtk.Label {
+                  label: _("New");
+                }
+              }
             }
 
             [end]
             Gtk.WindowControls {
+              margin-top: 4;
               valign: start;
               side: end;
             }
 
             [end]
-            Gtk.Box {
+            Gtk.MenuButton {
+              margin-top: 4;
               valign: start;
-              orientation: horizontal;
+              icon-name: "open-menu-symbolic";
+              popover:
+                Gtk.PopoverMenu {
+                  menu-model: primary-menu;
+                };
+            }
 
-              Gtk.ToggleButton {
-                can-focus: true;
-                icon-name: "system-search-symbolic";
-              }
+            [end]
+            Gtk.ToggleButton {
+              margin-top: 4;
+              valign: start;
+              can-focus: true;
+              icon-name: "system-search-symbolic";
+            }
 
-              Gtk.MenuButton {
-                icon-name: "open-menu-symbolic";
-                popover:
-                  Gtk.PopoverMenu {
-                    menu-model: primary-menu;
-                  };
-              }
+            [end]
+            Gtk.ToggleButton console-test {
+              margin-top: 4;
+              valign: start;
+              icon-name: 'terminal-symbolic';
             }
           }
 
@@ -134,7 +197,7 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
                 Adw.ViewStackPage {
                   name: "main-page";
-                  title: _("Blueprint");
+                  title: _("Profile");
                   icon-name: "map-symbolic";
                   child: $StvpkLaunchpadPage launchpadPage {};
                 }

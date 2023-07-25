@@ -7,7 +7,7 @@ import Adw from 'gi://Adw';
 import { Config } from './config.js';
 import { gobjectClass } from './utils/decorator.js';
 import { MainWindowContext } from './window.js';
-import { Addon } from './addons.js';
+import { Addon, creators2humanreadable } from './addons.js';
 import { LateBindee } from './mvc.js';
 import * as Markup from './markup.js';
 import { AddonStorage } from './addon-storage.js';
@@ -43,12 +43,12 @@ class UseButton extends Gtk.Button {
     const state = button.state;
     switch (state) {
     case UseStates.USED:
-      this.set_label('Used');
+      this.set_label('Added');
       this.remove_css_class('suggested-action');
       this.set_sensitive(false);
       break;
     case UseStates.AVAILABLE:
-      this.set_label('Use');
+      this.set_label('Add');
       this.add_css_class('suggested-action');
       this.set_sensitive(true);
       break;
@@ -83,16 +83,7 @@ class DownloadPageRowItem extends GObject.Object {
     super({});
     this.origin = param.addon;
     this.name = this.origin.title || '';
-    this.creator = (() => {
-                const creators: string[] = [];
-                this.origin.creators?.forEach((_, key) => creators.push(key));
-                if (creators.length === 0) return 'Unknown author';
-                const text: string = creators.reduce((acc, x, i) => {
-                  if (i === 0) return `${x}`;
-                  return `${acc}, ${x}`;
-                });
-                return text;
-              })();
+    this.creator = creators2humanreadable(this.origin.creators);
     this.description = Markup.MakeCompatPango(this.origin.description || '');
     //this.use_state = UseStates.AVAILABLE;
     console.log('ID is', Utils.g_variant_unpack<string>(this.id_gvariant, 'string'));

@@ -196,4 +196,13 @@ export class Addon extends GObject.Object {
   }
 }
 
-
+export function creators2humanreadable(map: Map<string, {}> | undefined) {
+  const creators: string[] = [];
+  map?.forEach((_, key) => creators.push(key));
+  if (creators.length === 0) return 'Unknown author';
+  const text: string = creators.reduce((acc, x, i) => {
+    if (i === 0) return `${x}`;
+    return `${acc}, ${x}`;
+  });
+  return text;
+}

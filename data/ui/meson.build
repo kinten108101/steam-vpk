@@ -7,6 +7,7 @@ interface = [
   'addon-details-lozenge.blp',
   'addon-details-peek-file.blp',
   'addon-details.blp',
+  'addons-panel-disk-allocate.blp',
   'addons-panel-disk.blp',
   'addons-panel.blp',
   'create-profile.blp',

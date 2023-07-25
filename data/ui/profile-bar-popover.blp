@@ -4,6 +4,7 @@ using Panel 1;
 template $StvpkProfileBarPopover : Gtk.Popover {
   width-request: 500;
   position: bottom;
+  styles ['profile-popover']
 
   Gtk.Box {
     orientation: vertical;
@@ -14,24 +15,19 @@ template $StvpkProfileBarPopover : Gtk.Popover {
       margin-end: 24;
       margin-top: 12;
       margin-bottom: 12;
+      spacing: 12;
 
-      Gtk.Box {
+      Gtk.Label profileName {
+        label: "Maru Mori";
+        valign: baseline;
         hexpand: true;
-        spacing: 12;
-
-        Gtk.Label profileName {
-          label: "<b>Maru Mori</b>";
-          use-markup: true;
-          valign: baseline;
-          hexpand: true;
-          xalign: 0;
-          margin-bottom: 12;
-        }
+        xalign: 0;
+        styles ['profile-name']
       }
 
       Gtk.Grid {
-        row-spacing: 6;
-        column-spacing: 18;
+        row-spacing: 4;
+        column-spacing: 12;
 
         Gtk.Label {
           label: _("Profile ID");
@@ -52,10 +48,11 @@ template $StvpkProfileBarPopover : Gtk.Popover {
             row: 0;
             column: 1;
           }
+          styles ['profile-id']
         }
 
         Gtk.Label {
-          label: _("Active Add-ons\");
+          label: _("Active Add-ons");
           xalign: 1;
           styles ["dim-label"]
           layout {
@@ -73,6 +70,24 @@ template $StvpkProfileBarPopover : Gtk.Popover {
             row: 1;
             column: 1;
           }
+        }
+      }
+
+      Gtk.ScrolledWindow {
+        hexpand: true;
+        vexpand: true;
+        min-content-height: 150;
+        styles ['terminal', 'card']
+        Gtk.Label {
+          margin-top: 12;
+          halign: start;
+          valign: fill;
+          justify: left;
+          use-markup: true;
+          hexpand: true;
+          label: 'Setting up win32api...\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
+          wrap: true;
+          styles ['monospace']
         }
       }
     }

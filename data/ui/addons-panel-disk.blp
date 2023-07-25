@@ -4,9 +4,11 @@ using Adw 1;
 Gtk.Box page {
   orientation: vertical;
   Adw.HeaderBar {
+    styles ['flat']
+
     title-widget:
       Adw.WindowTitle {
-        title: _('Repository Usage');
+        title: _('Add-on Repository');
       };
 
     [start]
@@ -24,7 +26,7 @@ Gtk.Box page {
 
   Adw.PreferencesPage {
     Adw.PreferencesGroup {
-      $StvpkFieldRow {
+      $StvpkFieldRow current-allocation {
         title: _('Current Allocation');
         value: '512 Mb'; // placeholder
       }
@@ -37,6 +39,7 @@ Gtk.Box page {
         Gtk.Button {
           label: _('Reallocate...');
           valign: center;
+          action-name: 'addons-panel-disk.allocate';
         }
       }
     }

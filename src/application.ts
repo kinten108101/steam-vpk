@@ -11,6 +11,7 @@ import { AddonStorage } from './addon-storage.js';
 import { ActionSynthesizer } from './addon-action.js';
 import Window from './window.js';
 import DiskCapacity from './disk-capacity.js';
+import { log_error } from './utils.js';
 
 export type Stvpk = {
   pkg_user_data_dir: Gio.File;
@@ -95,16 +96,18 @@ export default function application_implement() {
 
     try {
       File.make_dir_nonstrict(pkg_user_state_dir);
-      console.info(`pkg-user-state-dir: ${pkg_user_data_dir.get_path()}`);
+      console.info(`pkg-user-state-dir: ${pkg_user_state_dir.get_path()}`);
     } catch (error) {
       logError(error)
       console.error('Quitting...');
       return;
     }
 
-    downloader.start();
-    addonStorage.start();
-    addonSynthesizer.start();
+    downloader.start().catch(error => log_error(error));
+    addonStorage.start().catch(error => log_error(error));
+    addonSynthesizer.start().catch(error => log_error(error));
+    diskCapacity.bind({ addonStorage, settings });
+    diskCapacity.start();
   });
 
   const create_new_window = () => {

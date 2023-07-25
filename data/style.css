@@ -115,8 +115,34 @@ preferencesgroup.danger-zone list {
 }
 
 .inject-button {
-  font-size: x-small;
+  padding-bottom: 0px;
+  padding-top: 0px;
   font-weight: bold;
   background-color: @green_4;
   color: white;
+}
+
+.inject-button-2 {
+  color: @blue_2;
+}
+
+.profile-popover label.profile-name {
+  font-weight: bold;
+}
+
+.profile-popover label.profile-id {
+  font-family: monospace;
+}
+
+.terminal {
+  font-family: monospace;
+  padding: 7px 10px;
+  background-color: #4A4A4A;
+  color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+}
+
+.new-button {
+  padding-bottom: 0px;
+  padding-top: 0px;
 }

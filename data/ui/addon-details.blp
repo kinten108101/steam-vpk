@@ -6,9 +6,10 @@ Gtk.Box page {
   orientation: vertical;
 
   Adw.HeaderBar {
+    styles ['flat']
     title-widget:
       Adw.WindowTitle {
-        title: 'Add-on';
+        title: _('Add-on');
       };
 
     [start]
@@ -100,7 +101,7 @@ Gtk.Box page {
 
       $StvpkFieldRow stvpkid {
         icon-name: 'fingerprint-symbolic';
-        title: _('In-app ID');
+        title: _('Internal ID');
         //subtitle: _('For add-on management.');
         value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
 

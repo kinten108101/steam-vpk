@@ -135,7 +135,6 @@ export class ProfileMux implements LateBindee<MainWindowContext> {
   Template: `resource://${Config.config.app_rdnn}/ui/profile-bar.ui`,
   Children: [
     'label',
-    'profilePopover',
   ],
   Implements: [
     Gio.ActionMap,
@@ -146,7 +145,7 @@ implements LateBindee<MainWindowContext> {
   mux: ProfileMux;
   label!: Gtk.Label;
   activeProfileMenu!: Gio.Menu;
-  profilePopover!: ProfileBarPopover;
+  //profilePopover!: ProfileBarPopover;
 
   actionGroup: Gio.SimpleActionGroup;
 

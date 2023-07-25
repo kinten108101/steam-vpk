@@ -2,20 +2,28 @@ using Gtk 4.0;
 using Adw 1;
 using Panel 1;
 
+menu popover-menu {
+  section activeProfileMenu {
+    item (_("Default"), "profilesasfd.sdfafds")
+    item (_("Manage Profiles"), "profiles.manage")
+  }
+}
+
 menu profilebarMenu {
   section {
-    submenu activeProfileMenu {
-      label: _("Active Profile");
-      item (_("Manage Profiles"), "profiles.manage")
-    }
+    item (_("Reload add-ons"), "win.reload-data")
+    item (_("Reload profile"), "win.reload-data")
   }
 }
 
 template $StvpkProfileBar : Panel.OmniBar {
-  icon-name: 'build-alt-symbolic';
+  icon-name: 'refresh-large-symbolic';
+  tooltip-text: 'Reload Add-ons';
   width-request: 100;
-  popover: $StvpkProfileBarPopover profilePopover {};
-  action-name: "app.placeholder-command";
+  popover: Gtk.PopoverMenu profilePopover {
+    menu-model: popover-menu;
+  };
+  action-name: "win.reload-data";
   menu-model: profilebarMenu;
 
   [prefix]

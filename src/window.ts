@@ -8,14 +8,15 @@ import * as Gio1 from './utils/gio1.js';
 import * as Const from './const.js';
 import * as Utils from './utils.js';
 
+import './gtk.js';
 import './download-page.js';
 import './add-addon.js';
 import './launchpad.js';
 import './download-page.js';
-import { DownloadPage } from './download-page.js';
 import './launchpad.js';
-import { LaunchpadPage } from './launchpad.js';
 import './profile-bar.js';
+import { DownloadPage } from './download-page.js';
+import { LaunchpadPage } from './launchpad.js';
 import { ProfileBar } from './profile-bar.js';
 import { Config } from './config.js'
 import { PreferencesWindow } from './preferences-window.js';
@@ -96,7 +97,7 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
     const context: MainWindowContext = { application: this.stvpk, main_window: this };
     [
       this.downloadPage,
-      this.profileBar.profilePopover,
+      //this.profileBar.profilePopover,
       this.profileBar.mux,
       this.profileBar,
     ].forEach((x: LateBindee<MainWindowContext>) => {
@@ -140,6 +141,7 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
       main_window: this,
       leaflet: this.leaflet,
       addons_dir: this.stvpk.addons_dir,
+      disk_capacity: this.stvpk.diskCapacity,
     });
   }
 
@@ -204,7 +206,7 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
     const reloadData = Gio1.SimpleAction
       .builder({ name: 'reload-data' })
       .activate(() => {
-        const addonChangeSub = this.stvpk.addonStorage.connect(AddonStorage.Signals.addons_changed, () => {
+        const addonChangeSub = this.stvpk.addonStorage.connect_after(AddonStorage.Signals.addons_changed, () => {
           this.stvpk.addonStorage.disconnect(addonChangeSub);
           Adw1.Toast.builder()
             .title('Add-ons updated!')

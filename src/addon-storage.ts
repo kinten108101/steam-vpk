@@ -1,7 +1,6 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-const GSignals = imports.signals;
-import type { SignalMethods } from '@girs/gjs';
+import GObject from 'gi://GObject';
 
 import * as File from './file.js';
 import * as Utils from './utils.js';
@@ -52,8 +51,6 @@ function make_configuration_file_from_storage(addonStorage: AddonStorage) {
   return content;
 }
 
-
-
 const _quark = GLib.quark_from_string('stvpk-addon-storage-error');
 export function addon_storage_error_quark() {
   return _quark;
@@ -71,30 +68,41 @@ enum Signals {
   loadorder_changed = 'loadorder_changed',
   loadorder_order_changed = 'loadorder_order_changed',
   loadorder_config_changed = 'loadorder-config-changed',
+  force_update = 'force-update',
 }
 
-export interface AddonStorage extends SignalMethods {}
-
-export class AddonStorage implements Model {
+export class AddonStorage extends GObject.Object implements Model {
   static Signals = Signals;
 
+  static [GObject.signals] = {
+    [Signals.addons_enabled_changed]: {},
+    [Signals.addons_changed]: {},
+    [Signals.loadorder_changed]: {},
+    [Signals.loadorder_order_changed]: {},
+    [Signals.loadorder_config_changed]: {},
+    [Signals.force_update]: {},
+  }
+
   static {
-    GSignals.addSignalMethods(AddonStorage.prototype);
+    Utils.registerClass({}, this);
   }
 
   index: Gio.File;
   indexer: IndexDirectory;
   subdirFolder: Gio.File;
-  configState: Gio.File;
 
   idmap: Readonly<Map<string, Addon>>;
   model: Gio.ListStore<Addon>;
+
+  // these will be moved to another model component
+  configState: Gio.File;
   loadorder: string[];
   configmap: Map<string, Configuration>;
   private enabled: boolean;
 
   constructor(params: { subdir_folder: Gio.File,
                         pkg_user_state_dir: Gio.File, }) {
+    super({});
     this.subdirFolder = params.subdir_folder;
     this.idmap = new Map();
     this.index = params.pkg_user_state_dir.get_child(Config.config.addon_index);

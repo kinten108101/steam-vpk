@@ -11,7 +11,10 @@ import { AddonStorage } from './addon-storage.js';
 import TypedBuilder from './typed-builder.js';
 import DiskCapacity from './disk-capacity.js';
 import * as Files from './file.js';
+import { creators2humanreadable } from './addons.js';
+import { FieldRow } from './gtk.js';
 
+// experimental. Getting weakref errors
 class BuilderData extends GObject.Object {
   static {
     Utils.registerClass({
@@ -25,23 +28,6 @@ class BuilderData extends GObject.Object {
 
   constructor(params: { id: GLib.Variant }) {
     super(params);
-  }
-}
-
-class FieldRow extends Adw.ActionRow {
-  static {
-    Utils.registerClass({
-      Properties: {
-        value: GObject.ParamSpec.string('value', 'value', 'value', Utils.g_param_default, null),
-      },
-      Template: `resource://${Consts.APP_RDNN}/ui/field-row.ui`,
-    }, this);
-  }
-
-  value!: string;
-
-  set_value(val: string) {
-    this.value = val;
   }
 }
 
@@ -107,7 +93,7 @@ addon_details_implement(
     const title = builder.get_typed_object<Gtk.Label>('title');
     title.set_label(addon.title || 'Untitled add-on');
     const subtitle = builder.get_typed_object<Gtk.Label>('subtitle');
-    subtitle.set_label(addon.vanityId);
+    subtitle.set_label(creators2humanreadable(addon.creators));
     const size = (() => {
       if (addon.subdir)
         return diskCapacity.eval_size(addon.subdir);

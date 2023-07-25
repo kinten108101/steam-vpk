@@ -4,5 +4,8 @@
     <key name="last-profile" type="s">
       <default>""</default>
     </key>
+    <key name="allocated" type="t">
+      <default>0</default>
+    </key>
   </schema>
 </schemalist>

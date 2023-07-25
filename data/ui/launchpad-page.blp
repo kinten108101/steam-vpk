@@ -19,17 +19,20 @@ template $StvpkLaunchpadPage : Gtk.Box {
         orientation: vertical;
         spacing: 24;
 
-        Adw.PreferencesGroup { Adw.ActionRow {
+        Adw.PreferencesGroup {
+          visible: true;
+          Adw.ActionRow {
             title: 'Enable add-ons';
-            icon-name: 'puzzle-piece-symbolic';
-            subtitle: 'May lead to gameplay inconsistencies and performance issues.';
+            //icon-name: 'puzzle-piece-symbolic';
+            subtitle: 'May cause graphical and performance issues.';
 
             Gtk.Switch enable-addon {
               valign: center;
               action-name: 'addons.enabled';
               action-target: 'true'; // placeholder - see implementation
             }
-        }}
+          }
+        }
 
         $StvpkLaunchpadSection defaultSection {
           title: _('Add-ons to Link');
