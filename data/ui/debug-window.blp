@@ -1,0 +1,47 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window window {
+  default-height: 800;
+  default-width: 700;
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {}
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          title: _('Actions');
+
+          Gtk.ListBox action-list {
+            styles ['boxed-list']
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: _('Settings');
+
+          Adw.ActionRow {
+            title: _('Enable devel style');
+
+            [suffix]
+            Gtk.Button {
+              valign: center;
+              label: _('Enable');
+              action-name: 'debug.devel';
+              action-target: 'true';
+            }
+
+            [suffix]
+            Gtk.Button {
+              valign: center;
+              label: _('Disable');
+              action-name: 'debug.devel';
+              action-target: 'false';
+            }
+          }
+        }
+      }
+    };
+}

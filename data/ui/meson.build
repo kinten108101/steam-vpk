@@ -11,6 +11,8 @@ interface = [
   'addons-panel-disk.blp',
   'addons-panel.blp',
   'create-profile.blp',
+  'debug-window.blp',
+  'debug-window-action-row.blp',
   'download-page-row.blp',
   'download-page.blp',
   'download-window-row.blp',

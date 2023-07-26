@@ -163,6 +163,16 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
     return action;
   }
 
+  list_actions(): string[] {
+    const actions: string[] = [];
+    super.list_actions().forEach(x => actions.push(x));
+    this.actionGroups.forEach(group => {
+      group.list_actions().forEach(x => actions.push(x));
+    });
+    return actions;
+  }
+
+
   async start() {
     this.emit(signals.first_flush);
   }

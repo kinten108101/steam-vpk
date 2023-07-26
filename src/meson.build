@@ -25,6 +25,7 @@ script = [
   'config.ts',
   'const.ts',
   'create-profile.ts',
+  'debug-window.ts',
   'disk-capacity.ts',
   'download-page.ts',
   'download-window.ts',

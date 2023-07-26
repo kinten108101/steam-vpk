@@ -12,6 +12,7 @@ import { ActionSynthesizer } from './addon-action.js';
 import Window from './window.js';
 import DiskCapacity from './disk-capacity.js';
 import { log_error } from './utils.js';
+import debug_window_implement from './debug-window.js';
 
 export type Stvpk = {
   pkg_user_data_dir: Gio.File;
@@ -48,6 +49,10 @@ export default function application_implement() {
     index: addonStorage.indexer,
   });
   const diskCapacity = new DiskCapacity();
+
+  debug_window_implement({
+    application,
+  })
 
   application.connect('startup', () => {
     console.info(`${Consts.APP_FULLNAME} (${Consts.APP_ID})`);
