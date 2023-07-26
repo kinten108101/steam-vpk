@@ -90,7 +90,7 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
 
     this.stvpk = params.stvpk;
     if (Const.BUILD_TYPE === Const.BuildTypes.debug)
-      this.get_style_context().add_class('adevel');
+      this.get_style_context().add_class('devel');
 
     this.profiles = new Map();
     this.currentProfile = null;
