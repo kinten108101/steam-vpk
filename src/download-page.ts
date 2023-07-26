@@ -82,11 +82,9 @@ class DownloadPageRowItem extends GObject.Object {
   constructor(param: { addon: Addon }) {
     super({});
     this.origin = param.addon;
-    this.name = this.origin.title || '';
+    this.name = Markup.MakeCompatPango(this.origin.title || '');
     this.creator = creators2humanreadable(this.origin.creators);
     this.description = Markup.MakeCompatPango(this.origin.description || '');
-    //this.use_state = UseStates.AVAILABLE;
-    console.log('ID is', Utils.g_variant_unpack<string>(this.id_gvariant, 'string'));
     this.id_gvariant = GLib.Variant.new_string(this.origin.vanityId);
 
   }

@@ -378,7 +378,7 @@ implements ViewModelBindee<MainWindowContext> {
     }
 
     const item = new AddonlistPageItem({
-      name: addon.title || '',
+      name: Markup.MakeCompatPango(addon.title || ''),
       id: addon.vanityId || '',
       enabled: (() => {
               if (config) {
