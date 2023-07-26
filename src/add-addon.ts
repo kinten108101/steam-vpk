@@ -29,7 +29,6 @@ export class AddAddon extends GObject.Object {
   application: Application;
   mainWindow: Window;
   downloader: Downloader;
-  actionGroup: Gio.SimpleActionGroup;
 
   constructor(param: {
     application: Application;
@@ -39,26 +38,24 @@ export class AddAddon extends GObject.Object {
     this.application = param.application;
     this.mainWindow = param.window;
     this.downloader = param.application.downloader;
-    this.actionGroup = new Gio.SimpleActionGroup();
-    this.mainWindow.insert_action_group('add-addon', this.actionGroup);
     this.setupActions();
   }
 
   setupActions() {
     const addName = Gio1.SimpleAction
-      .builder({ name: 'add-name' })
+      .builder({ name: 'add-addon.add-name' })
       .activate(this.onAddNameActivate)
       .build();
-    this.actionGroup.add_action(addName);
+    this.mainWindow.add_action(addName);
 
     const addUrl = Gio1.SimpleAction
-      .builder({ name: 'add-url' })
+      .builder({ name: 'add-addon.add-url' })
       .activate(this.onAddUrlActivate)
       .build();
-    this.actionGroup.add_action(addUrl);
+    this.mainWindow.add_action(addUrl);
 
     const addArchive = Gio1.SimpleAction
-      .builder({ name: 'add-archive' })
+      .builder({ name: 'add-addon.add-archive' })
       .activate(async () => {
         const dialog = Gtk1.FileDialog.builder()
           .title('Select an Add-on Archive')
@@ -75,7 +72,7 @@ export class AddAddon extends GObject.Object {
         }
       })
       .build();
-    this.actionGroup.add_action(addArchive);
+    this.mainWindow.add_action(addArchive);
   }
 
   onAddNameActivate = async () => {

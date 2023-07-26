@@ -116,7 +116,6 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
       window: this,
     });
     addon_details_implement({
-      main_window: this,
       addonStorage: this.stvpk.addonStorage,
       page_slot: this.leaflet.get_child_by_name('addon-details-page') as Adw.Bin,
       leaflet: this.leaflet,

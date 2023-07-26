@@ -4,7 +4,7 @@ using Adw 1;
 template $StvpkDownloadPageRow: Gtk.ListBoxRow {
   styles ["search-row", "download-page-row"]
   activatable: true;
-  action-name: 'addon-details.see-details';
+  action-name: 'win.addon-details.see-details';
   action-target: bind (template.item as <$StvpkDownloadPageRowItem>).id-gvariant;
 
   Gtk.Box {

@@ -41,25 +41,20 @@ Utils.registerClass({
  */
 export default function
 addon_details_implement(
-{ main_window,
-  leaflet,
+{ leaflet,
   page_slot,
   addonStorage,
   toaster,
   diskCapacity,
   action_map,
 }:
-{ main_window: Gtk.Window,
-  leaflet: Adw.Leaflet,
+{ leaflet: Adw.Leaflet,
   page_slot: Adw.Bin,
   addonStorage: AddonStorage,
   toaster: Adw.ToastOverlay,
   diskCapacity: DiskCapacity,
   action_map: Gio.ActionMap,
 }) {
-  const addonActionGroup = new Gio.SimpleActionGroup();
-  main_window.insert_action_group('addon-details', addonActionGroup);
-
   const builder = new TypedBuilder();
   builder.add_from_resource(`${Consts.APP_RDNN}/ui/addon-details.ui`);
   const page = builder.get_typed_object<Gtk.Box>('page');
@@ -68,7 +63,7 @@ addon_details_implement(
   let currentAddon: string | undefined;
 
   const seeDetails = new Gio.SimpleAction({
-    name: 'see-details',
+    name: 'addon-details.see-details',
     parameter_type: GLib.VariantType.new('s'),
   });
   seeDetails.connect('activate', (_action, parameter) => {
@@ -129,7 +124,7 @@ addon_details_implement(
     leaflet.navigate(Adw.NavigationDirection.FORWARD);
     console.debug('>>addons.see-details<<');
   });
-  addonActionGroup.add_action(seeDetails);
+  action_map.add_action(seeDetails);
 
   addonStorage.connect(AddonStorage.Signals.addons_changed, () => {
     if (currentAddon === undefined) return;
