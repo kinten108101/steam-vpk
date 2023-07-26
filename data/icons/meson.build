@@ -14,6 +14,7 @@ icons = [
   'puzzle-piece-symbolic.svg',
   'refresh-large-symbolic.svg',
   'run-start-symbolic.svg',
+  'step-out-symbolic.svg',
   'terminal-symbolic.svg',
   'update-symbolic.svg',
   'warning-symbolic.svg',

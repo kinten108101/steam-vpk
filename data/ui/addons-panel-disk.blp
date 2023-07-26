@@ -16,12 +16,6 @@ Gtk.Box page {
       icon-name: 'left-large-symbolic';
       action-name: 'win.back';
     }
-
-    [end]
-    Gtk.Button {
-      icon-name: "folder-symbolic";
-      action-name: "addons-panel-disk.explore";
-    }
   }
 
   Adw.PreferencesPage {
@@ -41,6 +35,22 @@ Gtk.Box page {
           label: _('Reallocate...');
           valign: center;
           action-name: 'addons-panel-disk.allocate';
+        }
+      }
+
+      Adw.ActionRow {
+        title: _('Open in Explorer');
+        activatable-widget: step-out;
+
+        [suffix]
+        Gtk.Button step-out {
+          action-name: "addons-panel-disk.explore";
+          valign: center;
+          styles ['flat', 'dim-label']
+
+          Gtk.Image {
+            icon-name: 'step-out-symbolic';
+          }
         }
       }
     }
