@@ -9,6 +9,7 @@ import * as Const from './const.js';
 import * as Utils from './utils.js';
 
 import './gtk.js';
+import './inject-console.js';
 import './download-page.js';
 import './add-addon.js';
 import './launchpad.js';

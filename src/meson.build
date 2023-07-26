@@ -34,6 +34,7 @@ script = [
   'gtk.ts',
   'id.ts',
   'index-dir.ts',
+  'inject-console.ts',
   'launchpad.ts',
   'logger.ts',
   'main.ts',

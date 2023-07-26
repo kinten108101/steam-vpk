@@ -16,6 +16,7 @@ interface = [
   'download-window-row.blp',
   'download-window.blp',
   'field-row.blp',
+  'inject-console.blp',
   'launchpad-page.blp',
   'launchpad-row.blp',
   'launchpad-section.blp',

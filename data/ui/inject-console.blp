@@ -1,0 +1,36 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkInjectConsole : Gtk.Revealer {
+  transition-type: slide_down;
+  reveal-child: true;
+  child:
+    Gtk.Box box {
+      visible: false;
+      margin-top: 4;
+      margin-bottom: 4;
+      styles ['terminal', 'card']
+      Gtk.Revealer content-revealer {
+        transition-type: slide_down;
+        child:
+          Gtk.ScrolledWindow {
+            hexpand: true;
+            vexpand: true;
+            min-content-height: 150;
+            Gtk.Label {
+              margin-top: 8;
+              margin-bottom: 8;
+              halign: start;
+              valign: fill;
+              justify: left;
+              use-markup: true;
+              hexpand: true;
+              label: 'Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
+              wrap: true;
+              selectable: true;
+              styles ['monospace']
+            }
+          };
+      }
+    };
+}

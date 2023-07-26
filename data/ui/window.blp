@@ -67,8 +67,6 @@ template $StvpkWindow : Adw.ApplicationWindow {
                   Gtk.Box {
                     orientation: vertical;
 
-
-
                     Gtk.Box {
                       spacing: 8;
 
@@ -97,31 +95,14 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
                     }
 
-                    Gtk.ScrolledWindow {
-                      visible: bind console-test.active;
-                      hexpand: true;
-                      vexpand: true;
-                      min-content-height: 150;
-                      styles ['terminal', 'card']
-                      Gtk.Label {
-                        margin-top: 12;
-                        halign: start;
-                        valign: fill;
-                        justify: left;
-                        use-markup: true;
-                        hexpand: true;
-                        label: 'Setting up win32api...\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
-                        wrap: true;
-                        styles ['monospace']
-                      }
+                    $StvpkInjectConsole {
+                      switch: bind console-test.active;
                     }
 
                     Adw.ViewSwitcher view-switcher {
                       stack: win-view-stack;
                       policy: wide;
                     }
-
-
 
                   }
                 }
