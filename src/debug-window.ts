@@ -5,7 +5,7 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import TypedBuilder from './typed-builder.js';
 import * as Consts from './const.js';
-import { g_param_default, g_variant_unpack, registerClass } from './utils.js';
+import { g_param_default, registerClass } from './utils.js';
 
 class DebugWindowActionRowItem extends GObject.Object {
   static [GObject.properties] = {
@@ -69,7 +69,36 @@ export default function debug_window_implement(
       const builder = new TypedBuilder();
       builder.add_from_resource(`${Consts.APP_RDNN}/ui/debug-window-action-row.ui`);
       const row = builder.get_typed_object<Adw.ExpanderRow>('row');
-      row.set_title(`${item.group_name}.${item.action.get_name()}`);
+
+      const { group_name, action } = item;
+
+      row.set_title(`${group_name}.${action.get_name()}`);
+
+      const action_type = action.get_parameter_type();
+      if (action_type === null) {
+        const row = builder.get_typed_object<Adw.ActionRow>('action-stateless');
+        row.set_visible(true);
+
+        const button = builder.get_typed_object<Gtk.Button>('action-stateless-activate');
+        button.connect('clicked', () => {
+          action.activate(null);
+        });
+      }
+      else if (action_type.equal(GLib.VariantType.new('b'))) {
+        const row = builder.get_typed_object<Adw.ActionRow>('action-boolean');
+        row.set_visible(true);
+
+        const enable = builder.get_typed_object<Gtk.Button>('action-boolean-enable');
+        enable.connect('clicked', () => {
+          action.activate(GLib.Variant.new_boolean(true));
+        });
+
+        const disable = builder.get_typed_object<Gtk.Button>('action-boolean-disable');
+        disable.connect('clicked', () => {
+          action.activate(GLib.Variant.new_boolean(false));
+        });
+      }
+
       return row;
     }));
 
@@ -90,19 +119,4 @@ export default function debug_window_implement(
   });
   application.add_action(manage);
   application.set_accels_for_action('app.debug.manage', ['<Control>h']);
-
-  const devel = new Gio.SimpleAction({ name: 'debug.devel', parameter_type: GLib.VariantType.new('b') });
-  devel.connect('activate', (_action, parameter) => {
-    const active = g_variant_unpack<boolean>(parameter, 'boolean');
-    if (active === true) {
-      application.get_windows().forEach(x => {
-        if (x instanceof Gtk.ApplicationWindow) x.add_css_class('devel');
-      });
-    } else {
-      application.get_windows().forEach(x => {
-        if (x instanceof Gtk.ApplicationWindow) x.remove_css_class('devel');
-      });
-    }
-  });
-  application.add_action(devel);
 }

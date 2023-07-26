@@ -11,7 +11,7 @@ import { AddonStorage } from './addon-storage.js';
 import { ActionSynthesizer } from './addon-action.js';
 import Window from './window.js';
 import DiskCapacity from './disk-capacity.js';
-import { log_error } from './utils.js';
+import { g_variant_unpack, log_error } from './utils.js';
 import debug_window_implement from './debug-window.js';
 
 export type Stvpk = {
@@ -89,6 +89,21 @@ export default function application_implement() {
     application.set_accels_for_action('app.new-window', ['<Control>n']);
 
     application.set_accels_for_action('win.close', ['<Control>w']);
+
+    const devel = new Gio.SimpleAction({ name: 'devel', parameter_type: GLib.VariantType.new('b') });
+    devel.connect('activate', (_action, parameter) => {
+      const active = g_variant_unpack<boolean>(parameter, 'boolean');
+      if (active === true) {
+        application.get_windows().forEach(x => {
+          if (x instanceof Gtk.ApplicationWindow) x.add_css_class('devel');
+        });
+      } else {
+        application.get_windows().forEach(x => {
+          if (x instanceof Gtk.ApplicationWindow) x.remove_css_class('devel');
+        });
+      }
+    });
+    application.add_action(devel);
 
     try {
       File.make_dir_nonstrict(pkg_user_data_dir);

@@ -2,5 +2,31 @@ using Gtk 4.0;
 using Adw 1;
 
 Adw.ExpanderRow row {
+  Adw.ActionRow action-stateless {
+    visible: false;
+    title: _('Activate');
+    activatable-widget: action-stateless-activate;
 
+    Gtk.Button action-stateless-activate {
+      label: _('Activate');
+      // action setup
+    }
+  }
+
+  Adw.ActionRow action-boolean {
+    visible: false;
+    title: _('Activate');
+
+    [suffix]
+    Gtk.Button action-boolean-enable {
+      label: _('Enable');
+      // action setup
+    }
+
+    [suffix]
+    Gtk.Button action-boolean-disable {
+      label: _('Disable');
+      // action setup
+    }
+  }
 }

@@ -18,30 +18,6 @@ Adw.Window window {
             styles ['boxed-list']
           }
         }
-
-        Adw.PreferencesGroup {
-          title: _('Settings');
-
-          Adw.ActionRow {
-            title: _('Enable devel style');
-
-            [suffix]
-            Gtk.Button {
-              valign: center;
-              label: _('Enable');
-              action-name: 'debug.devel';
-              action-target: 'true';
-            }
-
-            [suffix]
-            Gtk.Button {
-              valign: center;
-              label: _('Disable');
-              action-name: 'debug.devel';
-              action-target: 'false';
-            }
-          }
-        }
       }
     };
 }
