@@ -13,6 +13,10 @@ import Window from './window.js';
 import DiskCapacity from './disk-capacity.js';
 import { g_variant_unpack, log_error } from './utils.js';
 import debug_window_implement from './debug-window.js';
+import SteamworkServices from './steam-api.js';
+import { Archiver } from './archive.js';
+import Injector from './injector.js';
+import Settings from './settings.js';
 
 export type Stvpk = {
   pkg_user_data_dir: Gio.File;
@@ -21,8 +25,11 @@ export type Stvpk = {
   addonStorage: AddonStorage;
   addonSynthesizer: ActionSynthesizer;
   downloader: Downloader;
-  settings: Gio.Settings;
+  settings: Settings;
   diskCapacity: DiskCapacity;
+  archiver: Archiver;
+  steamapi: SteamworkServices;
+  injector: Injector;
 }
 
 export default function application_implement() {
@@ -41,18 +48,27 @@ export default function application_implement() {
   );
   const addons_dir = pkg_user_data_dir.get_child(Consts.ADDON_DIR);
 
-  const settings = new Gio.Settings({ schema_id: Consts.APP_ID });
+  const settings = new Settings();
   const downloader = new Downloader({ download_dir: pkg_user_state_dir.get_child(Consts.DOWNLOAD_DIR) });
+  const archiver = new Archiver();
+  const steamapi = new SteamworkServices();
   const addonStorage = new AddonStorage({ subdir_folder: addons_dir, pkg_user_state_dir });
   const addonSynthesizer = new ActionSynthesizer({
     storage: addonStorage,
     index: addonStorage.indexer,
   });
   const diskCapacity = new DiskCapacity();
+  const injector = new Injector();
+
+  archiver.bind({ downloader, steamapi, addonStorage });
+  addonStorage.bind({ archiver });
+  diskCapacity.bind({ addonStorage, settings: settings.gio_settings });
+  injector.bind({ addonStorage, settings });
+  settings.bind();
 
   debug_window_implement({
     application,
-  })
+  });
 
   application.connect('startup', () => {
     console.info(`${Consts.APP_FULLNAME} (${Consts.APP_ID})`);
@@ -123,11 +139,17 @@ export default function application_implement() {
       return;
     }
 
-    downloader.start().catch(error => log_error(error));
-    addonStorage.start().catch(error => log_error(error));
-    addonSynthesizer.start().catch(error => log_error(error));
-    diskCapacity.bind({ addonStorage, settings });
-    diskCapacity.start();
+    [
+      settings,
+      downloader,
+      addonStorage,
+      addonSynthesizer,
+      diskCapacity,
+      settings,
+      injector,
+    ].forEach(x => {
+      x.start().catch(error => log_error(error));
+    })
   });
 
   const create_new_window = () => {
@@ -143,6 +165,9 @@ export default function application_implement() {
         downloader,
         settings,
         diskCapacity,
+        archiver,
+        steamapi,
+        injector,
       },
     });
     new Gtk.WindowGroup()

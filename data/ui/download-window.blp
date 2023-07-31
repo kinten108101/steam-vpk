@@ -7,6 +7,7 @@ menu primary-menu {
     item (_('Pause All'), 'downloader.pause-all')
     item (_('Remove Completed Downloads'), 'downloader.clear-completed')
     item (_('Statistics...'), 'downloader.statistics')
+    item (_('Download test'), 'download-window.download.download-test')
   }
   section {
     item (_('Preferences'), 'downloader.settings')
@@ -37,7 +38,7 @@ Adw.Window window {
         Adw.PreferencesGroup {
           title: _('Downloading');
 
-          Gtk.ListBox {
+          Gtk.ListBox downloading-list {
             selection-mode: none;
             styles ['boxed-list']
 
@@ -106,7 +107,7 @@ Adw.Window window {
           title: _('Queued');
           sensitive: true;
 
-          Gtk.ListBox {
+          Gtk.ListBox queued-list {
             selection-mode: none;
             styles ['boxed-list']
 
@@ -173,11 +174,14 @@ Adw.Window window {
                 };
             }
 
-
           }
         }
         Adw.PreferencesGroup {
           title: _('Completed');
+
+          Gtk.ListBox completed-list {
+            styles ['boxed-list']
+          }
         }
       }
     };

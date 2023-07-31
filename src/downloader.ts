@@ -32,13 +32,14 @@ class DownloadOrder extends GObject.Object {
       Signals: {
         'stopped': {},
         'started': { param_types: [GObject.TYPE_STRING] },
+        'completed': {},
       }
     }, this);
   }
 
   msg: Soup.Message;
   bytesread: number;
-  size: number;
+  size?: number;
   input_stream: Gio.InputStream | undefined;
   cancellable: Gio.Cancellable;
   session: Soup.Session;
@@ -46,9 +47,12 @@ class DownloadOrder extends GObject.Object {
 
   saved_location: Gio.File;
   output_stream: Gio.FileOutputStream | undefined;
-  monitor: Gio.FileMonitor | undefined;
 
-  constructor(params: { uri: GLib.Uri, size: number, saved_location: Gio.File, session: Soup.Session }) {
+  // this is temporary i swear
+  monitor: Gio.FileMonitor | undefined;
+  monitor_cancellable: Gio.Cancellable | undefined;
+
+  constructor(params: { uri: GLib.Uri, size?: number, saved_location: Gio.File, session: Soup.Session }) {
     super({});
     this.msg = new Soup.Message({ method: 'GET', uri: params.uri });
     this.size = params.size;
@@ -73,11 +77,19 @@ class DownloadOrder extends GObject.Object {
     this.input_stream = await this.session.send_async(this.msg, GLib.PRIORITY_DEFAULT, this.cancellable);
     console.timeEnd('send-async');
     this.output_stream = await this.saved_location.replace_async(null, false, Gio.FileCreateFlags.NONE, GLib.PRIORITY_DEFAULT, this.cancellable);
-    this.monitor = this.saved_location.monitor_file(Gio.FileMonitorFlags.NONE, null);
+    this.monitor_cancellable = new Gio.Cancellable;
+    this.monitor = this.saved_location.monitor_file(Gio.FileMonitorFlags.NONE, this.monitor_cancellable);
     this.monitor.connect('changed', () => {
       Utils.promise_wrap(async () => {
-        const info = await this.saved_location.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, null);
-        this.bytesread = info.get_size();
+        let info;
+        try {
+          info = await this.saved_location.query_info_async(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, GLib.PRIORITY_DEFAULT, this.cancellable);
+        } catch (error) {
+          if (error instanceof GLib.Error) {
+            if (error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.CANCELLED)) { return; }
+          } else throw error;
+        }
+        if (info) this.bytesread = info.get_size();
       });
     });
   }
@@ -91,6 +103,7 @@ class DownloadOrder extends GObject.Object {
       console.warn('Have not established disk outputstream. Download aborted.');
       return;
     }
+    this.monitor_cancellable?.cancel();
     try {
       console.time('download');
       // FIXME(kinten):
@@ -119,6 +132,7 @@ class DownloadOrder extends GObject.Object {
       return;
     }
     console.debug('Download completed!');
+    this.emit('completed');
   }
 
   async start() {
@@ -127,6 +141,7 @@ class DownloadOrder extends GObject.Object {
   }
 
   get_percentage() {
+    if (!this.size) return -1;
     return this.bytesread / this.size;
   }
 
@@ -143,7 +158,6 @@ export default class Downloader extends GObject.Object implements Model {
   session: Soup1.SessionWrap;
   soup_session: Soup.Session;
   download_dir: Gio.File;
-
   queue: Gio.ListStore<DownloadOrder>;
 
   constructor(param: { download_dir: Gio.File }) {
@@ -168,7 +182,7 @@ export default class Downloader extends GObject.Object implements Model {
     return this.queue.get_item(position);
   }
 
-  register_order(params: { uri: GLib.Uri, size: number, name: string }) {
+  register_order(params: { uri: GLib.Uri, size?: number, name: string }) {
     const order = new DownloadOrder({
       uri: params.uri,
       size: params.size,

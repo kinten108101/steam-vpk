@@ -29,4 +29,23 @@ Adw.ExpanderRow row {
       // action setup
     }
   }
+
+  Adw.PreferencesRow action-string {
+    visible: false;
+    child:
+      Gtk.Box {
+        halign: fill;
+        spacing: 12;
+
+        Gtk.Entry action-string-entry {
+          halign: start;
+          hexpand: true;
+        }
+
+        Gtk.Button action-string-activate {
+          halign: end;
+          label: _('Activate');
+        }
+      };
+  }
 }

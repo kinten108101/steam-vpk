@@ -1,23 +1,36 @@
 using Gtk 4.0;
 using Adw 1;
 
-Adw.Window window {
+Adw.PreferencesWindow window {
   default-height: 800;
   default-width: 700;
-  content:
-    Gtk.Box {
-      orientation: vertical;
 
-      Adw.HeaderBar {}
+  Adw.PreferencesPage {
+    name: 'actions';
+    title: 'Actions';
 
-      Adw.PreferencesPage {
-        Adw.PreferencesGroup {
-          title: _('Actions');
+    Adw.PreferencesGroup {
+      title: _('Actions');
 
-          Gtk.ListBox action-list {
-            styles ['boxed-list']
-          }
+      Gtk.ListBox action-list {
+        styles ['boxed-list']
+      }
+    }
+  }
+
+  Adw.PreferencesPage {
+    name: 'stress-test';
+    title: 'Stress Test';
+
+    Adw.PreferencesGroup {
+      Adw.ActionRow {
+        title: _('10 windows');
+
+        [suffix]
+        Gtk.Button ten-windows {
+          label: _('Spawn');
         }
       }
-    };
+    }
+  }
 }

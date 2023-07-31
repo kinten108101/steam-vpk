@@ -62,6 +62,8 @@ export default function debug_window_implement(
     const builder = new TypedBuilder();
     builder.add_from_resource(`${Consts.APP_RDNN}/ui/debug-window.ui`);
 
+    const action_objs = list_action_objs(application);
+
     const model = new Gio.ListStore<DebugWindowActionRowItem>({ item_type: DebugWindowActionRowItem.$gtype });
     const action_list = builder.get_typed_object<Gtk.ListBox>('action-list');
     action_list.bind_model(model, <Gtk.ListBoxCreateWidgetFunc>((_item: GObject.Object) => {
@@ -98,11 +100,37 @@ export default function debug_window_implement(
           action.activate(GLib.Variant.new_boolean(false));
         });
       }
+      else if (action_type.equal(GLib.VariantType.new('s'))) {
+        const row = builder.get_typed_object<Adw.ActionRow>('action-string');
+        row.set_visible(true);
+
+        const entry = builder.get_typed_object<Gtk.Entry>('action-string-entry');
+        const activate = builder.get_typed_object<Gtk.Button>('action-string-activate');
+        activate.connect('clicked', () => {
+          const val = entry.get_text();
+          if (val === null) return;
+          const gvariant = GLib.Variant.new_string(val);
+          action.activate(gvariant);
+        });
+      }
+      else if (action_type.equal(GLib.VariantType.new('i'))) {
+        const row = builder.get_typed_object<Adw.ActionRow>('action-string');
+        row.set_visible(true);
+
+        const entry = builder.get_typed_object<Gtk.Entry>('action-string-entry');
+        const activate = builder.get_typed_object<Gtk.Button>('action-string-activate');
+        activate.connect('clicked', () => {
+          const val = entry.get_text();
+          if (val === null) return;
+          const gvariant = GLib.Variant.new_int32(Number(val));
+          action.activate(gvariant);
+        });
+      }
 
       return row;
     }));
 
-    list_action_objs(application).forEach(({ group: group_name, action }) => {
+    action_objs.forEach(({ group: group_name, action }) => {
       const item = new DebugWindowActionRowItem({
         action,
         group_name,
@@ -110,10 +138,19 @@ export default function debug_window_implement(
       model.append(item);
     });
 
-    const window = builder.get_typed_object<Adw.Window>('window');
+    const ten_windows = builder.get_typed_object<Gtk.Button>('ten-windows');
+    ten_windows.connect('clicked', () => {
+      const actioninfo = action_objs.find(x => x.action.name === 'new-window');
+      if (actioninfo === undefined) {
+        console.warn('Couldn\'t find new-window action for ten-windows');
+        return;
+      }
+      for (let i = 0; i < 10; i++) {
+        actioninfo.action.activate(null);
+      }
+    });
 
-    const debugActions = new Gio.SimpleActionGroup();
-    window.insert_action_group('debug', debugActions);
+    const window = builder.get_typed_object<Adw.PreferencesWindow>('window');
 
     window.present();
   });

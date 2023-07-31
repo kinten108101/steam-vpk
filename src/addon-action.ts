@@ -56,6 +56,15 @@ implements Model {
       case Actions.Create:
         {
           const addon = order.param;
+          if (!addon.stvpkid) {
+            console.warn('Add-on id was not provided. Quitting...');
+            const error = new GLib.Error(
+              addon_storage_error_quark(),
+              AddonStorageError.ADDON_NOT_EXISTS,
+              'Add-on already exists.');
+            order.quit(error);
+            break;
+          }
 
           if (this.readable.index.subdirs.has(addon.stvpkid)) {
             console.warn('Add-on already exists. Quitting...');

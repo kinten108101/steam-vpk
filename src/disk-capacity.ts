@@ -20,7 +20,6 @@ export default class DiskCapacity extends GObject.Object {
   };
 
   used: number | undefined;
-  subdir_sizes: WeakMap<Gio.File, number> = new WeakMap;
   allocated!: number;
   settings!: Gio.Settings;
 
@@ -70,11 +69,6 @@ export default class DiskCapacity extends GObject.Object {
   }
 
   eval_size(subdir: Gio.File): number {
-    const cache = this.subdir_sizes.get(subdir);
-    if (cache !== undefined) {
-      console.debug(`Cached size used for ${subdir.get_path()}`);
-      return cache;
-    }
     const files = Files.list_file(subdir);
     const size = files.map(file => {
       const info = file.query_info(Gio.FILE_ATTRIBUTE_STANDARD_SIZE, Gio.FileQueryInfoFlags.NONE, null);
@@ -82,7 +76,6 @@ export default class DiskCapacity extends GObject.Object {
     }).reduce((acc, size) => {
       return acc + size;
     }, 0);
-    this.subdir_sizes.set(subdir, size);
     return size;
   }
 }

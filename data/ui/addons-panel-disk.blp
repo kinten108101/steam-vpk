@@ -34,7 +34,9 @@ Gtk.Box page {
         Gtk.Button {
           label: _('Reallocate...');
           valign: center;
-          action-name: 'addons-panel-disk.allocate';
+          action-name: 'win.addons-panel-disk.allocate';
+          action-target: '-1';
+          // will use maybe type
         }
       }
 
@@ -44,7 +46,7 @@ Gtk.Box page {
 
         [suffix]
         Gtk.Button step-out {
-          action-name: "addons-panel-disk.explore";
+          action-name: "win.addons-panel-disk.explore";
           valign: center;
           styles ['flat', 'dim-label']
 

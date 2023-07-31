@@ -1,5 +1,6 @@
 using Gtk 4.0;
 using Adw 1;
+using GLib 2.0;
 
 Gtk.Box page {
   styles ['addon-details']
@@ -106,24 +107,57 @@ Gtk.Box page {
         value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
 
         [suffix]
-        Gtk.Button {
-          icon-name: 'build-alt-symbolic';
+        Gtk.Button stvpkid-copy {
+          icon-name: 'edit-copy-symbolic';
+          action-name: 'win.addon-details.copy-string';
+          action-target: bind (data as <$StvpkBuilderData>).id;
           valign: center;
           styles ['flat']
         }
       }
 
       $StvpkFieldRow steamid {
+        visible: false;
         icon-name: 'fingerprint-symbolic';
         title: _('Steamworks ID');
         //subtitle: _('For vanity data and other resources.');
         value: '2396847377'; // placeholder
 
         [suffix]
-        Gtk.Button {
-          icon-name: 'build-alt-symbolic';
+        Gtk.Button steamid-copy {
+          icon-name: 'edit-copy-symbolic';
+          action-name: 'win.addon-details.copy-string';
+          action-target: bind (data as <$StvpkBuilderData>).steamid;
           valign: center;
           styles ['flat']
+        }
+      }
+
+      Adw.ActionRow visit-steam-row {
+        visible: false;
+        title: _('View in Workshop');
+        subtitle: ''; // placeholder
+        activatable-widget: visit-steam-button;
+
+        [suffix]
+        Gtk.Button visit-steam-button {
+          action-name: 'win.addon-details.visit-website';
+          action-target: bind (data as <$StvpkBuilderData>).steam-url;
+          icon-name: 'step-out-symbolic';
+          valign: center;
+          styles ['flat', 'dim-label']
+        }
+      }
+
+      Adw.ActionRow {
+        title: _('Open in Explorer');
+        activatable-widget: explore-button;
+
+        [suffix]
+        Gtk.Button explore-button {
+          icon-name: 'folder-symbolic';
+          valign: center;
+          styles ['flat', 'dim-label']
         }
       }
     }
@@ -203,7 +237,7 @@ Gtk.Box page {
 
         [suffix]
         Gtk.Button delete-button {
-          action-name: 'addons.trash';
+          action-name: 'win.addons.trash';
           action-target: bind (data as <$StvpkBuilderData>).id;
           valign: center;
           label: _('Delete');
@@ -215,5 +249,4 @@ Gtk.Box page {
 
 }
 
-$StvpkBuilderData data {
-}
+$StvpkBuilderData data {}

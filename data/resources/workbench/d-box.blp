@@ -1,0 +1,78 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 600;
+  default-height: 200;
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {
+        [end]
+        Gtk.MenuButton {
+          icon-name: 'open-menu-symbolic';
+          styles ['flat']
+
+          popover:
+            Gtk.Popover {
+              child:
+                Gtk.Box {
+
+                Gtk.ListView {
+                  styles ['navigation-sidebar']
+                  factory:
+                    Gtk.BuilderListItemFactory {
+                      template ListItem {
+                        child:
+                          Adw.Clamp {
+                            maximum-size: 600;
+                            Gtk.Box {
+                              halign: fill;
+                              spacing: 8;
+                              styles ['d-box']
+
+                              Gtk.Box {
+                                halign: fill;
+                                orientation: vertical;
+                                spacing: 8;
+
+                                Gtk.Label {
+                                  halign: start;
+                                  label: bind template.item as <StringObject>.string;
+                                  styles ['d-title']
+                                }
+
+                                Gtk.ProgressBar {
+                                  fraction: 0.8;
+                                }
+
+                                Gtk.Label {
+                                  halign: start;
+                                  label: 'Downloading: 98.5 MB/103.5 MB (3.8 MB/s)';
+                                  styles ['d-info']
+                                }
+                              }
+
+                            }
+                          };
+                      }
+                    };
+                  model:
+                    Gtk.NoSelection {
+                      model:
+                        Gtk.StringList {
+                          strings ['Installing Necessary SDKs', 'Upgrading legacy add-ons']
+                        };
+                    };
+                }
+                };
+            };
+
+          Gtk.Spinner {
+            spinning: true;
+          }
+        }
+      }
+    };
+}

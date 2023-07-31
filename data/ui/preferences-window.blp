@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkPreferencesWindow : Adw.PreferencesWindow {
+Adw.PreferencesWindow window {
   can-navigate-back: true;
   modal: true;
 
@@ -10,15 +10,26 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
     title: _("General");
 
     Adw.PreferencesGroup section_one {
-      title: _("Settings are fun");
 
       Adw.ActionRow pref_darkmode {
-        title: _("Dark Mode");
-        subtitle: _("Use dark theme");
+        title: _("Default Game Directory");
+        subtitle: _("Can be overriden by profile");
 
-        Gtk.Switch {
+        Gtk.Button {
           valign: center;
-          action-name: "settings.dark-theme";
+          action-name: 'pref-win.settings.set-game-dir';
+
+          Gtk.Box {
+            spacing: 8;
+
+            Gtk.Image {
+              icon-name: 'document-open-symbolic';
+            }
+
+            Gtk.Label game-dir-path {
+              ellipsize: middle;
+            }
+          }
         }
       }
     }

@@ -20,18 +20,22 @@ import { DownloadPage } from './download-page.js';
 import { LaunchpadPage } from './launchpad.js';
 import { ProfileBar } from './profile-bar.js';
 import { Config } from './config.js'
-import { PreferencesWindow } from './preferences-window.js';
+import PreferencesWindow from './preferences-window.js';
 import { LateBindee, Model } from './mvc.js';
 import { Stvpk } from './application.js';
 import { AddonStorage } from './addon-storage.js';
 import { Profile } from './profiles.js';
-import { AddAddon } from './add-addon.js';
+import AddAddonActions, { AddAddon } from './add-addon.js';
 import ViewModelBinder, { ViewModelBindee } from './view-model-binder.js';
 import addon_storage_controls from './addon-storage-controls.js';
 import addon_details_implement from './addon-details.js';
-import download_window_implement from './download-window.js';
+import DownloadWindow, { DownloadWindowActions } from './download-window.js';
 import profile_window_implement from './profile-window.js';
-import addons_panel_implement, { addons_panel_disk_implement } from './addons-panel.js';
+import addons_panel_implement, { AddonsPanelDiskActions, AddonsPanelDiskAllocateModal, AddonsPanelDiskPage, DiskModal } from './addons-panel.js';
+import InjectorActions from './injector-actions.js';
+import InjectConsole, { InjectConsoleActions } from './inject-console.js';
+import ArchiveActions from './archive-controls.js';
+import { SettingsActions } from './settings.js';
 
 export interface MainWindowContext { application: Stvpk, main_window: Window }
 
@@ -63,6 +67,7 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
         'leaflet',
         'view-switcher',
         'profile-bar-clamp',
+        'inject-console',
       ],
     }, this);
   }
@@ -81,20 +86,22 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
   binder: ViewModelBinder<MainWindowContext, this>;
   view_switcher!: Adw.ViewSwitcher;
   profile_bar_clamp!: Adw.Clamp;
+  inject_console?: InjectConsole;
 
   constructor(params: Adw.ApplicationWindow.ConstructorProperties & { stvpk: Stvpk }) {
     const { stvpk, ..._params } = params;
     super(_params);
-    this.actionGroups = new Map();
-
-
     this.stvpk = params.stvpk;
+
+    AddonsPanelDiskPage({
+      leaflet: this.leaflet,
+      disk_capacity: this.stvpk.diskCapacity,
+    });
+    this.actionGroups = new Map();
     if (Const.BUILD_TYPE === Const.BuildTypes.debug)
       this.get_style_context().add_class('devel');
-
     this.profiles = new Map();
     this.currentProfile = null;
-
     const context: MainWindowContext = { application: this.stvpk, main_window: this };
     [
       this.downloadPage,
@@ -114,6 +121,11 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
     new AddAddon({
       application: this.stvpk,
       window: this,
+      archiver: this.stvpk.archiver,
+    });
+    AddAddonActions({
+      action_map: this,
+      addon_storage: this.stvpk.addonStorage,
     });
     addon_details_implement({
       addonStorage: this.stvpk.addonStorage,
@@ -124,10 +136,11 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
       action_map: this,
     });
     addon_storage_controls(context);
-    download_window_implement({
+    DownloadWindowActions({
       application: this.application,
       main_window: this,
       downloader: this.stvpk.downloader,
+      DownloadWindow: DownloadWindow.bind(null, { addonStorage: this.stvpk.addonStorage, downloader: this.stvpk.downloader }),
     });
     profile_window_implement({
       main_window: this,
@@ -137,11 +150,29 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
       diskCapacity: this.stvpk.diskCapacity,
       addonStorage: this.stvpk.addonStorage,
     });
-    addons_panel_disk_implement({
-      main_window: this,
+    AddonsPanelDiskActions({
       leaflet: this.leaflet,
-      addons_dir: this.stvpk.addons_dir,
+      main_window: this,
+      action_map: this,
+      addons_dir: this.stvpk.addonStorage.subdirFolder,
       disk_capacity: this.stvpk.diskCapacity,
+      Modal: (function() {
+              const {instance, present} = AddonsPanelDiskAllocateModal();
+              return { present, close: () => { instance.close(); } };
+            }) as unknown as { new(): DiskModal },
+    });
+    InjectorActions({
+      injector: this.stvpk.injector,
+      action_map: this,
+    });
+    InjectConsoleActions({
+      inject_console: this.inject_console,
+      action_map: this,
+    });
+    ArchiveActions({
+      action_map: this,
+      addon_storage: this.stvpk.addonStorage,
+      archiver: this.stvpk.archiver,
     });
   }
 
@@ -181,11 +212,21 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
   }
 
   setupWindowActions() {
+    const group = new Gio.SimpleActionGroup();
+    SettingsActions({
+      action_map: group,
+      settings: this.stvpk.settings,
+      parent_window: this,
+    });
     const showPreferences = Gio1.SimpleAction
       .builder({ name: 'show-preferences' })
       .activate(() => {
-        const prefWin = new PreferencesWindow();
-        prefWin.set_transient_for(this);
+        const [prefWin, bind, insert_action_group] = PreferencesWindow();
+        bind({
+          parent_window: this,
+          settings: this.stvpk.settings,
+        });
+        insert_action_group(group);
         prefWin.present();
       })
       .build();

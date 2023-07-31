@@ -1,0 +1,23 @@
+.launchpad-row .icon {
+  background-color: @blue_3;
+  border-radius: 999px;
+  padding: 8px;
+  margin: 8px;
+}
+
+.launchpad-row .ztitle {
+
+}
+
+.launchpad-row .zsubtitle {
+  color: @light_5;
+  font-size: small;
+}
+
+.launchpad-row .zexcerpt {
+  color: @light_5;
+}
+
+.launchpad-row.sep label {
+  font-style: italic;
+}

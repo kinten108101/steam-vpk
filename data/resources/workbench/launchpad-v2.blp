@@ -1,0 +1,165 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 864;
+
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {}
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          Adw.PreferencesRow {
+            styles ['launchpad-row']
+            child:
+            Gtk.Box {
+              margin-top: 8;
+              margin-bottom: 8;
+              margin-end: 8;
+              margin-start: 8;
+              spacing: 8;
+
+              Gtk.Image {
+                valign: center;
+                margin-start: 12;
+                icon-name: 'list-drag-handle-symbolic';
+                styles ['dim-label']
+              }
+
+              Gtk.Image {
+                valign: center;
+                icon-name: 'media-flash-symbolic';
+                styles ['icon']
+              }
+
+              Gtk.Box {
+                orientation: vertical;
+
+                Gtk.Label {
+                  halign: start;
+                  label: 'MW2019 Ellis';
+                  ellipsize: end;
+                  styles ['ztitle']
+                }
+
+                Gtk.Label {
+                  visible: false;
+                  label: 'mw2019-ellis@mav';
+                  ellipsize: end;
+                  halign: start;
+                  styles ['zsubtitle']
+                }
+
+                Gtk.Label {
+                  visible: true;
+                  label: '模型：Modern Warfare2019\n替换-Ellis\n感谢MLUI的表情修复. 模型：Modern Warfare2019\r替换-Ellis\r感谢MLUI的表情修复. 模型：Modern Warfare2019\n替换-Ellis\n感谢MLUI的表情修复';
+                  halign: start;
+                  valign: start;
+                  xalign: 0;
+                  yalign: 0;
+                  ellipsize: end;
+                  lines: 1;
+                  wrap: true;
+                  single-line-mode: true;
+                  styles ['zexcerpt']
+                }
+              }
+
+              Gtk.Switch {
+                valign: center;
+                margin-end: 12;
+              }
+            };
+          }
+
+          Adw.PreferencesRow {
+            styles ['launchpad-row', 'sep']
+            child:
+            Gtk.Box {
+             margin-top: 8;
+              margin-bottom: 8;
+              margin-end: 8;
+              margin-start: 8;
+              spacing: 8;
+              Gtk.Image {
+                valign: center;
+                margin-start: 12;
+                icon-name: 'list-drag-handle-symbolic';
+                styles ['dim-label']
+              }
+
+              Gtk.Label {
+                margin-start: 56;
+                label: 'Skin add-ons';
+              }
+            };
+          }
+
+          Adw.PreferencesRow {
+            styles ['launchpad-row']
+            child:
+            Gtk.Box {
+              margin-top: 8;
+              margin-bottom: 8;
+              margin-end: 8;
+              margin-start: 8;
+              spacing: 8;
+
+              Gtk.Image {
+                valign: center;
+                margin-start: 12;
+                icon-name: 'list-drag-handle-symbolic';
+                styles ['dim-label']
+              }
+
+              Gtk.Image {
+                valign: center;
+                icon-name: 'media-flash-symbolic';
+                styles ['icon']
+              }
+
+              Gtk.Box {
+                orientation: vertical;
+
+                Gtk.Label {
+                  halign: start;
+                  label: 'Niko Bellic Remastered - Sasha\'s Jacket (Nick)';
+                  ellipsize: end;
+                  styles ['ztitle']
+                }
+
+                Gtk.Label {
+                  visible: false;
+                  label: 'niko-bellic-remastered-sasha-s-jacket-nick@Afifa';
+                  ellipsize: end;
+                  halign: start;
+                  styles ['zsubtitle']
+                }
+
+                Gtk.Label {
+                  visible: true;
+                  label: '[h1]Life is complicated.[/h1]\n\nThe Serb / Yugoslavian war veteran protagonist, now playable with a new look.\n\n[b] Went on to make this after seeing [url=https://steamcommunity.com/workshop/filedetails/?id=2986995208]Jo\'s updated Niko Bellic model.[/url] Haven\'t seen any of him in different outfits, so I decided to bring in the blue tracksuit and pants from the base game. ';
+                  halign: start;
+                  valign: start;
+                  xalign: 0;
+                  yalign: 0;
+                  ellipsize: end;
+                  lines: 1;
+                  wrap: true;
+                  single-line-mode: true;
+                  styles ['zexcerpt']
+                }
+              }
+
+              Gtk.Switch {
+                valign: center;
+                margin-end: 12;
+              }
+            };
+          }
+        }
+      }
+    };
+}

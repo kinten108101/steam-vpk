@@ -1,5 +1,6 @@
 icons = [
   'addon-box.svg',
+  'arrow2-up-symbolic.svg',
   'build-alt-symbolic.svg',
   'cloud-disabled-symbolic.svg',
   'cloud-filled-symbolic.svg',
@@ -18,4 +19,5 @@ icons = [
   'terminal-symbolic.svg',
   'update-symbolic.svg',
   'warning-symbolic.svg',
+  'wrench-wide-symbolic.svg',
 ]

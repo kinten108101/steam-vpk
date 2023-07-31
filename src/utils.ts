@@ -53,8 +53,6 @@ Gio._promisify(Gio.OutputStream.prototype,
   'close_async',
   'close_finish');
 
-
-
 Gio._promisify(Gio.InputStream.prototype,
   'read_bytes_async',
   'read_bytes_finish');
@@ -67,8 +65,22 @@ Gio._promisify(Gio.OutputStream.prototype,
   'splice_async',
   'splice_finish');
 
+Gio._promisify(Gio.File.prototype,
+  'move_async',
+  'move_finish');
+
 export const Decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
 export const Encoder = new TextEncoder();
+
+/**
+ * @deprecated This is very slow.
+ */
+export function array_insert<T>(source: Array<T>, item: T, index: number) {
+  for (let i = source.length; i > index; i--) {
+    source[i] = source[i-1] as T;
+  }
+  source[index] = item;
+}
 
 export function promise_wrap(cb: (...args: any[]) => Promise<void>, ...args: any[]) {
   return cb(args).catch(error => { log_error(error) });

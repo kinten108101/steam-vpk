@@ -47,58 +47,10 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
 
   [prefix]
-  Gtk.Box {
-    margin-top: 8;
-    margin-bottom: 8;
-    margin-start: 8;
-    spacing: 8;
-
-    Gtk.Image {
-      valign: center;
-      icon-name: 'list-drag-handle-symbolic';
-      styles ['dim-label']
-    }
-
-    Gtk.Image {
-      visible: false;
-      valign: center;
-      icon-name: 'media-flash-symbolic';
-      styles ['icon']
-    }
-
-    Gtk.Box {
-      margin-start: 8;
-      orientation: vertical;
-
-      Gtk.Label ztitle {
-        halign: start;
-        label: 'MW2019 Ellis';
-        ellipsize: end;
-        styles ['ztitle']
-      }
-
-      Gtk.Label zsubtitle {
-        visible: false;
-        label: 'mw2019-ellis@mav';
-        ellipsize: end;
-        halign: start;
-        styles ['zsubtitle']
-      }
-
-      Gtk.Label zexcerpt {
-        visible: false;
-        label: '模型：Modern Warfare2019\n替换-Ellis\n感谢MLUI的表情修复. 模型：Modern Warfare2019\r替换-Ellis\r感谢MLUI的表情修复. 模型：Modern Warfare2019\n替换-Ellis\n感谢MLUI的表情修复';
-        halign: start;
-        valign: start;
-        xalign: 0;
-        yalign: 0;
-        ellipsize: end;
-        lines: 2;
-        wrap: true;
-        single-line-mode: true;
-        styles ['zexcerpt']
-      }
-    }
+  Gtk.Image {
+    visible: true;
+    icon-name: "list-drag-handle-symbolic";
+    styles ['drag-handle']
   }
 
   [action]
@@ -134,19 +86,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       styles ['lozenge', 'grey', 'opaque']
     }
 
-    Gtk.MenuButton {
-      visible: true;
-      valign: center;
-      popover:
-        Gtk.PopoverMenu popoverMenu {
-          menu-model: move-row-menu;
-        };
-      icon-name: "wrench-wide-symbolic";
-      tooltip-text: "Options";
-
-      styles ["flat"]
-    }
-
     Gtk.Switch toggle {
       valign: center;
       halign: center;
@@ -156,8 +95,20 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       // action-target is set in code
     }
 
-    Gtk.Button remove-small {
+    Gtk.MenuButton {
       visible: false;
+      valign: center;
+      popover:
+        Gtk.PopoverMenu popoverMenu {
+          menu-model: move-row-menu;
+        };
+      icon-name: "view-more-symbolic";
+      tooltip-text: "Options";
+
+      styles ["flat"]
+    }
+
+    Gtk.Button remove-small {
       icon-name: 'cross-filled-symbolic';
       action-name: 'win.addons.remove';
       valign: center;
@@ -165,16 +116,14 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
     }
   }
 
-  Gtk.ListBoxRow {
+  Gtk.ListBoxRow { // by default the expansion menu is activatable no matter the row?? A workaround is to use listboxrow and disable activatable there.
     activatable: false;
-    visible: false;
 
     Gtk.Grid {
       styles ["row-content"]
 
       row-spacing: 15;
       column-spacing: 15;
-      margin-top: 4;
 
       Gtk.Label {
         styles ["dim-label"]
@@ -233,6 +182,7 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
           selectable: true;
           halign: start;
           valign: start;
+          margin-start: 4;
           margin-end: 4;
         }
       }

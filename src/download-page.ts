@@ -222,8 +222,6 @@ implements LateBindee<MainWindowContext> {
   }
 
   updateLayout = () => {
-    console.debug('<<updateLayout>>');
-    console.debug('loadorder:', this.context.application.addonStorage.loadorder);
     this.localRepoModel.remove_all();
     this.remoteRepoModel.remove_all();
     this.addonStorage.idmap.forEach(x => {

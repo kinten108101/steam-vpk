@@ -8,51 +8,85 @@ import Pango from 'gi://Pango';
 
 import { Config } from './config.js';
 import Window, { MainWindowContext } from './window.js';
-import { AddonStorage } from './addon-storage.js';
+import { AddonStorage, Configuration, ItemType } from './addon-storage.js';
 import { Addon, AddonFlags } from './addons.js';
 import { gobjectClass } from './utils/decorator.js';
 import * as Markup from './markup.js';
 import ViewModelBinder, { ViewModelBindee } from './view-model-binder.js';
 import { g_param_default } from './utils.js';
+import { Stvpk } from './application.js';
 
 class AddonlistPageItem extends GObject.Object {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkAddonlistPageItem',
       Properties: {
+        'origin': GObject.ParamSpec.object('origin', 'origin', 'origin', g_param_default, Addon.$gtype),
         'name': GObject.ParamSpec.string('name', 'name', 'name', GObject.ParamFlags.READWRITE, ''),
         'id': GObject.ParamSpec.string('id', 'id', 'id', GObject.ParamFlags.READWRITE, ''),
         'enabled': GObject.ParamSpec.boolean('enabled', 'enabled', 'enabled', GObject.ParamFlags.READWRITE, true),
         'description': GObject.ParamSpec.string('description', 'description', 'description', GObject.ParamFlags.READWRITE, ''),
+        'description-short': GObject.ParamSpec.string('description-short', '', '', GObject.ParamFlags.READWRITE, ''),
         'last-update': GObject.ParamSpec.string('last-update', 'last-update', 'last-update', GObject.ParamFlags.READWRITE, ''),
         'in-randomizer': GObject.ParamSpec.boolean('in-randomizer', 'in-randomizer', 'in-randomizer', GObject.ParamFlags.READWRITE, false),
-        'flags': GObject.ParamSpec.int('flags', 'flags', 'flags', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, AddonFlags.NONE, AddonFlags.max, AddonFlags.NONE)
+        'flags': GObject.ParamSpec.int('flags', 'flags', 'flags', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, AddonFlags.NONE, AddonFlags.max, AddonFlags.NONE),
+        'has-archive': GObject.ParamSpec.boolean('has-archive', 'has-archive', 'has-archive', GObject.ParamFlags.READWRITE, false),
+        'install_missing_archive': GObject.ParamSpec.boolean('install_missing_archive', 'install_missing_archive', 'install_missing_archive', GObject.ParamFlags.READWRITE, false),
       },
     }, this);
   }
 
-  name!: string;
-  id!: string;
-  enabled!: boolean;
-  description!: string;
-  last_update!: string;
-  in_randomizer!: boolean;
+  origin!: Addon;
+  name: string;
+  id: string;
+  enabled: boolean;
+  description: string;
+  description_short: string;
+  last_update: string;
+  in_randomizer: boolean;
   flags!: AddonFlags;
-
+  has_archive: boolean;
+  install_missing_archive: boolean;
 
   constructor(param: {
-    name: string;
-    id: string;
-    enabled: boolean;
-    description: string;
-    last_update: string;
-    in_randomizer: boolean;
-    flags: AddonFlags;
+    origin: Addon;
+    initialState?: Configuration;
   }) {
-    super(param);
+    const { initialState, ..._params } = param;
+    super(_params);
     if (!AddonFlags.valid(this.flags)) {
       throw new Error('AddonFlag enum isn\'t set up correctly!');
     }
+    this.name = `${Markup.MakeCompatPango(this.origin.title || '')}`;
+    this.id = `${this.origin.id || ''}`;
+    this.enabled = (() => {
+      if (initialState) {
+        return initialState.active;
+      }
+      return false;
+    })();
+    this.description = (() => {
+      const markup = Markup.SteamMd2Pango(this.origin.description || '');
+      try {
+        Pango.parse_markup(markup, -1, '_');
+      } catch (error) {
+        return Markup.MakeCompatPango(this.origin.description || '');
+      }
+      return markup;
+    })();
+    this.description_short = (() => {
+      return Markup.MakeCompatPango(this.origin.description || '').substring(0, 100);
+    })();
+    this.last_update = (() => {
+      const date = this.origin.timeUpdated;
+      if (date === undefined) return '';
+      const display = `${date.toDateString()} @ ${date.toLocaleTimeString()}`;
+      return display;
+    })();
+    this.in_randomizer = false;
+    this.flags = this.origin.flags;
+    this.has_archive = this.origin.has_archive_lite();
+    this.install_missing_archive = this.origin.is_viable_remote_archive_registration();
   }
 }
 
@@ -68,6 +102,7 @@ export class LaunchpadRow extends Adw.ExpanderRow {
       },
       Template: `resource://${Config.config.app_rdnn}/ui/launchpad-row.ui`,
       Children: [
+        'title_field',
         'description_field',
         'last_update_field',
         'toggle',
@@ -77,12 +112,19 @@ export class LaunchpadRow extends Adw.ExpanderRow {
         'popoverMenu',
         'enterPosition',
         'warning',
+        'no-archive',
+        'install-archive',
+        'remove-small',
+        'ztitle',
+        'zsubtitle',
+        'zexcerpt',
       ],
     }, this);
   }
 
   itemk!: AddonlistPageItem;
 
+  title_field!: Gtk.Label;
   description_field!: Gtk.Label;
   last_update_field!: Gtk.Label;
   toggle!: Gtk.Switch;
@@ -94,29 +136,45 @@ export class LaunchpadRow extends Adw.ExpanderRow {
   moveDown: Gio.MenuItem;
   popoverMenu!: Gtk.PopoverMenu;
   warning!: Gtk.Button;
+  no_archive!: Gtk.Button;
+  install_archive!: Gtk.Button;
+  remove_small!: Gtk.Button;
+
+  ztitle!: Gtk.Label;
+  zsubtitle!: Gtk.Label;
+  zexcerpt!: Gtk.Label;
 
   constructor(params: { itemk: AddonlistPageItem } & Adw.ExpanderRow.ConstructorProperties) {
     super(params);
-    this.itemk.bind_property('name', this, 'title', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    //this.itemk.bind_property('name', this, 'subtitle', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    //this.itemk.bind_property('id', this, 'title', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    this.itemk.bind_property('enabled', this.toggle, 'active', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    this.itemk.bind_property('description', this.description_field, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
-    this.itemk.bind_property('last_update', this.last_update_field, 'label', GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL);
+    const id = GLib.Variant.new_string(this.itemk.id);
+    const flags = GObject.BindingFlags.SYNC_CREATE | GObject.BindingFlags.BIDIRECTIONAL;
+    this.itemk.bind_property('name', this.ztitle, 'label', flags);
+    this.itemk.bind_property('id', this.zsubtitle, 'label', flags);
+    this.itemk.bind_property('description-short', this.zexcerpt, 'label', flags);
+
+    this.itemk.bind_property('name', this.title_field, 'label', flags);
+    this.itemk.bind_property('enabled', this.toggle, 'active', flags);
+    this.itemk.bind_property('description', this.description_field, 'label', flags);
+    this.itemk.bind_property('last_update', this.last_update_field, 'label', flags);
     if (AddonFlags.includes(this.itemk.flags, AddonFlags.DUMMY)) {
       this.set_title('<i>Unknown add-on</i>');
       this.warning.set_visible(true);
     }
-    this.itemk.flags
-    const id = new GLib.Variant('s', this.itemk.id);
+    if (!this.itemk.has_archive) {
+      this.no_archive.set_visible(true);
+    }
+    if (this.itemk.install_missing_archive) {
+      this.install_archive.set_visible(true);
+    }
+    this.install_archive.set_action_target_value(id);
     this.seeDetails.set_action_target_value(id);
     this.removeAddon.set_action_target_value(id);
+    this.remove_small.set_action_target_value(id);
 
     this.moveUp = new Gio.MenuItem();
     this.moveUp.set_label('Move Up');
     this.moveUp.set_action_and_target_value('addons.move-up', id);
     this.moveSection.append_item(this.moveUp);
-    // why couldnt i set action and target value outside of constructor
 
     this.moveDown = new Gio.MenuItem();
     this.moveDown.set_label('Move Down');
@@ -178,7 +236,6 @@ implements ViewModelBindee<MainWindowContext> {
 
   constructor(props: { title: string } & Gtk.Box.ConstructorProperties) {
     super(props);
-    GObject.TYPE_NONE
     this.section_list.bind_model(this.model, this.rowFactory.bind(this));
     // new GtkDropTarget did not work
     this.drop_target = Gtk.DropTarget.new(LaunchpadRow.$gtype, Gdk.DragAction.MOVE);
@@ -191,7 +248,7 @@ implements ViewModelBindee<MainWindowContext> {
   }
 
   onBind = (context: MainWindowContext): void => {
-    this.drop_target.connect('drop', (_, origin, __, y): boolean => {
+    this.drop_target.connect('drop', (_, origin: LaunchpadRow, __, y): boolean => {
       if (origin === null) {
         console.warn('Could not retrieve packaged drag value. Quitting...');
         return false;
@@ -230,6 +287,8 @@ implements ViewModelBindee<MainWindowContext> {
       context.application.addonStorage.loadorder_insert_silent(origin_idx, target_idx);
       this.section_list.remove(origin);
       this.section_list.insert(origin, target_idx);
+      console.log(origin.grab_focus());
+      context.application.addonStorage.emit(AddonStorage.Signals.loadorder_order_changed);
       row.set_state_flags(Gtk.StateFlags.NORMAL, true);
       console.timeEnd('dnd-insert');
       return true;
@@ -241,6 +300,7 @@ implements ViewModelBindee<MainWindowContext> {
     const row = new LaunchpadRow({
       itemk: _val,
     });
+    row.set_can_focus(true);
     this.#setupDrag(row);
     return row;
   }
@@ -322,7 +382,9 @@ implements ViewModelBindee<MainWindowContext> {
     }, this);
   }
 
-  context!: MainWindowContext;
+  addonStorage!: AddonStorage;
+  // TODO(kinten): Unless we do diffing, there is no difference between a BST and an array if we'll just refill content every thing. So for now, use an array
+  arrStorage: AddonlistPageItem[] = [];
   binder: ViewModelBinder<MainWindowContext, this>;
 
   constructor() {
@@ -332,96 +394,62 @@ implements ViewModelBindee<MainWindowContext> {
     this.binder = new ViewModelBinder([], this);
   }
 
-  onBind = (context: MainWindowContext) => {
-    this.context = context;
-    //context.application.addonStorage.connect(AddonStorage.Signals.storage_changed, this.updateModel);
-    context.application.addonStorage.connect(AddonStorage.Signals.addons_changed, this.updateModel);
-    context.application.addonStorage.connect(AddonStorage.Signals.loadorder_changed, this.updateModel);
-    context.application.addonStorage.connect(AddonStorage.Signals.loadorder_order_changed, this.updateModel);
-    // do not listen to loadorder-config-changed because all of these configs are controlled by launchpad actions -> the widgets have changed by themselves.
-    //context.application.addonStorage.connect(AddonStorage.Signals.loadorder_config_changed, this.updateModel);
-    context.main_window.connect(Window.Signals.first_flush, this.updateModel);
-    //context.main_window.connect('notify::current-profile', this.updateModel);
+  onBind = ({
+    application,
+    main_window,
+  }:
+  {
+    application: Stvpk;
+    main_window: Window;
+  }) => {
+    this.addonStorage = application.addonStorage;
+    application.addonStorage.connect_after(AddonStorage.Signals.addons_changed, this.updateModel);
+    application.addonStorage.connect_after(AddonStorage.Signals.loadorder_changed, this.updateModel);
+    // NOTE(kinten) do not listen to loadorder-config-changed because all of these configs are controlled by launchpad actions -> the widgets have changed by themselves.
+    main_window.connect(Window.Signals.first_flush, this.updateModel);
   }
 
   updateModel = () => {
-    const arr: AddonlistPageItem[] = [];
-    const loadorder: Addon[] = (() => {
-      if (this.context.main_window.currentProfile !== null) {
-        return this.context.main_window.currentProfile.adapt_loadorder(this.context.application.addonStorage.idmap) as Addon[];
+    const items: AddonlistPageItem[] = [];
+    this.addonStorage.loadorder.forEach(x => {
+      const config = this.addonStorage.configmap.get(x);
+      if (!config) {
+        return;
       }
-      const draft: Addon[] = [];
-      this.context.application.addonStorage.loadorder.forEach(x => {
-        const addon = this.context.application.addonStorage.get(x);
-        if (addon === undefined) {
-          draft.push(Addon.new_from_manifest({
-            stvpkid: x,
-          }, AddonFlags.DUMMY));
-          return;
-        }
-        draft.push(addon);
-      });
-      return draft;
-    })();
-    loadorder.forEach(x => {
-      const newItem = this.factory(x);
-      arr.push(newItem);
+      switch (config.type) {
+      case ItemType.separator: {
+        const sep = this.addonStorage.sepmap.get(x);
+        if (!sep) return;
+        //const item = this.separator2item(sep);
+        //items.push(item);
+      } break;
+      case ItemType.addon: {
+        const addon = this.addonStorage.get(x) || this.addonStorage.make_dummy(x);
+        const item = this.addon2item(addon);
+        items.push(item);
+      } break;
+      }
     });
-    this.changeState(arr);
+    this.changeState(items);
   }
 
-  factory(addon: Addon): AddonlistPageItem {
+  addon2item(addon: Addon): AddonlistPageItem {
     const id = addon.vanityId;
-    const config = this.context.application.addonStorage.configmap.get(id);
+    const config = this.addonStorage.configmap.get(id);
     if (config === undefined) {
       console.warn(`Could not find configuration when building addonListPageItem for ${id}`);
     }
 
     const item = new AddonlistPageItem({
-      name: Markup.MakeCompatPango(addon.title || ''),
-      id: addon.vanityId || '',
-      enabled: (() => {
-              if (config) {
-                return config.active;
-              }
-              return false;
-            })(),
-      description: (() => {
-                const markup = Markup.SteamMd2Pango(addon.description || '');
-                try {
-                  Pango.parse_markup(markup, -1, '_');
-                } catch (error) {
-                  return Markup.MakeCompatPango(addon.description || '');
-                }
-                return markup;
-              })(),
-      last_update: (() => {
-                const date = addon.timeUpdated;
-                if (date === undefined) return '';
-                const display = `${date.toDateString()} @ ${date.toLocaleTimeString()}`;
-                return display;
-              })(),
-      in_randomizer: false,
-      flags: addon.flags,
+      origin: addon,
+      initialState: config,
     });
     return item;
   }
 
-  // TODO(kinten): Unless we do diffing, there is no difference between a BST and an array if we'll just refill content every thing. So for now, use an array
-  arrStorage?: AddonlistPageItem[] = [];
 
-  /*
-  changeState(col: AddonlistPageItem[]) {
-    this.remove_all();
-    col.forEach(x => {
-      this.append(x);
-    });
-    this.emit('state-changed');
-  }
-  */
 
   changeState(col: AddonlistPageItem[]) {
-    delete this.arrStorage;
     this.arrStorage = col;
     this.emit('state-changed');
   }
@@ -445,7 +473,6 @@ implements ViewModelBindee<MainWindowContext> {
 })
 export class LaunchpadPage extends Gtk.Box implements ViewModelBindee<MainWindowContext> {
   model: AddonlistModel;
-  contentArea!: Gtk.Box;
   enable_addon!: Gtk.Switch;
   defaultSection!: LaunchpadSection;
   binder: ViewModelBinder<MainWindowContext, this>;

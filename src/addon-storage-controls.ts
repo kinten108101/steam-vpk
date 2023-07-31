@@ -16,11 +16,8 @@ export function logged(func: Function) {
 }
 
 export default function addon_storage_controls(context: MainWindowContext) {
-  const addonsGroup = new Gio.SimpleActionGroup();
-  context.main_window.insert_action_group('addons', addonsGroup);
-
   const enableAddon = Gio1.SimpleAction
-    .builder({ name: 'enabled', parameterType: GLib.VariantType.new('b') })
+    .builder({ name: 'addons.enabled', parameterType: GLib.VariantType.new('b') })
     .activate((_, parameter) => {
       // TODO(kinten): js primitive equality check. Can we use gvariant instead?
       console.debug('<<enableAddon>>');
@@ -32,10 +29,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       }
     })
     .build();
-  addonsGroup.add_action(enableAddon);
+  context.main_window.add_action(enableAddon);
 
   const includeInProfile = Gio1.SimpleAction
-    .builder({ name: 'box', parameterType: GLib.VariantType.new('s') })
+    .builder({ name: 'addons.box', parameterType: GLib.VariantType.new('s') })
     .activate((_, parameter) => {
       console.log('<<includeInProfile>>');
       const id = Utils.g_variant_unpack<string>(parameter, 'string');
@@ -43,10 +40,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       context.application.addonStorage.loadorder_push(id);
     })
     .build();
-  addonsGroup.add_action(includeInProfile);
+  context.main_window.add_action(includeInProfile);
 
   const moveUp = Gio1.SimpleAction
-    .builder({ name: 'move-up', parameterType: GLib.VariantType.new('s') })
+    .builder({ name: 'addons.move-up', parameterType: GLib.VariantType.new('s') })
     .activate((_, parameter) => {
       console.debug('<<moveUp>>');
       const id = Utils.g_variant_unpack<string>(parameter, 'string');
@@ -62,10 +59,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       context.application.addonStorage.loadorder_swap(idx_src, idx_src - 1);
     })
     .build();
-  addonsGroup.add_action(moveUp);
+  context.main_window.add_action(moveUp);
 
   const moveDown = Gio1.SimpleAction
-    .builder({ name: 'move-down', parameterType: GLib.VariantType.new('s') })
+    .builder({ name: 'addons.move-down', parameterType: GLib.VariantType.new('s') })
     .activate((_, parameter) => {
       const id = Utils.g_variant_unpack<string>(parameter, 'string');
       const idx_src = context.application.addonStorage.loadorder.indexOf(id);
@@ -81,10 +78,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       context.application.addonStorage.loadorder_swap(idx_src, idx_src + 1);
     })
     .build();
-  addonsGroup.add_action(moveDown);
+  context.main_window.add_action(moveDown);
 
   const removeAddon = Gio1.SimpleAction
-    .builder({ name: 'remove', parameterType: GLib.VariantType.new('s') })
+    .builder({ name: 'addons.remove', parameterType: GLib.VariantType.new('s') })
     .activate((_: any, parameter: GLib.Variant | null) => {
       console.log('<  addons.remove >');
       (async () => {
@@ -113,10 +110,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       })
     })
     .build();
-  addonsGroup.add_action(removeAddon);
+  context.main_window.add_action(removeAddon);
 
   const set_active = new Gio.SimpleAction({
-    name: 'active',
+    name: 'addons.active',
     parameter_type: GLib.VariantType.new_tuple([new GLib.VariantType('s'), new GLib.VariantType('b')]),
   });
   // parameter is supplied by viewmodel
@@ -138,10 +135,10 @@ export default function addon_storage_controls(context: MainWindowContext) {
       context.application.addonStorage.emit(AddonStorage.Signals.loadorder_config_changed);
     }
   });
-  addonsGroup.add_action(set_active);
+  context.main_window.add_action(set_active);
 
   const trash = new Gio.SimpleAction({
-    name: 'trash', parameter_type: GLib.VariantType.new('s'),
+    name: 'addons.trash', parameter_type: GLib.VariantType.new('s'),
   });
   trash.connect('activate', (_, parameter) => {
     (async () => {
@@ -165,20 +162,20 @@ export default function addon_storage_controls(context: MainWindowContext) {
         throw new Error(`Unknown message dialog response. Got ${response}`);
       }
       const id = Utils.g_variant_unpack<string>(parameter, 'string');
-      await context.application.addonStorage.addon_trash(id);
+      context.application.addonStorage.addon_trash(id).catch(error => Utils.log_error(error));
     })().catch((error) => {
       logError(error);
       console.error('Quitting...');
     });
   });
-  addonsGroup.add_action(trash);
+  context.main_window.add_action(trash);
 
-  const missingArchive = new Gio.SimpleAction({ name: 'upgrade-missing-archive' });
+  const missingArchive = new Gio.SimpleAction({ name: 'addons.upgrade-missing-archive' });
   missingArchive.connect('activate', (_action, parameter) => {
     const id = Utils.g_variant_unpack<string>(parameter, 'string');
     id;
 
   });
-  addonsGroup.add_action(missingArchive);
+  context.main_window.add_action(missingArchive);
 }
 

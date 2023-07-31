@@ -1,6 +1,7 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
+Gio._promisify(Gio.File.prototype, 'enumerate_children_async', 'enumerate_children_finish');
 Gio._promisify(Gio.File.prototype, 'replace_contents_async', 'replace_contents_finish');
 Gio._promisify(Gio.File.prototype, 'load_contents_async', 'load_contents_finish');
 
@@ -70,11 +71,9 @@ export function bytes2humanreadable(bytes: number): string {
 export function make_dir_nonstrict(dir: Gio.File) {
   try {
     dir.make_directory(null);
-    console.info(`Created ${dir.get_path()} for the first time.`);
   } catch (error) {
     if (error instanceof GLib.Error) {
       if (error.matches(Gio.io_error_quark(), Gio.IOErrorEnum.EXISTS)) {
-        console.debug(`Directory ${dir.get_path()} already exists.`);
       }
     } else throw error;
   }

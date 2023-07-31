@@ -17,11 +17,13 @@ import Window from './window.js';
 import Downloader from './downloader.js';
 import { generateAddonName, generateAuthor, generateName } from './id.js';
 import { AddonManifest } from './addons.js';
-import { AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
+import { AddonStorage, AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
 import { ActionOrder } from './addon-action.js';
 import { Stvpk as Application } from './application.js';
 import { AddAddonPreviewDownload, AddAddonWindow, AddAddonWizard } from './add-addon-window.js';
+import { Archiver } from './archive.js';
 
+/** @deprecated */
 @gobjectClass({
   GTypeName: 'StvpkAddAddon',
 })
@@ -29,15 +31,18 @@ export class AddAddon extends GObject.Object {
   application: Application;
   mainWindow: Window;
   downloader: Downloader;
+  archiver: Archiver;
 
   constructor(param: {
     application: Application;
     window: Window;
+    archiver: Archiver;
   }) {
     super({});
     this.application = param.application;
     this.mainWindow = param.window;
     this.downloader = param.application.downloader;
+    this.archiver = param.archiver;
     this.setupActions();
   }
 
@@ -354,20 +359,46 @@ export class AddAddon extends GObject.Object {
       if (includeInProfile) {
         const result = (() => {
           this.application.addonStorage.loadorder_push(addonId)
-          const action = this.mainWindow.lookup_action('box');
-          if (action === null) {
-            console.warn('Could not find action addons.box. Must manually include in profile. Skipping')
-            return null;
-          }
-          action.activate(GLib.Variant.new_string(addonId));
           return null;
         })();
         if (typeof result === 'symbol') return [result];
       }
-      // Request a download
+
       addAddonWindow.close();
+      // Request a download
+      const addon = this.application.addonStorage.idmap.get(addonId);
+      if (addon === undefined) {
+        console.warn('Could not find addon after creation.');
+        return [wizard.navigation.QUIT];
+      }
+      this.archiver.retrieve_steam_archive(addon);
       return [wizard.navigation.QUIT];
     });
     wizard.run();
   }
+}
+
+export default function AddAddonActions({
+  action_map,
+  addon_storage,
+}:
+{
+  action_map: Gio.ActionMap;
+  addon_storage: AddonStorage;
+}) {
+  // TODO(kinten): Use maybe type
+  const separator = new Gio.SimpleAction({ name: 'add-addon.separator', parameter_type: GLib.VariantType.new('i') });
+  separator.connect('activate', (_action, parameter) => {
+    let gui = false;
+    const position = Utils.g_variant_unpack<number>(parameter, 'number');
+    if (position < 0) gui = true;
+
+    if (gui) {
+      addon_storage;
+    }
+
+    addon_storage
+
+  });
+  action_map.add_action(separator);
 }

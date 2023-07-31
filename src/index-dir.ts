@@ -9,6 +9,16 @@ import { Model } from './mvc.js';
 
 export class Subdir {
   id: string;
+  file: Gio.File;
+
+  constructor(id: string, file: Gio.File) {
+    this.id = id;
+    this.file = file;
+  }
+}
+
+export class SubdirManifest {
+  id: string;
 
   constructor(id: string) {
     this.id = id;
@@ -16,10 +26,10 @@ export class Subdir {
 }
 
 export class IndexFile {
-  readonly subdirs: Subdir[];
+  readonly subdirs: SubdirManifest[];
   readonly comment?: string;
 
-  constructor(param: { subdirs: Subdir[], comment?: string }) {
+  constructor(param: { subdirs: SubdirManifest[], comment?: string }) {
     this.subdirs = param.subdirs;
     this.comment = param.comment;
   }
@@ -39,12 +49,14 @@ implements Model {
   comment?: string;
   monitor: Gio.FileMonitor;
   save_ready: boolean;
+  storage: Gio.File;
 
-  constructor(param: { file: Gio.File }) {
+  constructor(param: { file: Gio.File, storage: Gio.File }) {
     this.index = param.file;
     this.subdirs = new Map;
     this.monitor = this.index.monitor_file(Gio.FileMonitorFlags.WATCH_MOVES, null);
     this.save_ready = false;
+    this.storage = param.storage;
   }
 
   async start() {
@@ -63,8 +75,6 @@ implements Model {
   }
 
   load_file = async () => {
-    console.debug('Index is being read...');
-
     let obj: any;
     try {
       obj = await File.read_json_async(this.index);
@@ -109,11 +119,6 @@ implements Model {
 
     const comment = obj['comment'];
     this.comment = comment;
-    console.debug(`Index has finished reading! Result:\nids = ${(() => {
-          const arr: string[] = [];
-          this.subdirs.forEach(x => arr.push(x.id));
-          return arr;
-        })()}`)
     this.emit('subdirs-changed');
     return;
   }
@@ -121,9 +126,9 @@ implements Model {
   async save_file () {
     const content: IndexFile = new IndexFile({
       subdirs: (() => {
-        const arr: Subdir[] = [];
+        const arr: SubdirManifest[] = [];
         this.subdirs.forEach(x => {
-          arr.push(new Subdir(x.id));
+          arr.push(new SubdirManifest(x.id));
         });
         return arr;
       })(),
@@ -168,7 +173,7 @@ implements Model {
       console.warn(`Add-on ${id} already exists. Quitting...`);
       return;
     }
-    this.subdirs.set(id, new Subdir(id));
+    this.subdirs.set(id, new Subdir(id, this.storage.get_child(id) ));
 
     this.mark_state_modified();
   }

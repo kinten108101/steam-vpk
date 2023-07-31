@@ -1,8 +1,9 @@
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 
-import { gobjectClass } from './utils/decorator.js';
-import Archive, { ArchiveManifest } from './archive.js';
+import { ArchiveGroup, ArchiveManifest } from './archive.js';
+import { ADDON_INFO } from './const.js';
+import { registerClass } from './utils.js';
 
 export interface StorageExport {
   addondetails: {
@@ -16,7 +17,7 @@ export interface StorageExport {
 }
 
 export interface AddonManifest {
-  stvpkid: string,
+  stvpkid?: string,
   publishedfileid?: string,
   time_updated?: Number,
   title?: string,
@@ -84,43 +85,15 @@ export namespace AddonFlags {
   export const valid = (val: number) => includes(max, val);
 }
 
-@gobjectClass()
+
 export class Addon extends GObject.Object {
-  static new_from_manifest(manifest: AddonManifest, flags: AddonFlags = AddonFlags.NONE) {
-    return new Addon({
-      vanityId: manifest.stvpkid,
-      steamId: manifest.publishedfileid,
-      title: manifest.title,
-      description: manifest.description,
-      categories: (() => {
-              if (manifest.tags === undefined) return new Map();
-              const arr = manifest.tags?.map(({ tag }) => {
-                return tag;
-              });
-              const map = new Map<string, {}>();
-              arr.forEach(x => {
-                map.set(x, {});
-              });
-              return map;
-            })(),
-      timeUpdated: (() => {
-              if (manifest.time_updated === undefined) return undefined;
-              const date = new Date(manifest.time_updated.valueOf() * 1000);
-              return date;
-            })(),
-      comment: manifest.comment,
-      creators: (() => {
-              if (manifest.creators === undefined) return new Map();
-              const arr = manifest.creators?.map(({ creator }) => { return creator });
-              const map = new Map<string, {}>();
-              arr.forEach(x => {
-                map.set(x, {})
-              });
-              return map;
-            })(),
-      flags,
-    });
-  }
+  static [GObject.signals] = {
+    'modified': {},
+  };
+
+  static {
+    registerClass({}, this);
+  };
 
   static toManifest(addon: Addon) {
     const manifest: AddonManifest = {
@@ -146,6 +119,9 @@ export class Addon extends GObject.Object {
             creators.forEach((_, key) => _creators.push({ creator: key }));
             return _creators;
           })(),
+      archives: (() => {
+            return addon.archive_group?.toManifest();
+          })(),
     };
     return manifest;
   }
@@ -161,9 +137,9 @@ export class Addon extends GObject.Object {
   comment?: string;
   creators?: Map<string, {}>;
   flags: AddonFlags;
-
-  // these props only available when registered with addonStorage or its divisions
-  subdir?: Gio.File;
+  subdir: Gio.File;
+  info: Gio.File;
+  archive_group?: ArchiveGroup;
 
   constructor(param: {
     id?: string;
@@ -177,9 +153,8 @@ export class Addon extends GObject.Object {
     comment?: string;
     creators?: Map<string, {}>;
     flags: AddonFlags;
-    subdir?: Gio.File;
-    archives?: Map<string, Archive>;
-    archiveorder?: string[];
+    subdir: Gio.File;
+    archive_group?: ArchiveGroup;
   }) {
     super({});
     this.id = param.vanityId;
@@ -193,6 +168,35 @@ export class Addon extends GObject.Object {
     this.creators = param.creators;
     this.flags = param.flags;
     this.subdir = param.subdir;
+    this.info = this.subdir.get_child(ADDON_INFO);
+    this.archive_group = param.archive_group;
+  }
+
+  set_archive_group(group: ArchiveGroup | undefined) {
+    this.archive_group = group;
+    this.emit('modified');
+  }
+
+  has_archive_lite(): boolean {
+    const archive_group = this.archive_group;
+    if (!archive_group) return false;
+    const count = archive_group.archives.get_n_items();
+    if (!count) return false;
+    return true;
+  }
+
+  is_viable_remote_archive_registration() {
+    const steamId = this.steamId;
+    if (!steamId) {
+      return false;
+    }
+    let group = this.archive_group;
+    if (group !== undefined) {
+      if (group.archives.get_n_items() !== 0) {
+        return false;
+      }
+    }
+    return true;
   }
 }
 

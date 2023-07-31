@@ -1,3 +1,4 @@
+import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import * as Utils from './utils.js';
@@ -38,4 +39,21 @@ export default class InjectConsole extends Gtk.Revealer {
       }
     })
   }
+}
+
+export function InjectConsoleActions(
+{
+  inject_console,
+  action_map,
+}:
+{
+  inject_console?: InjectConsole;
+  action_map: Gio.ActionMap;
+}) {
+  const toggle_console = new Gio.SimpleAction({ name: 'inject-console.toggle-console' });
+  toggle_console.connect('activate', () => {
+    if (!inject_console) return;
+    inject_console.switch = !inject_console.switch;
+  });
+  action_map.add_action(toggle_console);
 }
