@@ -6,34 +6,38 @@ Adw.PreferencesGroup panel {
     action-name: 'win.addons-panel-disk.manage';
     child:
       Gtk.Box {
+        halign: fill;
         spacing: 8;
         margin-start: 12;
         margin-end: 12;
         margin-top: 8;
         margin-bottom: 16;
         Gtk.Image {
+          halign: start;
           icon-name: 'drive-removable-media';
           pixel-size: 64;
         }
         Gtk.Box {
           margin-top: 4;
           orientation: vertical;
-          halign: center;
+          halign: fill;
           Gtk.Box {
-            halign: center;
+            halign: fill;
 
             Gtk.Box {
-
+              halign: fill;
               orientation: vertical;
               Gtk.Label {
-                halign: start;
+                halign: fill;
+                xalign: 0;
                 use-markup: true;
                 label: _('<span weight=\'bold\' size=\'small\'>Add-on Repository</span>');
                 ellipsize: end;
                 lines: 1;
               }
               Gtk.Label {
-                halign: start;
+                halign: fill;
+                xalign: 0;
                 use-markup: true;
                 label: _('<span size=\'small\'>~/.local/share/steam-vpk/addons</span>');
                 ellipsize: end; lines: 1;
@@ -45,7 +49,7 @@ Adw.PreferencesGroup panel {
               visible: true;
               margin-start: 8;
               orientation: vertical;
-              halign: end;
+              halign: fill;
               Gtk.Label used {
                 halign: end;
                 justify: right;
@@ -65,11 +69,14 @@ Adw.PreferencesGroup panel {
 
           Gtk.ProgressBar usage-meter {
             visible: true;
+            halign: fill;
+            hexpand: true;
             margin-top: 12;
             fraction: 0.2; // placeholder
           }
 
           Gtk.Box {
+            halign: fill;
             visible: false;
             margin-top: 4;
             margin-bottom: 4;
