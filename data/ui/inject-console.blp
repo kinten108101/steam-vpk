@@ -2,7 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template $StvpkInjectConsole : Gtk.Revealer {
-  transition-type: slide_down;
+  transition-type: slide_up;
   reveal-child: true;
   child:
     Gtk.Box box {
@@ -11,22 +11,25 @@ template $StvpkInjectConsole : Gtk.Revealer {
       margin-bottom: 4;
       styles ['terminal', 'card']
       Gtk.Revealer content-revealer {
-        transition-type: slide_down;
+        transition-type: slide_up;
         child:
           Gtk.ScrolledWindow {
             hexpand: true;
             vexpand: true;
-            min-content-height: 150;
-            Gtk.Label {
+            min-content-height: 200;
+            Gtk.Label output {
               margin-top: 8;
               margin-bottom: 8;
-              halign: start;
+              halign: fill;
+              xalign: 0;
               valign: fill;
+              yalign: 0;
               justify: left;
               use-markup: true;
               hexpand: true;
               label: 'Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
               wrap: true;
+              wrap-mode: char;
               selectable: true;
               styles ['monospace']
             }

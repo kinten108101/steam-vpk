@@ -1,5 +1,5 @@
 export function MakeCompatPango(text: string) {
-  return text.replaceAll('&', '&amp;');
+  return text.replaceAll('&', '&amp;').replaceAll('<', '&#60;').replaceAll('>', '&#62;');
 }
 
 export function SteamMd2Pango(text: string) {

@@ -12,6 +12,7 @@ import { LateBindee } from './mvc.js';
 import * as Markup from './markup.js';
 import { AddonStorage } from './addon-storage.js';
 import * as Utils from './utils.js';
+import AddonsPanel from './addons-panel.js';
 
 export enum UseStates {
   USED = 'used',
@@ -59,33 +60,36 @@ class UseButton extends Gtk.Button {
 }
 
 class DownloadPageRowItem extends GObject.Object {
+  static [GObject.properties] = {
+    name: GObject.ParamSpec.string('name', 'name', 'name', Utils.g_param_default, null),
+    creator: GObject.ParamSpec.string('creator', 'creator', 'creator', Utils.g_param_default, null),
+    description: GObject.ParamSpec.string('description', 'description', 'description', Utils.g_param_default, 'lol'),
+    ['use-state']: GObject.ParamSpec.string('use-state', 'use-state', 'use-state', Utils.g_param_default, UseStates.AVAILABLE),
+    ['id-gvariant']: GObject.param_spec_variant('id-gvariant', 'id-gvariant', 'id-gvariant', GLib.VariantType.new('s'), GLib.Variant.new_string('default'), Utils.g_param_default),
+    ['id']: Utils.param_spec_string({ name: 'id' }),
+  };
+
   static {
-    Utils.registerClass({
-      Properties: {
-        origin: GObject.ParamSpec.object('origin', 'origin', 'origin', Utils.g_param_default, Addon.$gtype),
-        name: GObject.ParamSpec.string('name', 'name', 'name', Utils.g_param_default, null),
-        creator: GObject.ParamSpec.string('creator', 'creator', 'creator', Utils.g_param_default, null),
-        description: GObject.ParamSpec.string('description', 'description', 'description', Utils.g_param_default, 'lol'),
-        'use-state': GObject.ParamSpec.string('use-state', 'use-state', 'use-state', Utils.g_param_default, UseStates.AVAILABLE),
-        'id-gvariant': GObject.param_spec_variant('id-gvariant', 'id-gvariant', 'id-gvariant', GLib.VariantType.new('s'), GLib.Variant.new_string('default'), Utils.g_param_default),
-      }
-    }, this);
+    Utils.registerClass({}, this);
   }
 
-  origin!: Addon;
+  origin: Addon;
   name!: string;
   creator!: string;
   description!: string;
   use_state!: UseStates;
+  id!: string;
   id_gvariant!: GLib.Variant;
 
   constructor(param: { addon: Addon }) {
-    super({});
+    const { addon, ..._params } = param;
+    super(_params);
     this.origin = param.addon;
     this.name = Markup.MakeCompatPango(this.origin.title || '');
     this.creator = creators2humanreadable(this.origin.creators);
     this.description = Markup.MakeCompatPango(this.origin.description || '');
     this.id_gvariant = GLib.Variant.new_string(this.origin.vanityId);
+    this.id = this.origin.id;
 
   }
 
@@ -123,15 +127,7 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
       ['use-state', this.use_button, 'state'],
     ]).forEach(([prop, child, child_prop]) => {
       this.item.bind_property(prop, child, child_prop, flags);
-    })
-
-
-    /*
-    this.title.bind_property('label', this.item, 'name', flags);
-    this.subtitle.bind_property('label', this.item, 'creator', flags);
-    this.description.bind_property('label', this.item, 'description', flags);
-    this.use_button.bind_property('state', this.item, 'use-state', flags);
-    */
+    });
   }
 }
 
@@ -143,7 +139,7 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
     'localRepoSection',
     'remoteRepoList',
     'remoteRepoSection',
-    'builder-entry',
+    'panel',
   ] })
 export class DownloadPage extends Adw.PreferencesPage
 implements LateBindee<MainWindowContext> {
@@ -159,8 +155,7 @@ implements LateBindee<MainWindowContext> {
 
   addonStorage!: AddonStorage;
   context!: MainWindowContext;
-
-  builder_entry!: Adw.Bin;
+  panel!: AddonsPanel;
 
   constructor(param = {}) {
     super(param);
@@ -201,23 +196,6 @@ implements LateBindee<MainWindowContext> {
   widgetCreator = (x: GObject.Object): DownloadPageRow => {
     const item = x as DownloadPageRowItem;
     const row = new DownloadPageRow({ item });
-    /*
-    const id = GLib.Variant.new_string(addon.vanityId);
-    row.use_button.set_action_target_value(id);
-    // this will cause a memory leak?
-    const update = () => {
-      if (this.addonStorage.loadorder.includes(addon.vanityId)) {
-        console.debug('Set use-button state as used!');
-        row.use_button.set_state(UseButton.States.USED);
-      } else {
-        row.use_button.set_state(UseButton.States.AVAILABLE);
-      }
-    };
-    update();
-    this.addonStorage.connect(AddonStorage.Signals.loadorder_changed, update);
-    this.context.main_window.connect(Window.Signals.first_flush, update);
-    row.set_action_target_value(id);
-    */
     return row;
   }
 

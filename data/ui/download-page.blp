@@ -2,11 +2,7 @@ using Gtk 4.0;
 using Adw 1;
 
 template $StvpkDownloadPage : Adw.PreferencesPage {
-  Adw.PreferencesGroup {
-    Adw.Bin builder-entry {
-      // addons-panel
-    }
-  }
+  $StvpkAddonsPanel panel {}
 
   Adw.PreferencesGroup localRepoSection {
     title: _('Manually Installed');

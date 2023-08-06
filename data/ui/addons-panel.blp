@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-Adw.PreferencesGroup panel {
+template $StvpkAddonsPanel : Adw.PreferencesGroup {
   Adw.PreferencesRow {
     action-name: 'win.addons-panel-disk.manage';
     child:
@@ -68,7 +68,7 @@ Adw.PreferencesGroup panel {
           }
 
           Gtk.ProgressBar usage-meter {
-            visible: true;
+            visible: false;
             halign: fill;
             hexpand: true;
             margin-top: 12;

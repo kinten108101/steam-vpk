@@ -18,6 +18,7 @@ interface = [
   'download-window-row.blp',
   'download-window.blp',
   'field-row.blp',
+  'inject-button-set.blp',
   'inject-console.blp',
   'launchpad-page.blp',
   'launchpad-row.blp',
@@ -27,6 +28,7 @@ interface = [
   'profile-bar-popover.blp',
   'profile-bar.blp',
   'profile-window.blp',
+  'repository-page.blp',
   'window.blp',
 ]
 

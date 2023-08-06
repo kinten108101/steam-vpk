@@ -7,6 +7,7 @@ template $StvpkLaunchpadPage : Gtk.Box {
   Gtk.ScrolledWindow {
     vexpand: true;
     hexpand: true;
+    hscrollbar-policy: never;
     Adw.Clamp {
       maximum-size: 600;
 
@@ -19,9 +20,20 @@ template $StvpkLaunchpadPage : Gtk.Box {
         orientation: vertical;
         spacing: 24;
 
-        Adw.PreferencesGroup {
+        $StvpkLaunchpadSection defaultSection {
+          title: _('Add-ons to Link');
+          subtitle: _('Only add-ons listed below are available for linking');
+        }
+      }
+    }
+  }
+}
+
+Adw.PreferencesGroup {
           visible: true;
+
           Adw.ActionRow {
+            visible: false;
             title: 'Enable add-ons';
             //icon-name: 'puzzle-piece-symbolic';
             subtitle: 'May cause graphical and performance issues.';
@@ -33,12 +45,3 @@ template $StvpkLaunchpadPage : Gtk.Box {
             }
           }
         }
-
-        $StvpkLaunchpadSection defaultSection {
-          title: _('Add-ons to Link');
-          subtitle: _('Only add-ons listed below are available for linking');
-        }
-      }
-    }
-  }
-}

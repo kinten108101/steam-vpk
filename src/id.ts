@@ -1,5 +1,6 @@
 export function generateAddonName(name: string): string {
-  let a = name.replace('\n', '');
+  // TODO(kinten): Please use regex
+  let a = name.replace('\n', '').replace('\r', '');
   return a;
 }
 

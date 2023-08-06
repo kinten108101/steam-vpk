@@ -25,19 +25,19 @@ export default class DiskCapacity extends GObject.Object {
 
   bind(
   {
-    addonStorage,
+    addon_storage,
     settings,
   }:
   {
-    addonStorage: AddonStorage;
+    addon_storage: AddonStorage;
     settings: Gio.Settings;
   }) {
     this.settings = settings;
 
     const updateUsed = () => {
-      this.eval_addon_dir(addonStorage.subdirFolder);
+      this.eval_addon_dir(addon_storage.subdirFolder);
     };
-    addonStorage.connect(AddonStorage.Signals.addons_changed, updateUsed);
+    addon_storage.connect(AddonStorage.Signals.addons_changed, updateUsed);
     updateUsed();
 
     settings.bind('allocated', this, 'allocated', Gio.SettingsBindFlags.DEFAULT);

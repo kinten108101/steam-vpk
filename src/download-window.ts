@@ -48,11 +48,11 @@ export type DownwinUiDependencies = {
 }
 
 export default function DownloadWindow(
-{ addonStorage,
+{ addon_storage,
   downloader,
 }:
 {
-  addonStorage: AddonStorage,
+  addon_storage: AddonStorage,
   downloader: Downloader,
 },
 { current_wgroup,
@@ -85,7 +85,7 @@ DownwinUiDependencies) {
       return model;
     })(),
   });
-  addonStorage;
+  addon_storage;
   downloader;
   all;
 

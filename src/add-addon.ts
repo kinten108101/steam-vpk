@@ -19,7 +19,7 @@ import { generateAddonName, generateAuthor, generateName } from './id.js';
 import { AddonManifest } from './addons.js';
 import { AddonStorage, AddonStorageError, addon_storage_error_quark } from './addon-storage.js';
 import { ActionOrder } from './addon-action.js';
-import { Stvpk as Application } from './application.js';
+import { Stvpk as Application } from './window.js';
 import { AddAddonPreviewDownload, AddAddonWindow, AddAddonWizard } from './add-addon-window.js';
 import { Archiver } from './archive.js';
 

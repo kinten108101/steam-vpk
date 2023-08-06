@@ -178,7 +178,7 @@ export class ArchiveGroup extends GObject.Object {
 export class Archiver {
   downloader!: Downloader;
   steamapi!: SteamworkServices;
-  addonStorage!: AddonStorage;
+  addon_storage!: AddonStorage;
 
   constructor() {
     //this.groups = new Gio.ListStore({ item_type: ArchiveGroup.$gtype });
@@ -188,16 +188,16 @@ export class Archiver {
   {
     downloader,
     steamapi,
-    addonStorage,
+    addon_storage,
   }:
   {
     downloader: Downloader;
     steamapi: SteamworkServices;
-    addonStorage: AddonStorage;
+    addon_storage: AddonStorage;
   }) {
     this.downloader = downloader;
     this.steamapi = steamapi;
-    this.addonStorage = addonStorage;
+    this.addon_storage = addon_storage;
   }
 
   async start() {

@@ -7,14 +7,11 @@ import Adw from 'gi://Adw';
 import Pango from 'gi://Pango';
 
 import { Config } from './config.js';
-import Window, { MainWindowContext } from './window.js';
 import { AddonStorage, Configuration, ItemType } from './addon-storage.js';
 import { Addon, AddonFlags } from './addons.js';
 import { gobjectClass } from './utils/decorator.js';
 import * as Markup from './markup.js';
-import ViewModelBinder, { ViewModelBindee } from './view-model-binder.js';
 import { g_param_default } from './utils.js';
-import { Stvpk } from './application.js';
 
 class AddonlistPageItem extends GObject.Object {
   static {
@@ -191,8 +188,7 @@ export class LaunchpadRow extends Adw.ExpanderRow {
   }
 }
 
-class LaunchpadSection extends Gtk.Box
-implements ViewModelBindee<MainWindowContext> {
+class LaunchpadSection extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkLaunchpadSection',
@@ -232,7 +228,6 @@ implements ViewModelBindee<MainWindowContext> {
 
   drop_target!: Gtk.DropTarget;
   origin_idx: number;
-  binder: ViewModelBinder<MainWindowContext, this>;
 
   constructor(props: { title: string } & Gtk.Box.ConstructorProperties) {
     super(props);
@@ -241,13 +236,15 @@ implements ViewModelBindee<MainWindowContext> {
     this.drop_target = Gtk.DropTarget.new(LaunchpadRow.$gtype, Gdk.DragAction.MOVE);
     this.section_list.add_controller(this.drop_target);
     this.origin_idx = 0;
-    this.binder = new ViewModelBinder(
-      [],
-      this,
-    );
   }
 
-  onBind = (context: MainWindowContext): void => {
+  bind(
+  { addon_storage,
+
+  }:
+  { addon_storage: AddonStorage;
+
+  }) {
     this.drop_target.connect('drop', (_, origin: LaunchpadRow, __, y): boolean => {
       if (origin === null) {
         console.warn('Could not retrieve packaged drag value. Quitting...');
@@ -284,11 +281,11 @@ implements ViewModelBindee<MainWindowContext> {
       /*
       context.application.addonStorage.loadorder_insert(origin_idx, target_idx);
       */
-      context.application.addonStorage.loadorder_insert_silent(origin_idx, target_idx);
+      addon_storage.loadorder_insert_silent(origin_idx, target_idx);
       this.section_list.remove(origin);
       this.section_list.insert(origin, target_idx);
       console.log(origin.grab_focus());
-      context.application.addonStorage.emit(AddonStorage.Signals.loadorder_order_changed);
+      addon_storage.emit(AddonStorage.Signals.loadorder_order_changed);
       row.set_state_flags(Gtk.StateFlags.NORMAL, true);
       console.timeEnd('dnd-insert');
       return true;
@@ -371,8 +368,7 @@ class ListStore<T extends GObject.Object> extends Gio.ListStore<T> {
   }
 }
 
-export class AddonlistModel extends ListStore<AddonlistPageItem>
-implements ViewModelBindee<MainWindowContext> {
+export class AddonlistModel extends ListStore<AddonlistPageItem> {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkAddonlistModel',
@@ -385,24 +381,21 @@ implements ViewModelBindee<MainWindowContext> {
   addonStorage!: AddonStorage;
   // TODO(kinten): Unless we do diffing, there is no difference between a BST and an array if we'll just refill content every thing. So for now, use an array
   arrStorage: AddonlistPageItem[] = [];
-  binder: ViewModelBinder<MainWindowContext, this>;
 
   constructor() {
     super({
       item_type: AddonlistPageItem.$gtype,
     });
-    this.binder = new ViewModelBinder([], this);
   }
 
-  onBind = ({
-    application,
+  bind(
+  { addon_storage,
   }:
-  {
-    application: Stvpk;
-  }) => {
-    this.addonStorage = application.addonStorage;
-    application.addonStorage.connect_after(AddonStorage.Signals.addons_changed, this.updateModel);
-    application.addonStorage.connect_after(AddonStorage.Signals.loadorder_changed, this.updateModel);
+  { addon_storage: AddonStorage;
+  }) {
+    this.addonStorage = addon_storage;
+    addon_storage.connect_after(AddonStorage.Signals.addons_changed, this.updateModel);
+    addon_storage.connect_after(AddonStorage.Signals.loadorder_changed, this.updateModel);
     // NOTE(kinten) do not listen to loadorder-config-changed because all of these configs are controlled by launchpad actions -> the widgets have changed by themselves.
     this.updateModel();
   }
@@ -469,11 +462,10 @@ implements ViewModelBindee<MainWindowContext> {
   Template: `resource://${Config.config.app_rdnn}/ui/launchpad-page.ui`,
   Children: [ 'enable-addon', 'defaultSection' ],
 })
-export class LaunchpadPage extends Gtk.Box implements ViewModelBindee<MainWindowContext> {
+export class LaunchpadPage extends Gtk.Box {
   model: AddonlistModel;
   enable_addon!: Gtk.Switch;
   defaultSection!: LaunchpadSection;
-  binder: ViewModelBinder<MainWindowContext, this>;
 
   constructor(params = {}) {
     super(params);
@@ -486,19 +478,21 @@ export class LaunchpadPage extends Gtk.Box implements ViewModelBindee<MainWindow
       // target value must be the next state to the current state aka the inverse
       button.set_action_target_value(GLib.Variant.new_boolean(!button.get_active()));
     });
-    this.binder = new ViewModelBinder<MainWindowContext, this>(
-      [this.model, this.defaultSection],
-      this,
-    );
   }
 
-  onBind = (source: MainWindowContext): void => {
-    source.application.addonStorage.connect(AddonStorage.Signals.addons_enabled_changed, () => {
-      const val = source.application.addonStorage.get_addons_enabled();
+  bind(
+  { addon_storage,
+
+  }:
+  { addon_storage: AddonStorage,
+
+  }) {
+    addon_storage.connect(AddonStorage.Signals.addons_enabled_changed, () => {
+      const val = addon_storage.get_addons_enabled();
       this.enable_addon.set_active(val); // sync state across windows
       this.defaultSection.set_sensitive(val);
     });
-    this.enable_addon.set_active(source.application.addonStorage.get_addons_enabled());
+    this.enable_addon.set_active(addon_storage.get_addons_enabled());
   }
 
   _refreshAll() {

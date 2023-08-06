@@ -16,6 +16,7 @@ icons = [
   'refresh-large-symbolic.svg',
   'run-start-symbolic.svg',
   'step-out-symbolic.svg',
+  'stop-large-symbolic.svg',
   'terminal-symbolic.svg',
   'update-symbolic.svg',
   'warning-symbolic.svg',

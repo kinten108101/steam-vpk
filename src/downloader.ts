@@ -195,7 +195,6 @@ export default class Downloader extends GObject.Object implements Model {
       })(),
       session: this.soup_session,
     });
-    this.queue.append(order);
     return order;
   }
 }

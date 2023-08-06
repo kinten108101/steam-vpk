@@ -15,8 +15,6 @@ splitbutton.omnibar {
 splitbutton.omnibar > button {
   margin-bottom: 0;
   margin-top: 0;
-  padding-bottom: 0;
-  padding-top: 0;
 }
 
 .run-button > button {
@@ -166,4 +164,10 @@ preferencesgroup.danger-zone list {
 .launchpad-row .zexcerpt {
   color: @light_5;
   font-size: small;
+}
+
+.thin-button {
+  padding-bottom: 0;
+  padding-top: 0;
+  font-weight: bold;
 }

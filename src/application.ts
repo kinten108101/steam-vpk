@@ -18,21 +18,7 @@ import { Archiver } from './archive.js';
 import Injector from './injector.js';
 import Settings from './settings.js';
 
-export type Stvpk = {
-  pkg_user_data_dir: Gio.File;
-  pkg_user_state_dir: Gio.File;
-  addons_dir: Gio.File;
-  addonStorage: AddonStorage;
-  addonSynthesizer: ActionSynthesizer;
-  downloader: Downloader;
-  settings: Settings;
-  diskCapacity: DiskCapacity;
-  archiver: Archiver;
-  steamapi: SteamworkServices;
-  injector: Injector;
-}
-
-export default function application_implement() {
+export default function Application() {
   const application = new Adw.Application({
     application_id: Consts.APP_ID,
   });
@@ -47,23 +33,24 @@ export default function application_implement() {
     GLib.build_filenamev([Consts.USER_STATE_DIR, Consts.APP_SHORTNAME]),
   );
   const addons_dir = pkg_user_data_dir.get_child(Consts.ADDON_DIR);
+  const download_dir = pkg_user_state_dir.get_child(Consts.DOWNLOAD_DIR);
 
   const settings = new Settings();
-  const downloader = new Downloader({ download_dir: pkg_user_state_dir.get_child(Consts.DOWNLOAD_DIR) });
+  const downloader = new Downloader({ download_dir });
   const archiver = new Archiver();
   const steamapi = new SteamworkServices();
-  const addonStorage = new AddonStorage({ subdir_folder: addons_dir, pkg_user_state_dir });
-  const addonSynthesizer = new ActionSynthesizer({
-    storage: addonStorage,
-    index: addonStorage.indexer,
+  const addon_storage = new AddonStorage({ subdir_folder: addons_dir, pkg_user_state_dir });
+  const addon_synthesizer = new ActionSynthesizer({
+    storage: addon_storage,
+    index: addon_storage.indexer,
   });
-  const diskCapacity = new DiskCapacity();
+  const disk_capacity = new DiskCapacity();
   const injector = new Injector();
 
-  archiver.bind({ downloader, steamapi, addonStorage });
-  addonStorage.bind({ archiver });
-  diskCapacity.bind({ addonStorage, settings: settings.gio_settings });
-  injector.bind({ addonStorage, settings });
+  archiver.bind({ downloader, steamapi, addon_storage });
+  addon_storage.bind({ archiver });
+  disk_capacity.bind({ addon_storage, settings: settings.gio_settings });
+  injector.bind({ addon_storage, settings });
   settings.bind();
 
   debug_window_implement({
@@ -142,9 +129,9 @@ export default function application_implement() {
     [
       settings,
       downloader,
-      addonStorage,
-      addonSynthesizer,
-      diskCapacity,
+      addon_storage,
+      addon_synthesizer,
+      disk_capacity,
       settings,
       injector,
     ].forEach(x => {
@@ -156,23 +143,20 @@ export default function application_implement() {
     const mainWindow = new Window({
       application,
       title: GLib.get_application_name(),
-      stvpk: {
-        pkg_user_data_dir,
-        pkg_user_state_dir,
-        addons_dir,
-        addonStorage,
-        addonSynthesizer,
-        downloader,
-        settings,
-        diskCapacity,
-        archiver,
-        steamapi,
-        injector,
-      },
+      pkg_user_data_dir,
+      pkg_user_state_dir,
+      addons_dir,
+      addon_storage,
+      addon_synthesizer,
+      downloader,
+      settings,
+      disk_capacity,
+      archiver,
+      steamapi,
+      injector,
     });
     new Gtk.WindowGroup()
       .add_window(mainWindow);
-    mainWindow.start();
     mainWindow.present();
   };
 

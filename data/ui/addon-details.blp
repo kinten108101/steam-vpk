@@ -87,12 +87,13 @@ Gtk.Box page {
                 margin-top: 12;
               }
 
-              Gtk.Box {
+              Gtk.Box tags {
                 visible: false;
                 margin-top: 12;
                 margin-bottom: 4;
-                Gtk.Button {
-                  label: _('NEW VERSION');
+                Gtk.Button tag-empty {
+                  visible: false;
+                  label: _('Empty');
                   styles ['tag']
                 }
               }
@@ -145,7 +146,7 @@ Gtk.Box page {
           action-target: bind (data as <$StvpkBuilderData>).steam-url;
           icon-name: 'step-out-symbolic';
           valign: center;
-          styles ['flat', 'dim-label']
+          styles ['flat']
         }
       }
 
@@ -156,8 +157,10 @@ Gtk.Box page {
         [suffix]
         Gtk.Button explore-button {
           icon-name: 'folder-symbolic';
+          action-name: 'win.addon-details.explore-fs';
+          action-target: bind (data as <$StvpkBuilderData>).subdir-uri;
           valign: center;
-          styles ['flat', 'dim-label']
+          styles ['flat']
         }
       }
     }

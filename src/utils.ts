@@ -72,6 +72,55 @@ Gio._promisify(Gio.File.prototype,
 export const Decoder = new TextDecoderWrap({ decoder: new TextDecoder('utf-8') });
 export const Encoder = new TextEncoder();
 
+export function param_spec_string(
+{ name,
+  nick,
+  blurb,
+  flags,
+  default_value,
+}:
+{ name: string,
+  nick?: string,
+  blurb?: string,
+  flags?: GObject.ParamFlags,
+  default_value?: string,
+}) {
+  return GObject.param_spec_string(name, nick || name, blurb || name, default_value || null, flags || g_param_default);
+}
+
+export function param_spec_variant(
+{
+  name,
+  blurb,
+  nick,
+  type,
+  default_value,
+  flags,
+}
+:{ name: string,
+   blurb?: string,
+   nick?: string,
+   type: GLib.VariantType,
+   default_value?: GLib.Variant,
+   flags?: GObject.ParamFlags,
+}) {
+  return GObject.param_spec_variant(name, blurb || name, nick || name, type, default_value || null, flags || g_param_default);
+}
+
+export function param_spec_object(
+{
+  name,
+  flags,
+  objectType,
+}:
+{
+  name: string;
+  flags?: GObject.ParamFlags;
+  objectType?: GObject.GType;
+}) {
+  return GObject.ParamSpec.object(name, name, name, flags || g_param_default, objectType || GObject.Object.$gtype);
+}
+
 /**
  * @deprecated This is very slow.
  */
