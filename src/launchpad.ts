@@ -396,17 +396,15 @@ implements ViewModelBindee<MainWindowContext> {
 
   onBind = ({
     application,
-    main_window,
   }:
   {
     application: Stvpk;
-    main_window: Window;
   }) => {
     this.addonStorage = application.addonStorage;
     application.addonStorage.connect_after(AddonStorage.Signals.addons_changed, this.updateModel);
     application.addonStorage.connect_after(AddonStorage.Signals.loadorder_changed, this.updateModel);
     // NOTE(kinten) do not listen to loadorder-config-changed because all of these configs are controlled by launchpad actions -> the widgets have changed by themselves.
-    main_window.connect(Window.Signals.first_flush, this.updateModel);
+    this.updateModel();
   }
 
   updateModel = () => {

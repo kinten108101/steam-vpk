@@ -43,17 +43,7 @@ export class ProfileBarPopover extends Gtk.Popover implements LateBindee<MainWin
   onBind(context: MainWindowContext) {
     this.context = context;
     context.main_window.connect('notify::current-profile', this.update);
-    context.main_window.connect(Window.Signals.first_flush, this.update);
-    // TODO(kinten): is binding strong ref or weak ref? Is it on the obj or on the pointer?
-    /*
-    context.addonManager.registerForDataReload(() => {
-      const profile = context.profileManager.getCurrentProfile();
-      const count = context.addonManager.getAddonFilterList().length;
-      this.profileName.set_label(profile.name);
-      this.profileId.set_label(profile.id);
-      this.addonCount.set_label(count.toString());
-    });
-    */
+    this.update();
   }
 
   update = () => {

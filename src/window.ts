@@ -40,7 +40,6 @@ import { SettingsActions } from './settings.js';
 export interface MainWindowContext { application: Stvpk, main_window: Window }
 
 enum signals {
-  first_flush = 'first_flush',
 }
 
 export default class Window
@@ -54,9 +53,6 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
         'current-profile': GObject.ParamSpec.string(
           'current-profile', 'current-profile', 'current-profile',
           GObject.ParamFlags.READWRITE, ''),
-      },
-      Signals: {
-        [signals.first_flush]: {},
       },
       Template: `resource://${Config.config.app_rdnn}/ui/window.ui`,
       Children: [
