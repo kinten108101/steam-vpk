@@ -98,8 +98,6 @@ implements Adw1.Toaster, Model, ViewModelBindee<MainWindowContext> {
       disk_capacity: this.stvpk.diskCapacity,
     });
     this.actionGroups = new Map();
-    if (Const.BUILD_TYPE === Const.BuildTypes.debug)
-      this.get_style_context().add_class('devel');
     this.profiles = new Map();
     this.currentProfile = null;
     const context: MainWindowContext = { application: this.stvpk, main_window: this };
