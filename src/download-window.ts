@@ -4,29 +4,24 @@ import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import * as Gio1 from './utils/gio1.js';
-import * as Utils from './utils.js';
-import * as Consts from './const.js';
-
-import Window from "./window";
-import Downloader from './downloader';
 import TypedBuilder from './typed-builder.js';
-import { AddonStorage } from './addon-storage.js';
+import { g_variant_unpack_tuple, param_spec_object, promise_wrap, registerClass } from './utils.js';
+import { APP_RDNN } from './const.js';
 
 export class DownloadWindowRowItem extends GObject.Object {
   static {
-    Utils.registerClass({}, this);
+    registerClass({}, this);
   }
 }
 
 export class DownloadWindowRow extends Gtk.ListBoxRow {
   static [GObject.properties] = {
-    'item': GObject.ParamSpec.object('item', 'item', 'item', Utils.g_param_default, DownloadWindowRowItem.$gtype),
+    item: param_spec_object({ name: 'item', objectType: DownloadWindowRowItem.$gtype }),
   };
 
   static {
-    Utils.registerClass({
-      Template: `resource://${Consts.APP_RDNN}/ui/download-window-row.ui`,
+    registerClass({
+      Template: `resource://${APP_RDNN}/ui/download-window-row.ui`,
     }, this);
   }
 
@@ -40,7 +35,6 @@ export class DownloadWindowRow extends Gtk.ListBoxRow {
 
 
 export type DownwinModelDependencies = {
-  addonStorage: AddonStorage;
 }
 
 export type DownwinUiDependencies = {
@@ -48,18 +42,15 @@ export type DownwinUiDependencies = {
 }
 
 export default function DownloadWindow(
-{ addon_storage,
-  downloader,
+{
 }:
 {
-  addon_storage: AddonStorage,
-  downloader: Downloader,
 },
 { current_wgroup,
 }:
 DownwinUiDependencies) {
   const builder = new TypedBuilder();
-  builder.add_from_resource(`${Consts.APP_RDNN}/ui/download-window.ui`);
+  builder.add_from_resource(`${APP_RDNN}/ui/download-window.ui`);
 
   const func: Gtk.ListBoxCreateWidgetFunc = ($obj: GObject.Object): DownloadWindowRow => {
     const item = $obj as DownloadWindowRowItem;
@@ -85,8 +76,6 @@ DownwinUiDependencies) {
       return model;
     })(),
   });
-  addon_storage;
-  downloader;
   all;
 
   const window = builder.get_typed_object<Adw.Window>('window');
@@ -97,77 +86,35 @@ DownwinUiDependencies) {
 export function
 DownloadWindowActions(
 { application,
-  downloader,
-  main_window,
+  action_map,
+  window_group,
   DownloadWindow,
 }:
-{ application: Gtk.Application,
-  downloader: Downloader,
-  main_window: Window,
+{ application: Gtk.Application;
+  action_map: Gio.ActionMap;
+  window_group: Gtk.WindowGroup;
   DownloadWindow: (deps: DownwinUiDependencies) => Adw.Window;
 }) {
-  const downwin_actions = new Gio.SimpleActionGroup();
-  const downloadTest = Gio1.SimpleAction
-    .builder({ name: 'download.download-test' })
-    .activate(() => {
-      Utils.promise_wrap(async () => {
-        console.log('<<download-test>>');
-        const name = String(Math.random());
-        console.log('Start order', name);
-        const uri = GLib.Uri.parse('https://steamusercontent-a.akamaihd.net/ugc/1849291128394309645/78545F2CED217E017F360B43E75D3C392916EF1F/', GLib.UriFlags.NONE);
-        const order = downloader.register_order({ name, uri, size: 864674328 });
+  const downwin_actions = new Gio.SimpleActionGroup();;
 
-        setInterval(() => {
-          console.log(order.get_percentage());
-        }, 500);
-
-        setTimeout(() => {
-          order.stop();
-        }, 7000);
-
-        setTimeout(() => {
-          order.continue().finally(() => {
-            const size = order.bytesread;
-            console.log('Read', size, 'bytes');
-            console.log('>>download-test<<');
-          });
-        }, 12000);
-
-        /*
-        order.start().finally(() => {
-          const size = order.bytesread.get_size();
-          console.log('Read', size, 'bytes');
-          console.log('>>download-test<<');
-        });
-        */
-        setTimeout(() => {
-          console.log('shit');
-        }, 1000 * 20);
-
-        await order.start();
-      });
-    })
-    .build();
-  main_window.add_action(downloadTest);
-  downwin_actions.add_action(downloadTest);
-
-  const install_archive = Gio1.SimpleAction
-    .builder({ name: 'download.install-archive', parameterType: GLib.VariantType.new('(ss)') })
-    .activate((_action, parameter) => {
-      Utils.promise_wrap(async () => {
-        const [] = Utils.g_variant_unpack_tuple<[string, string]>(parameter, ['string', 'string']);
-      });
-    })
-    .build();
-  main_window.add_action(install_archive);
+  const install_archive = new Gio.SimpleAction({
+    name: 'download.install-archive',
+    parameter_type: GLib.VariantType.new('(ss)'),
+  });
+  install_archive.connect('activate', (_action, parameter) => {
+    promise_wrap(async () => {
+      const [] = g_variant_unpack_tuple<[string, string]>(parameter, ['string', 'string']);
+    });
+  });
+  action_map.add_action(install_archive);
   downwin_actions.add_action(install_archive);
 
   const manage = new Gio.SimpleAction({ name: 'download.manage' });
   manage.connect('activate', () => {
-    const window = DownloadWindow({ current_wgroup: main_window.get_group() });
+    const window = DownloadWindow({ current_wgroup: window_group });
     window.insert_action_group('download-window', downwin_actions);
     window.present();
   });
-  main_window.add_action(manage);
+  action_map.add_action(manage);
   application.set_accels_for_action('win.download.manage', ['<Control>j']);
 }

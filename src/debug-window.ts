@@ -3,7 +3,9 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
+
 import TypedBuilder from './typed-builder.js';
+
 import * as Consts from './const.js';
 import { g_param_default, registerClass } from './utils.js';
 

@@ -1,0 +1,20 @@
+.profile-bar {
+  margin: 0px;
+  padding: 0px;
+  border-radius: 8px;
+  background: alpha(currentColor, 0.075);
+}
+
+.profile-bar button {
+  margin: 0;
+}
+
+.profile-bar .profile-button {
+}
+
+.profile-bar .menu-button {
+}
+
+.profile-bar dropdown label {
+  font-size: small;
+}

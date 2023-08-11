@@ -1,0 +1,61 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.Window {
+  default-width: 864;
+
+  content:
+    Gtk.Box {
+      orientation: vertical;
+
+      Adw.HeaderBar {}
+      Gtk.SearchBar {
+        search-mode-enabled: true;
+        Gtk.Box {
+          styles ['profile-bar']
+
+            Gtk.Button {
+              valign: fill;
+              vexpand: true;
+              styles ['flat', 'profile-button']
+
+              Gtk.Box {
+                spacing: 4;
+
+                Gtk.Box {
+                  orientation: vertical;
+                  valign: center;
+
+                  Gtk.Image {
+                    icon-name: 'pan-up-symbolic';
+                    pixel-size: 12;
+                  }
+
+                  Gtk.Image {
+                    icon-name: 'pan-down-symbolic';
+                    pixel-size: 12;
+                  }
+                }
+
+                Gtk.Label {
+                  margin-start: 4;
+                  margin-end: 4;
+                  label: _('I\'m scared of drawing...');
+                }
+              }
+
+
+            }
+
+            Gtk.Button {
+              valign: fill;
+              vexpand: true;
+              styles ['flat', 'menu-button']
+              icon-name: 'pan-down-symbolic';
+            }
+        }
+      }
+      Adw.PreferencesPage {}
+    };
+}
+

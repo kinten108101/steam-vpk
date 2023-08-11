@@ -1,0 +1,18 @@
+.profile-bar {
+  padding: 0px;
+  min-height: 0px;
+  border-radius: 8px;
+  background: alpha(currentColor, 0.075);
+}
+
+.profile-bar button {
+  margin: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.profile-bar .profile-button {
+}
+
+.profile-bar .menu-button {
+}

@@ -1,6 +1,43 @@
 interface = []
 interface_files = []
-subdir('ui')
+
+interface = [
+  'gtk/menus.blp',
+  'gtk/help-overlay.blp',
+  'ui/add-addon-name.blp',
+  'ui/add-addon-preview-download.blp',
+  'ui/add-addon-url.blp',
+  'ui/add-addon.blp',
+  'ui/addon-details-context-label.blp',
+  'ui/addon-details-lozenge.blp',
+  'ui/addon-details-peek-file.blp',
+  'ui/addon-details.blp',
+  'ui/addons-panel-disk-allocate.blp',
+  'ui/addons-panel-disk.blp',
+  'ui/addons-panel.blp',
+  'ui/create-profile.blp',
+  'ui/debug-window.blp',
+  'ui/debug-window-action-row.blp',
+  'ui/download-page-row.blp',
+  'ui/download-page.blp',
+  'ui/download-window-row.blp',
+  'ui/download-window.blp',
+  'ui/field-row.blp',
+  'ui/inject-button-set.blp',
+  'ui/inject-console.blp',
+  'ui/launchpad-page.blp',
+  'ui/launchpad-row.blp',
+  'ui/launchpad-section.blp',
+  'ui/navigate-row.blp',
+  'ui/preferences-window.blp',
+  'ui/profile-bar-popover.blp',
+  'ui/profile-bar.blp',
+  'ui/profile-window.blp',
+  'ui/repository-page.blp',
+  'ui/window.blp',
+]
+
+interface_files = files(interface)
 
 blueprints = custom_target('blueprints',
   input: interface_files,
@@ -15,7 +52,7 @@ blueprints = custom_target('blueprints',
 
 UI = ''
 foreach x : interface
-  UI = ''.join([UI, '<file>ui/'])
+  UI = ''.join([UI, '<file>'])
   UI = ''.join([UI, x.replace('.blp', '.ui')])
   UI = ''.join([UI, '</file>'])
 endforeach
@@ -51,21 +88,9 @@ data_resource = gnome.compile_resources(
   install_dir: pkgdatadir
 )
 
-test('GSettings schema test', gschema_compiler, args: ['--strict', '--dry-run', meson.current_build_dir()])
-
-configure_file(
-  input: 'resource.gschema.xml.in',
-  output: app_id + '.gschema.xml',
-  configuration: {
-    'APP_ID': app_id,
-    'APP_RDNN': app_rdnn,
-  },
-  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
-)
-
 icondir = 'icons' / 'hicolor' / 'scalable' / 'apps'
 install_data(
-  'resources' / 'logo' / 'addon-box.svg',
+  meson.project_source_root() / 'data' / 'resources' / 'logo' / 'addon-box.svg',
   install_dir: datadir / icondir
 )
 

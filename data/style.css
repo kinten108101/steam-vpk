@@ -2,23 +2,9 @@
   padding-left: 10px;
 }
 
-
 .download-page-row {
   padding-top: 12px;
   padding-bottom: 12px;
-}
-
-splitbutton.omnibar {
-  background: alpha(currentColor, 0.075);
-}
-
-splitbutton.omnibar > button {
-  margin-bottom: 0;
-  margin-top: 0;
-}
-
-.run-button > button {
-  color: #3584e4;
 }
 
 /**
@@ -170,4 +156,68 @@ preferencesgroup.danger-zone list {
   padding-bottom: 0;
   padding-top: 0;
   font-weight: bold;
+}
+
+.thin-buttons button {
+  padding-bottom: 0;
+  padding-top: 0;
+  font-weight: bold;
+}
+
+.profile-bar {
+  padding: 0px;
+  min-height: 0px;
+  border-radius: 8px;
+  background: alpha(currentColor, 0.075);
+}
+
+.profile-bar button {
+  margin: 0px;
+  padding-top: 0px;
+  padding-bottom: 0px;
+}
+
+.profile-bar .profile-button {
+}
+
+.profile-bar .menu-button {
+}
+
+.boxedlist {
+  background-color: transparent;
+  border-radius: 12px;
+}
+
+.boxedlist row {
+  border-bottom: 0px;
+  padding-top: 6px;
+  padding-bottom: 6px;
+
+  transition-duration: 200ms;
+  transition-property: background-color;
+  transition-timing-function: ease-in-out;
+}
+
+.boxedlist row:hover {
+  transition-duration: 200ms;
+  transition-property: background-color;
+  transition-timing-function: ease-in-out;
+}
+
+.boxedlist row:active {
+  transition-duration: 100ms;
+  transition-property: background-color;
+  transition-timing-function: ease-in-out;
+}
+
+.boxedlist row:focus:first-child {
+  border-radius: 12px 12px 0px 0px;
+}
+
+.boxedlist row:focus:last-child {
+  border-radius: 0px 0px 12px 12px;
+}
+
+.boxedlist row:not(:first-child) {
+  border-top: 1px inset alpha(@dark_5, 0.5);
 }

@@ -15,9 +15,11 @@ Adw.PreferencesWindow window {
         title: _("Default Game Directory");
         subtitle: _("Can be overriden by profile");
 
+        [suffix]
         Gtk.Button {
           valign: center;
           action-name: 'pref-win.settings.set-game-dir';
+          action-target: '""';
 
           Gtk.Box {
             spacing: 8;
@@ -30,6 +32,14 @@ Adw.PreferencesWindow window {
               ellipsize: middle;
             }
           }
+        }
+
+        [suffix]
+        Gtk.Button {
+          valign: center;
+          icon-name: 'user-trash-symbolic';
+          styles ['flat']
+          action-name: 'pref-win.settings.reset-game-dir';
         }
       }
     }

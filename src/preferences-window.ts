@@ -4,9 +4,13 @@ import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
 import { APP_RDNN } from './const.js';
-import Settings from './settings.js';
 
-export default function PreferencesWindow(): [Gtk.Window, (params: {parent_window: Gtk.Window, settings: Settings}) => void, (group: Gio.ActionGroup) => void] {
+export default function PreferencesWindow():
+[
+  Gtk.Window,
+  (params: { parent_window: Gtk.Window, settings: Gio.Settings }) => void,
+  (group: Gio.ActionGroup) => void,
+] {
   const builder = new TypedBuilder();
   builder.add_from_resource(`${APP_RDNN}/ui/preferences-window.ui`);
 
@@ -14,22 +18,32 @@ export default function PreferencesWindow(): [Gtk.Window, (params: {parent_windo
   const window = builder.get_typed_object<Adw.Window>('window');
 
   function bind(
-  {
+  { settings,
     parent_window,
-    settings,
   }:
-  {
+  { settings: Gio.Settings;
     parent_window: Gtk.Window,
-    settings: Settings;
   }) {
-    const update_game_dir_path = () => {
-      const dir = settings.game_dir;
-      const name = dir.get_basename();
-      game_dir_path.set_label(name);
-    };
-    settings.connect_after('notify::game-dir', update_game_dir_path);
-    update_game_dir_path();
     window.set_transient_for(parent_window);
+
+    const update_game_dir_path = () => {
+      const val = settings.get_string('game-dir');
+      if (val === null) return;
+      let dir: Gio.File = Gio.File.new_for_path(val);
+      const name = dir?.get_basename() || null;
+      const display = (() => {
+        if (name === null) return '(None)';
+        return name;
+      })()
+      game_dir_path.set_label(display);
+    };
+    // listen to settings signal notify::game-dir
+    update_game_dir_path();
+
+    settings.connect('changed', (_obj, key) => {
+      if (key === null) return;
+      if (key === 'game-dir') update_game_dir_path();
+    });
   }
 
   function insert_action_group(group: Gio.ActionGroup) {

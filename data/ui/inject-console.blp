@@ -5,35 +5,54 @@ template $StvpkInjectConsole : Gtk.Revealer {
   transition-type: slide_up;
   reveal-child: true;
   child:
-    Gtk.Box box {
-      visible: false;
-      margin-top: 4;
-      margin-bottom: 4;
-      styles ['terminal', 'card']
-      Gtk.Revealer content-revealer {
-        transition-type: slide_up;
+    Adw.ViewStack {
+      Adw.ViewStackPage {
+        name: 'inject-page';
         child:
-          Gtk.ScrolledWindow {
-            hexpand: true;
-            vexpand: true;
-            min-content-height: 200;
-            Gtk.Label output {
-              margin-top: 8;
-              margin-bottom: 8;
-              halign: fill;
-              xalign: 0;
-              valign: fill;
-              yalign: 0;
-              justify: left;
-              use-markup: true;
-              hexpand: true;
-              label: 'Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
-              wrap: true;
-              wrap-mode: char;
-              selectable: true;
-              styles ['monospace']
+          Gtk.Box box {
+            visible: false;
+            margin-top: 4;
+            margin-bottom: 4;
+            styles ['terminal', 'card']
+            Gtk.Revealer content-revealer {
+              transition-type: slide_up;
+              child:
+                Gtk.ScrolledWindow {
+                  hexpand: true;
+                  vexpand: true;
+                  min-content-height: 200;
+                  Gtk.Label output {
+                    margin-top: 8;
+                    margin-bottom: 8;
+                    halign: fill;
+                    xalign: 0;
+                    valign: fill;
+                    yalign: 0;
+                    justify: left;
+                    use-markup: true;
+                    hexpand: true;
+                    label: 'Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir';
+                    wrap: true;
+                    wrap-mode: char;
+                    selectable: true;
+                    styles ['monospace']
+                  }
+                };
+            }
+          };
+      }
+
+      Adw.ViewStackPage {
+        name: 'profile-page';
+        child:
+          Gtk.Box profile-box {
+            visible: false;
+            styles ['card']
+            Gtk.Label {
+              label: 'hi';
             }
           };
       }
     };
+
 }

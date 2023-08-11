@@ -4,11 +4,9 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Exceptions are versions before 1.0.0 since they are not releasable.
 
-## [Unreleased]
+## [0.6.0] - 2023-08-12
 
-- Transition to gjspack?
-
-## [0.5.0] - 2022-07-03
+## [0.5.0] - 2023-07-03
 
 First (late) changelog entry!
 
@@ -33,7 +31,7 @@ First (late) changelog entry!
 - Transition from single-window app to multi-window app, which is reflected in the overall architecture.
 
 
-## [0.4.0] - 2022-05-21
+## [0.4.0] - 2023-05-21
 
 ### Summary
 

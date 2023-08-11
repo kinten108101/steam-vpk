@@ -1,0 +1,54 @@
+app-id: com.github.kinten108101.SteamVPK
+runtime: org.gnome.Platform
+runtime-version: "44"
+sdk: org.gnome.Sdk
+sdk-extensions:
+  - org.freedesktop.Sdk.Extension.node18
+build-options:
+  append-path: /usr/lib/sdk/node18/bin
+command: com.github.kinten108101.SteamVPK
+
+finish-args:
+  - --socket=wayland
+  - --socket=fallback-x11
+  - --share=ipc
+  - --device=dri
+  - --filesystem=home:rw
+
+cleanup:
+  - /include
+  - /lib/pkgconfig
+  - /share/pkgconfig
+  - /share/doc
+  - /share/gtk-doc
+  - /man
+  - /share/man
+  - "*.a"
+  - "*.la"
+  - /yarn-mirror
+
+modules:
+  - name: blueprint
+    buildsystem: meson
+    builddir: true
+    sources:
+      - type: git
+        url: https://gitlab.gnome.org/jwestman/blueprint-compiler.git
+        tag: v0.8.1
+        commit: aa7679618e864748f4f4d8f15283906e712752fe
+  - name: yarn-deps
+    buildsystem: simple
+    build-commands:
+      - /usr/lib/sdk/node18/enable.sh
+      - mkdir -p /app
+      - "cp -r ${FLATPAK_BUILDER_BUILDDIR}/flatpak-node/yarn-mirror/ /app"
+    sources:
+      - generated-sources.json
+  - name: stvpk
+    buildsystem: meson
+    config-opts:
+      - -Doffline-mirror=/app/yarn-mirror
+      - -Dbuildtype=debug
+    sources:
+      - type: dir
+        path: ../

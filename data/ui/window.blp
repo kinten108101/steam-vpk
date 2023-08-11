@@ -4,23 +4,24 @@ using Panel 1;
 
 menu add_menu {
   section {
-    label: _("Add-on");
-    item (_("New..."), "win.add-addon.add-manual")
-    item (_("Detect add-on..."), "win.add-addon.add-name")
-    item (_("Retrieve from Steamworks..."), "win.add-addon.add-url")
-    item (_("Import archive..."), "win.add-addon.add-archive")
+    item (_("New blank add-on..."), "win.add-addon.add-manual")
+  }
+  section {
+    item (_("Import by name..."), "win.add-addon.add-name")
+    item (_("Import from Workshop..."), "win.add-addon.add-url")
+    item (_("Import from archive..."), "win.add-addon.add-archive")
   }
 }
 
 menu primary-menu {
   section {
-    item (_("Downloads"), "download.manage")
+    item (_("Downloads"), "win.download.manage")
   }
 
   section {
     item (_("Preference"), "win.show-preferences")
-    item (_("Keyboard Shortcuts"), "win.show-shortcuts")
-    item (_("Help"), "win.show-help")
+    item (_("Keyboard Shortcuts"), "win.show-help-overlay")
+    item (_("Help"), "win.help")
     item (_("About Steam VPK"), "win.show-about")
   }
 }
@@ -32,14 +33,11 @@ menu run_menu {
   }
 }
 
-template $StvpkWindow : Adw.ApplicationWindow {
+Adw.ApplicationWindow window {
   resizable: true;
   default-width: 864;
   default-height: 600;
 
-  Gtk.GestureClick {
-    button: 8;
-  }
   Adw.ToastOverlay toastOverlay {
     vexpand: true;
 
@@ -65,27 +63,50 @@ template $StvpkWindow : Adw.ApplicationWindow {
                     Gtk.CenterBox {
 
                       [center]
-                      Gtk.Box {
-                        margin-start: 4;
-                        margin-end: 4;
-                        orientation: vertical;
+                      Adw.Clamp {
+                        maximum-size: 100;
 
-                        Adw.ViewSwitcherTitle view-switcher {
-                          title: bind template.title;
-                          stack: win-view-stack;
+                        Gtk.Box {
+                          margin-top: 4;
+                          margin-bottom: 4;
+                          margin-start: 4;
+                          margin-end: 4;
+                          orientation: vertical;
+                          hexpand: true;
+                          halign: fill;
+
+                          Gtk.Box {
+                            spacing: 8;
+
+                            $StvpkProfileBar profileBar {
+                              valign: center;
+                              vexpand: false;
+                            }
+
+                            $StvpkInjectButtonSet inject-button-set {
+                              valign: start;
+                            }
+                          }
+
+                          $StvpkInjectConsole inject-console {}
+
+                          Adw.ViewSwitcher view-switcher {
+                            policy: wide;
+                            stack: win-view-stack;
+                          }
                         }
-
                       }
-
                     };
 
                   [start]
                   Gtk.MenuButton {
+                    valign: start;
+                    margin-top: 4;
                     visible: true;
                     margin-start: 4;
                     always-show-arrow: false;
                     menu-model: add_menu;
-                    styles ['new-button', 'flat']
+                    styles ['new-button', 'flat', 'thin-button']
 
                     Adw.ButtonContent {
                       label: _("New");
@@ -95,11 +116,15 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
                   [end]
                   Gtk.WindowControls {
+                    valign: start;
+                    margin-top: 4;
                     side: end;
                   }
 
                   [end]
                   Gtk.MenuButton {
+                    valign: start;
+                    margin-top: 4;
                     icon-name: "open-menu-symbolic";
                     popover:
                       Gtk.PopoverMenu {
@@ -109,6 +134,8 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
                   [end]
                   Gtk.ToggleButton {
+                    valign: start;
+                    margin-top: 4;
                     visible: false;
                     can-focus: true;
                     icon-name: "system-search-symbolic";
@@ -116,33 +143,11 @@ template $StvpkWindow : Adw.ApplicationWindow {
                 }
 
                 Gtk.SearchBar secondary-bar {
-                  search-mode-enabled: true;
+                  search-mode-enabled: false;
 
                   Gtk.CenterBox {
-                    [center]
-                    Gtk.Box {
-                      orientation: vertical;
-                      margin-start: 8;
-                      margin-end: 8;
 
-                      $StvpkInjectConsole inject-console {}
-
-                      $StvpkProfileBar profileBar {
-                        hexpand: true;
-                        halign: fill;
-                        valign: fill;
-                        vexpand: true;
-                      }
-
-                    }
-
-                    [end]
-                    $StvpkInjectButtonSet inject-button-set {
-                      valign: end;
-                    }
                   }
-
-
                 }
 
                 Adw.ViewStack win-view-stack {
@@ -150,15 +155,15 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
                   Adw.ViewStackPage {
                     name: "main-page";
-                    title: _("Load Order");
+                    title: _("Load-order");
                     icon-name: "map-symbolic";
                     child: $StvpkLaunchpadPage launchpadPage {};
                   }
 
                   Adw.ViewStackPage {
                     name: "download-page";
-                    title: _("Add-ons");
-                    icon-name: "puzzle-piece-symbolic";
+                    title: _("Browse");
+                    icon-name: "harddisk-symbolic";
                     child: $StvpkDownloadPage downloadPage {};
                   }
                 }
@@ -168,7 +173,7 @@ template $StvpkWindow : Adw.ApplicationWindow {
 
             Adw.ViewSwitcherBar {
               stack: win-view-stack;
-              reveal: bind view-switcher.title-visible;
+              reveal: false;
             }
 
             Gtk.Revealer toolbar-revealer {
@@ -188,10 +193,8 @@ template $StvpkWindow : Adw.ApplicationWindow {
                         orientation: vertical;
                         margin-start: 8;
                         margin-end: 8;
-
                       }
                     }
-
                   };
               }
             }

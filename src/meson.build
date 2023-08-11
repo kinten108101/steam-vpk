@@ -1,10 +1,7 @@
 exec_config = configuration_data()
 exec_config.set('GJS', gjs_console)
-exec_config.set('VERSION', meson.project_version())
 exec_config.set('APP_ID', app_id)
-exec_config.set('APP_RDNN', app_rdnn)
-exec_config.set('APP_FULLNAME', app_fullname)
-exec_config.set('APP_SHORTNAME', app_shortname)
+exec_config.set('VERSION', meson.project_version())
 exec_config.set('PREFIX', get_option('prefix'))
 exec_config.set('DATADIR', get_option('datadir'))
 exec_config.set('LIBDIR', get_option('libdir'))
@@ -12,88 +9,62 @@ exec_config.set('SRC_DIR', meson.current_source_dir())
 exec_config.set('BUILD_TYPE', get_option('buildtype'))
 
 script = [
-  'add-addon-window.ts',
-  'add-addon.ts',
-  'addon-action.ts',
-  'addon-details.ts',
-  'addon-storage-controls.ts',
-  'addon-storage.ts',
+  'actions/action-builder.ts',
+  'actions/addon-details.ts',
+  'actions/addons-panel-actions.ts',
+  'actions/addon-storage-controls.ts',
+  'actions/archive-controls.ts',
+  'actions/injector-actions.ts',
+  'actions/settings-actions.ts',
+  'dialogs/allocate.ts',
+  'dialogs/file-dialog.ts',
+  'dialogs/message-dialog.ts',
+  'dialogs/window-promiser.ts',
+  'addon-details-page.ts',
   'addons-panel.ts',
-  'addons.ts',
+  'api.ts',
   'application.ts',
-  'archive.ts',
-  'archive-controls.ts',
-  'config.ts',
   'const.ts',
-  'create-profile.ts',
+  'conversation.ts',
   'debug-window.ts',
-  'disk-capacity.ts',
+  'download-page-present.ts',
   'download-page.ts',
   'download-window.ts',
-  'downloader.ts',
-  'file-dialog.ts',
-  'file.ts',
+  'field-row.ts',
   'gtk.ts',
-  'id.ts',
-  'index-dir.ts',
   'inject-button-set.ts',
+  'inject-console-presenter.ts',
   'inject-console.ts',
-  'injector-actions.ts',
-  'injector.ts',
   'launchpad.ts',
-  'logger.ts',
   'main.ts',
-  'markup.ts',
-  'message-dialog.ts',
-  'mvc.ts',
+  'navigate-row.ts',
   'preferences-window.ts',
   'profile-bar.ts',
   'profile-window.ts',
-  'profiles.ts',
   'repository-page.ts',
-  'settings.ts',
+  'shortcuts.ts',
   'spinning-button.ts',
-  'steam-api.ts',
+  'stack-controller.ts',
+  'toast-builder.ts',
   'typed-builder.ts',
   'utils.ts',
   'view-model-binder.ts',
-  'window-promiser.ts',
   'window.ts',
 ]
 script_files = files(script)
 
-lib = [
-  'utils/action.ts',
-  'utils/adw1.ts',
-  'utils/code.ts',
-  'utils/decorator.ts',
-  'utils/errors.ts',
-  'utils/file-dialog.ts',
-  'utils/gio1.ts',
-  'utils/glib1.ts',
-  'utils/gtk1.ts',
-  'utils/json1.ts',
-  'utils/message-dialog.ts',
-  'utils/result.ts',
-  'utils/soup1.ts',
-  'utils/spinning-button.ts',
-  'utils/toast.ts',
-  'utils/window-promiser.ts',
-  ]
-lib_files = files(lib)
-
-
-tsc_out = join_paths(meson.project_build_root(), 'tsc-out')
+tsc_out = join_paths(meson.project_build_root(), 'tsc-out-steam-vpk')
 
 _build_root = meson.project_build_root() / '@0@'
-typescript = custom_target(
-  'typescript-compile',
-  input: script_files + lib_files,
+typescript_steam_vpk = custom_target(
+  'typescript-compile-steam-vpk',
+  input: script_files,
   build_by_default: true,
   build_always_stale: true,
   command: [ yarn, yarn_args, 'run', 'tsc',
     '--outDir', tsc_out,
-    '--project', _build_root.format(TS_CONFIG) ],
+    '--project', meson.project_source_root() / 'tsconfig.json',
+    ],
   depends: [ yarn_deps ],
   output: [ 'tsc-output' ],
 )
@@ -105,42 +76,34 @@ foreach x : script
   SRC = ''.join([SRC, '</file>'])
 endforeach
 
-LIB = ''
-foreach x : lib
-  LIB = ''.join([LIB, '<file>'])
-  LIB = ''.join([LIB, x.replace('.ts', '.js')])
-  LIB = ''.join([LIB, '</file>'])
-endforeach
-
 src_manifest = configure_file(
   input:  'resource.src.gresource.xml.in',
   output: 'resource.src.gresource.xml',
   configuration: {
     'SRC': SRC,
-    'LIB': LIB,
     'APP_RDNN': app_rdnn,
   },
 )
 
 src_resource = gnome.compile_resources(
-  app_id + '.src',
+  'com.github.kinten108101.SteamVPK.src',
   src_manifest,
-  dependencies: typescript,
-  source_dir: tsc_out / 'src',
+  dependencies: typescript_steam_vpk,
+  source_dir: tsc_out, # tsc_out / 'src'
   gresource_bundle: true,
   install: true,
   install_dir: pkgdatadir,
 )
 
-app_launcher = configure_file(
-  input: 'stvpk.js',
-  output: app_id + '.js',
+steam_vpk_launcher = configure_file(
+  input: 'steam-vpk.js',
+  output: 'com.github.kinten108101.SteamVPK.js',
   configuration: exec_config,
 )
 
 install_data(
-  app_launcher,
-  rename: app_id,
+  steam_vpk_launcher,
+  rename: 'com.github.kinten108101.SteamVPK',
   install_dir: get_option('bindir'),
   install_mode: 'rwxrwxrwx',
 )

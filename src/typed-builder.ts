@@ -21,7 +21,7 @@ export default class TypedBuilder extends Gtk.Builder {
    */
   get_typed_object<T extends GObject.Object>(name: string): T {
     const obj = this.get_object(name);
-    if (obj === null) throw new Error(`Bad XML, ${name} not found.`);
+    if (obj === null) throw new Error(`Bad XML, \"${name}\" not found.`);
     return obj as T;
   }
 }

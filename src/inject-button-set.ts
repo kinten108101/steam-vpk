@@ -1,7 +1,7 @@
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
-import { param_spec_variant, registerClass } from './utils.js';
+import { GtkTemplate, param_spec_variant, registerClass } from './utils.js';
 import { APP_RDNN } from './const.js';
 
 export default class InjectButtonSet extends Gtk.Box {
@@ -12,12 +12,14 @@ export default class InjectButtonSet extends Gtk.Box {
   };
 
   static [GObject.properties] = {
-    'prop-id': param_spec_variant({ name: 'id', type: GLib.VariantType.new('i'), default_value: GLib.Variant.new_int32(-1) }),
+    'prop-id': param_spec_variant({ name: 'id', type: GLib.VariantType.new('s'), default_value: GLib.Variant.new_string('placeholder id') }),
   };
+
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/inject-button-set.ui`;
 
   static {
     registerClass({
-      Template: `resource://${APP_RDNN}/ui/inject-button-set.ui`,
+
       Children: ['inject', 'hold', 'hold-spinner', 'hold-icon', 'done'],
     }, this);
   }
@@ -37,6 +39,19 @@ export default class InjectButtonSet extends Gtk.Box {
   reset() {
     this.set_state_button(InjectButtonSet.Buttons.inject);
     this.hold_set_spinning(false);
+    this.make_sensitive(true);
+  }
+
+  make_sensitive(val: boolean) {
+    if (val) {
+      this.inject?.set_sensitive(true);
+      this.hold?.set_sensitive(true);
+      this.done?.set_sensitive(true);
+    } else {
+      this.inject?.set_sensitive(false);
+      this.hold?.set_sensitive(false);
+      this.done?.set_sensitive(false);
+    }
   }
 
   hold_set_spinning(val: boolean) {
@@ -51,8 +66,8 @@ export default class InjectButtonSet extends Gtk.Box {
     }
   }
 
-  set_id(val: number) {
-    this.id = GLib.Variant.new_int32(val);
+  set_id(val: string) {
+    this.id = GLib.Variant.new_string(val);
   }
 
   set_state_button(name: string) {

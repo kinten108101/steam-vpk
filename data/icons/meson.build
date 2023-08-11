@@ -19,6 +19,7 @@ icons = [
   'stop-large-symbolic.svg',
   'terminal-symbolic.svg',
   'update-symbolic.svg',
+  'user-trash-symbolic.svg',
   'warning-symbolic.svg',
   'wrench-wide-symbolic.svg',
 ]

@@ -9,11 +9,12 @@ menu inject-menu {
 }
 
 template $StvpkInjectButtonSet: Gtk.Box {
-  Adw.SplitButton inject {
+  styles ['thin-buttons']
+
+  Gtk.Button inject {
     visible: true;
     styles ['suggested-action']
     action-name: 'win.injector.run';
-    menu-model: inject-menu;
 
     Gtk.Box {
       spacing: 8;

@@ -1,0 +1,63 @@
+using Gtk 4.0;
+
+Gtk.ShortcutsWindow help_overlay {
+  modal: true;
+  Gtk.ShortcutsSection {
+    section-name: 'primary';
+
+    Gtk.ShortcutsGroup {
+      title: _('Add-ons');
+
+      Gtk.ShortcutsShortcut {
+        title: _('New blank add-on');
+        accelerator: '<Control>t';
+      }
+    }
+  }
+
+  Gtk.ShortcutsSection {
+    section-name: 'navigation';
+
+    Gtk.ShortcutsGroup {
+      title: _('Windows');
+
+      Gtk.ShortcutsShortcut {
+        title: _('New window');
+        accelerator: '<Control>n';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Close window');
+        accelerator: '<Control>w';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Preferences');
+        accelerator: '<Control>comma';
+      }
+    }
+
+    Gtk.ShortcutsGroup {
+      title: _('Browsing');
+
+      Gtk.ShortcutsShortcut {
+        title: _('Go back');
+        accelerator: '<Alt>Left';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Go forth');
+        accelerator: '<Alt>Right';
+      }
+    }
+
+    Gtk.ShortcutsGroup {
+      title: _('Application');
+
+      Gtk.ShortcutsShortcut {
+        title: _('Quit');
+        accelerator: '<Control>q';
+      }
+    }
+  }
+}

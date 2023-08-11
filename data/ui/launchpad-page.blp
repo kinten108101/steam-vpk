@@ -1,47 +1,76 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkLaunchpadPage : Gtk.Box {
-  orientation: vertical;
-
-  Gtk.ScrolledWindow {
+template $StvpkLaunchpadPage : Adw.Bin {
+  Adw.ViewStack stack {
     vexpand: true;
-    hexpand: true;
-    hscrollbar-policy: never;
-    Adw.Clamp {
-      maximum-size: 600;
 
-      Gtk.Box contentArea {
-        styles ["content"]
-        margin-top: 24;
-        margin-bottom: 24;
-        margin-start: 16;
-        margin-end: 16;
-        orientation: vertical;
-        spacing: 24;
+    Adw.ViewStackPage {
+      name: 'main';
+      child:
+        Adw.PreferencesPage {
+          Adw.PreferencesGroup {
+            title: _('Add-ons to Link');
+            description: _('Only add-ons listed below are available for linking');
 
-        $StvpkLaunchpadSection defaultSection {
-          title: _('Add-ons to Link');
-          subtitle: _('Only add-ons listed below are available for linking');
-        }
-      }
+            Gtk.ListBox addonlist {
+              selection-mode: none;
+              styles ['boxed-list']
+            }
+          }
+        };
+    }
+
+    Adw.ViewStackPage {
+      name: 'empty';
+      child:
+        Adw.StatusPage {
+          title: _('Create or Import an Add-on');
+          description: _('Click the bottom on the top-left corner, or use one of the following:');
+          child:
+            Gtk.Grid {
+              halign: center;
+              row-spacing: 18;
+              column-spacing: 48;
+
+              Gtk.Label {
+                layout { row: 0; column: 0; }
+                xalign: 0;
+                label: _('Blank add-on');
+              }
+
+              Gtk.ShortcutLabel {
+                layout { row: 0; column: 1;}
+                halign: end;
+                accelerator: '<Control>N';
+              }
+
+              Gtk.Label {
+                layout { row: 1; column: 0; }
+                xalign: 0;
+                label: _('Import from Workshop');
+              }
+
+              Gtk.ShortcutLabel {
+                layout { row: 1; column: 1;}
+                halign: end;
+                accelerator: '<Control>B';
+              }
+
+              Gtk.Box {
+                layout { row: 2; column: 0; column-span: 2; }
+                margin-top: 12;
+                homogeneous: true;
+                spacing: 12;
+                orientation: vertical;
+
+                Gtk.Button {
+                  label: _('New add-on');
+                  styles ['pill']
+                }
+              }
+            };
+        };
     }
   }
 }
-
-Adw.PreferencesGroup {
-          visible: true;
-
-          Adw.ActionRow {
-            visible: false;
-            title: 'Enable add-ons';
-            //icon-name: 'puzzle-piece-symbolic';
-            subtitle: 'May cause graphical and performance issues.';
-
-            Gtk.Switch enable-addon {
-              valign: center;
-              action-name: 'addons.enabled';
-              action-target: 'true'; // placeholder - see implementation
-            }
-          }
-        }

@@ -1,57 +1,57 @@
 using Gtk 4.0;
 using Adw 1;
-using Panel 1;
 
-menu popover-menu {
-  section activeProfileMenu {
-    item (_("Default"), "profilesasfd.sdfafds")
-    item (_("Manage Profiles"), "profiles.manage")
-  }
-}
-
-menu profilebarMenu {
-  section {
-    item (_("Reload add-ons"), "win.reload-data")
-    item (_("Reload profile"), "win.reload-data")
-  }
-}
-
-template $StvpkProfileBar : Panel.OmniBar {
-  icon-name: 'refresh-large-symbolic';
-  tooltip-text: 'Reload Add-ons';
-  width-request: 100;
-  popover: Gtk.PopoverMenu profilePopover {
-    menu-model: popover-menu;
-  };
-  action-name: "win.reload-data";
-  menu-model: profilebarMenu;
-
-  [prefix]
-  Gtk.Box {
-    valign: center;
+template $StvpkProfileBar : Adw.Bin {
+  Adw.Clamp {
+    vexpand: false;
     orientation: vertical;
-    margin-end: 12;
-    styles ["pan"]
+    maximum-size: 16;
+    styles ['profile-bar']
+    Gtk.Box {
+      halign: fill;
+      Gtk.Button {
+        vexpand: true;
+        halign: fill;
+        hexpand: true;
+        styles ['flat', 'profile-button']
 
-    Gtk.Image {
-      icon-name: "pan-up-symbolic";
-      pixel-size: 12;
-    }
+        Gtk.Box {
+          halign: fill;
+          spacing: 4;
 
-    Gtk.Image {
-      icon-name: "pan-down-symbolic";
-      pixel-size: 12;
+          Gtk.Box {
+            halign: start;
+            orientation: vertical;
+            valign: center;
+
+            Gtk.Image {
+              icon-name: 'pan-up-symbolic';
+              pixel-size: 12;
+            }
+
+            Gtk.Image {
+              icon-name: 'pan-down-symbolic';
+              pixel-size: 12;
+            }
+          }
+
+          Gtk.Label profile_label {
+            hexpand: true;
+            halign: fill;
+            xalign: 0;
+            label: 'I\'m scared of drawing so I\'m programming instead!';
+            ellipsize: end;
+            styles ['profile-name']
+          }
+        }
+      }
+
+      Gtk.Button {
+        vexpand: true;
+        halign: end;
+        styles ['flat', 'menu-button']
+        icon-name: 'pan-down-symbolic';
+      }
     }
   }
-
-
-  Gtk.Label label {
-    label: "I\'m scared of drawing...";
-    hexpand: true;
-    xalign: 0;
-    ellipsize: end;
-  }
-
-
-
 }
