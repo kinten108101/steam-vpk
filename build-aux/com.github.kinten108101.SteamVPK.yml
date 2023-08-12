@@ -13,19 +13,7 @@ finish-args:
   - --socket=fallback-x11
   - --share=ipc
   - --device=dri
-  - --filesystem=home:rw
-
-cleanup:
-  - /include
-  - /lib/pkgconfig
-  - /share/pkgconfig
-  - /share/doc
-  - /share/gtk-doc
-  - /man
-  - /share/man
-  - "*.a"
-  - "*.la"
-  - /yarn-mirror
+  - --filesystem=home
 
 modules:
   - name: blueprint
@@ -48,7 +36,6 @@ modules:
     buildsystem: meson
     config-opts:
       - -Doffline-mirror=/app/yarn-mirror
-      - -Dbuildtype=debug
     sources:
       - type: dir
         path: ../
