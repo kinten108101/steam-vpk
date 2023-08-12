@@ -1,7 +1,10 @@
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
-import { param_spec_object, registerClass } from './utils.js';
+import {
+  param_spec_object,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 import { FieldRow } from './field-row.js';
 import TypedBuilder from './typed-builder.js';

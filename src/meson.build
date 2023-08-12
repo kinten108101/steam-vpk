@@ -20,6 +20,10 @@ script = [
   'dialogs/file-dialog.ts',
   'dialogs/message-dialog.ts',
   'dialogs/window-promiser.ts',
+  'steam-vpk-utils/dbus-utils.ts',
+  'steam-vpk-utils/portals.ts',
+  'steam-vpk-utils/utils.ts',
+  'steam-vpk-utils/weakrefmap.ts',
   'addon-details-page.ts',
   'addons-panel.ts',
   'api.ts',
@@ -47,7 +51,6 @@ script = [
   'stack-controller.ts',
   'toast-builder.ts',
   'typed-builder.ts',
-  'utils.ts',
   'view-model-binder.ts',
   'window.ts',
 ]

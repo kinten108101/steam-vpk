@@ -1,5 +1,5 @@
 import Adw from 'gi://Adw';
-import { registerClass } from './utils.js';
+import { registerClass } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export default class RepositoryPage extends Adw.PreferencesPage {

@@ -1,6 +1,6 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-import { g_variant_unpack, promise_wrap } from '../utils.js';
+import { g_variant_unpack, promise_wrap } from '../steam-vpk-utils/utils.js';
 import { PrettyProxy } from '../api.js';
 
 export default function InjectorActions(

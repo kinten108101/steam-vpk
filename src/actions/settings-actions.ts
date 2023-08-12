@@ -1,7 +1,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
-import { g_variant_unpack, promise_wrap } from '../utils.js';
+import { g_variant_unpack, promise_wrap } from '../steam-vpk-utils/utils.js';
 import FileDialog from '../dialogs/file-dialog.js';
 
 export function SettingsActions(

@@ -4,7 +4,7 @@ import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { g_variant_unpack, promise_wrap } from '../utils.js';
+import { g_variant_unpack, promise_wrap } from '../steam-vpk-utils/utils.js';
 import { Toast } from '../toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../gtk.js';
 

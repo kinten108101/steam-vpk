@@ -2,7 +2,7 @@ import { DBusMonitor, PrettyProxy } from './api.js';
 import InjectButtonSet from './inject-button-set.js';
 import InjectConsole from './inject-console.js';
 import { ProfileBar } from './profile-bar.js';
-import { promise_wrap } from './utils.js';
+import { promise_wrap } from './steam-vpk-utils/utils.js';
 
 export default function InjectConsolePresenter(
 { inject_console,

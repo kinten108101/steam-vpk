@@ -14,7 +14,10 @@ import {
   SERVER_NAME,
   VERSION,
 } from './const.js';
-import { g_variant_unpack, log_error } from './utils.js';
+import {
+  g_variant_unpack,
+  log_error,
+} from './steam-vpk-utils/utils.js';
 import Shortcuts from './shortcuts.js';
 import Window from './window.js';
 import { widget_ensure } from './gtk.js';

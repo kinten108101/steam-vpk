@@ -1,7 +1,7 @@
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
-import { GtkTemplate, param_spec_variant, registerClass } from './utils.js';
+import { GtkTemplate, param_spec_variant, registerClass } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export default class InjectButtonSet extends Gtk.Box {

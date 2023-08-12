@@ -1,6 +1,6 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import { promise_wrap } from '../utils.js';
+import { promise_wrap } from '../steam-vpk-utils/utils.js';
 
 class BuilderPatternError extends Error {
 }

@@ -3,7 +3,12 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { GtkChildren, GtkTemplate, param_spec_object, registerClass } from './utils.js';
+import {
+  GtkChildren,
+  GtkTemplate,
+  param_spec_object,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export class LaunchpadPage extends Adw.Bin {

@@ -7,7 +7,7 @@ import Adw from 'gi://Adw';
 import TypedBuilder from './typed-builder.js';
 
 import * as Consts from './const.js';
-import { g_param_default, registerClass } from './utils.js';
+import { g_param_default, registerClass } from './steam-vpk-utils/utils.js';
 
 class DebugWindowActionRowItem extends GObject.Object {
   static [GObject.properties] = {

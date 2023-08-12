@@ -13,7 +13,7 @@ import {
   param_spec_string,
   param_spec_variant,
   registerClass,
-} from './utils.js';
+} from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export enum UseStates {

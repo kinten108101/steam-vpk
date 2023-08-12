@@ -1,7 +1,7 @@
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
-import { GtkTemplate, param_spec_string, registerClass } from './utils.js';
+import { GtkTemplate, param_spec_string, registerClass } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export class FieldRow extends Adw.ActionRow {

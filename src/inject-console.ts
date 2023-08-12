@@ -5,10 +5,10 @@ import {
   APP_RDNN,
 } from './const.js';
 import {
-    GtkChildren,
+  GtkChildren,
   GtkTemplate,
   registerClass,
-} from './utils.js';
+} from './steam-vpk-utils/utils.js';
 
 // TODO(kinten): Scroll window to bottom as new lines are available
 

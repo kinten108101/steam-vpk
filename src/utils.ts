@@ -1,1 +1,0 @@
-/home/kinten/Projects/SteamVpk/steam-vpk/steam-vpk-utils/utils.ts

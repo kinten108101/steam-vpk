@@ -2,7 +2,7 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { GtkChildren, GtkTemplate, registerClass } from './utils.js';
+import { GtkChildren, GtkTemplate, registerClass } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export class ProfileBar extends Adw.Bin {

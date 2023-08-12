@@ -8,7 +8,13 @@ import Adw from 'gi://Adw';
 import * as Consts from './const.js';
 import TypedBuilder from './typed-builder.js';
 import { TOAST_TIMEOUT_SHORT } from './gtk.js';
-import { g_param_default, g_variant_unpack, param_spec_variant, promise_wrap, registerClass } from './utils.js';
+import {
+  g_param_default,
+  g_variant_unpack,
+  param_spec_variant,
+  promise_wrap,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
 import { Toast } from './toast-builder.js';
 
 export class BuilderData extends GObject.Object {

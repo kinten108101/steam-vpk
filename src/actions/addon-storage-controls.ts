@@ -3,7 +3,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 import { SimpleAction } from './action-builder.js';
-import { g_variant_unpack } from '../utils.js';
+import { g_variant_unpack } from '../steam-vpk-utils/utils.js';
 import { MessageDialog } from '../dialogs/message-dialog.js';
 
 export function logged(func: Function) {

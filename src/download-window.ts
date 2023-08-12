@@ -5,7 +5,12 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
-import { g_variant_unpack_tuple, param_spec_object, promise_wrap, registerClass } from './utils.js';
+import {
+  g_variant_unpack_tuple,
+  param_spec_object,
+  promise_wrap,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export class DownloadWindowRowItem extends GObject.Object {
