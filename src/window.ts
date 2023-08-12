@@ -161,12 +161,13 @@ function WindowActions(
     name: 'show-preferences',
   });
   showPreferences.connect('activate', () => {
-    const [prefWin, bind, insert_action_group] = PreferencesWindow();
-    bind({
-      parent_window,
-      settings,
-    });
-    insert_action_group(group);
+    const prefWin = PreferencesWindow()
+      .bind({
+        parent_window,
+        settings,
+      })
+      .insert_action_group(group)
+      .build();
     prefWin.present();
   });
   action_map.add_action(showPreferences);

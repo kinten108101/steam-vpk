@@ -5,12 +5,7 @@ import Adw from 'gi://Adw';
 import TypedBuilder from './typed-builder.js';
 import { APP_RDNN } from './const.js';
 
-export default function PreferencesWindow():
-[
-  Gtk.Window,
-  (params: { parent_window: Gtk.Window, settings: Gio.Settings }) => void,
-  (group: Gio.ActionGroup) => void,
-] {
+export default function PreferencesWindow() {
   const builder = new TypedBuilder();
   builder.add_from_resource(`${APP_RDNN}/ui/preferences-window.ui`);
 
@@ -44,11 +39,24 @@ export default function PreferencesWindow():
       if (key === null) return;
       if (key === 'game-dir') update_game_dir_path();
     });
+
+    return window_builder;
   }
 
   function insert_action_group(group: Gio.ActionGroup) {
     window.insert_action_group('pref-win', group);
+    return window_builder;
   }
 
-  return [window, bind, insert_action_group];
+  function build() {
+    return window;
+  }
+
+  const window_builder = {
+    bind,
+    insert_action_group,
+    build,
+  };
+
+  return window_builder;
 }
