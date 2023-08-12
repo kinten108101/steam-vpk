@@ -14,7 +14,6 @@ app_rdnn = '/com/github/kinten108101/SteamVPK'
 app_fullname = 'Steam VPK'
 app_shortname = 'steam-vpk'
 
-server = find_program('com.github.kinten108101.SteamVPK.Server', required: true)
 yarn = find_program('yarn', version: '>=1.22.19', required: true)
 gjs = dependency('gjs-1.0', version: '>=1.76.0', required: true)
 gjs_console = gjs.get_variable(pkgconfig: 'gjs_console')
