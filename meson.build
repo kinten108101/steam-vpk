@@ -59,8 +59,5 @@ yarn_deps = custom_target(
 subdir('data')
 subdir('src')
 
-gnome.post_install(
-  glib_compile_schemas: true,
-  gtk_update_icon_cache: true,
-  update_desktop_database: true,
-)
+gnome.post_install( gtk_update_icon_cache: true, update_desktop_database:
+true, )
