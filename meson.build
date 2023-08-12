@@ -30,6 +30,12 @@ typelibdir_abs = get_option('prefix') / get_option('libdir') / typelibdir
 
 yarn_args = []
 
+run_command(
+    'yarn', '-v',
+    env: { 'HOME': meson.project_build_root() },
+    check: true
+  )
+
 offline_mirror = get_option('offline-mirror')
 if offline_mirror != ''
   run_command(
