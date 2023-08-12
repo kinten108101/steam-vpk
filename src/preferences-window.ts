@@ -21,13 +21,13 @@ export default function PreferencesWindow():
   { settings,
     parent_window,
   }:
-  { settings: Gio.Settings;
+  { settings?: Gio.Settings;
     parent_window: Gtk.Window,
   }) {
     window.set_transient_for(parent_window);
 
     const update_game_dir_path = () => {
-      const val = settings.get_string('game-dir');
+      const val = settings?.get_string('game-dir') || null;
       if (val === null) return;
       let dir: Gio.File = Gio.File.new_for_path(val);
       const name = dir?.get_basename() || null;
@@ -40,7 +40,7 @@ export default function PreferencesWindow():
     // listen to settings signal notify::game-dir
     update_game_dir_path();
 
-    settings.connect('changed', (_obj, key) => {
+    settings?.connect('changed', (_obj, key) => {
       if (key === null) return;
       if (key === 'game-dir') update_game_dir_path();
     });

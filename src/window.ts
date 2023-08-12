@@ -38,12 +38,10 @@ export default function Window(
 { application,
   monitor,
   proxies,
-  settings,
 }:
 { application: Gtk.Application;
   monitor: DBusMonitor;
   proxies: ProxyManager;
-  settings: Gio.Settings;
 }) {
   monitor;
   const builder = new TypedBuilder();
@@ -82,7 +80,6 @@ export default function Window(
     action_map,
     leaflet,
     parent_window,
-    settings,
   });
 
   AddonDetailsPage({
@@ -152,7 +149,7 @@ function WindowActions(
 { action_map: Gio.ActionMap;
   leaflet: Adw.Leaflet;
   parent_window: Gtk.Window;
-  settings: Gio.Settings;
+  settings?: Gio.Settings;
 }) {
   const group = new Gio.SimpleActionGroup();
   SettingsActions({

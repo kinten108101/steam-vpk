@@ -13,7 +13,7 @@ export function SettingsActions(
 {
   action_map: Gio.ActionMap;
   parent_window: Gtk.Window;
-  settings: Gio.Settings;
+  settings?: Gio.Settings;
 }) {
   const set_game_dir = new Gio.SimpleAction({
     name: 'settings.set-game-dir',
@@ -46,7 +46,7 @@ export function SettingsActions(
         }
         const content = file?.get_path() || '';
         content;
-        settings.set_string('game-dir', content);
+        settings?.set_string('game-dir', content);
       }
     });
   });

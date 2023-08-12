@@ -31,7 +31,6 @@ export default function Application() {
 
   const monitor = new DBusMonitor();
   const proxies = new ProxyManager();
-  const settings = new Gio.Settings({ schema_id: APP_ID });
 
   debug_window_implement({
     application,
@@ -94,7 +93,6 @@ export default function Application() {
       application,
       monitor,
       proxies,
-      settings,
     });
     mainWindow.present();
   };
