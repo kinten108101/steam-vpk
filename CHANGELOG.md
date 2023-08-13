@@ -2,9 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html). Exceptions are versions before 1.0.0 since they are not releasable.
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/). This project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [0.6.0] - 2023-08-12
+## [Unreleased]
+
+Portal!
+
+- The application should be split into two smaller ones: the front-end (this, Steam VPK) and the back-end (Add-on Box).
+  + Async is enforced
+  + Possibility of external tools and other clients.
+- Main window UI renovation.
+
+## [0.6.0] - 2023-07-31
+
+MVP!
+
+### Added
+
+- Add-on management features. Import an add-on from Workshop, or remove add-on from working repository (move to trash). Add add-on to load order (use). Manipulate the load order by moving entry up, down, drag-n-drop remove entry (disuse), etc.
+- Hidden window for debugging which can be activated with Ctrl+H. This window lists (almost) all actions in the app.
+- A panel in the Repository page for overview info of add-ons.
+- Add-on archives can now be downloaded from Workshop and installed into game!  Although UI is unfinished and there are various performance issues.
+
+### Changed
+
+- Simplified some internal modules e.g. index-dir and addon-storage.
+
+### Removed
+
+- Deprecated XXX1 namespaces.
+- Deprecated Result.
+- Deprecated Config in favor of Const.
+- Deprecated Log.
 
 ## [0.5.0] - 2023-07-03
 
@@ -31,25 +60,25 @@ First (late) changelog entry!
 - Transition from single-window app to multi-window app, which is reflected in the overall architecture.
 
 
-## [0.4.0] - 2023-05-21
+## [0.4.0] - 2023-05-29
 
 ### Summary
 
 - New GJS TypeScript stack
 
-## [0.3.0]
+## [0.3.0] - 2023-05-21
 
 ### Summary
 
 - Profile system, basic application model
 
-## [0.2.0]
+## [0.2.0] - 2023-04-17
 
 ### Summary
 
 - New interface layout
 
-## [0.1.0]
+## [0.1.0] - 2023-04-10
 
 ### Summary
 
