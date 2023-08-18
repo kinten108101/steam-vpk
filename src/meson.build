@@ -25,6 +25,7 @@ script = [
   'steam-vpk-utils/utils.ts',
   'steam-vpk-utils/weakrefmap.ts',
   'addon-details-page.ts',
+  'about.ts',
   'addons-panel.ts',
   'api.ts',
   'application.ts',

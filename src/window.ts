@@ -7,10 +7,8 @@ import DownloadWindow from './download-window.js';
 import InjectButtonSet from './inject-button-set.js';
 
 import {
-  APP_FULLNAME,
   APP_RDNN,
   SERVER_NAME,
-  VERSION,
 } from './const.js';
 import InjectConsole, {
   InjectConsoleActions,
@@ -33,6 +31,7 @@ import { DBusMonitor, ProxyManager } from './api.js';
 import InjectorActions from './actions/injector-actions.js';
 import { SettingsActions } from './actions/settings-actions.js';
 import { ProfileBar } from './profile-bar.js';
+import AboutWindow from './about.js';
 
 export default function Window(
 { application,
@@ -174,18 +173,9 @@ function WindowActions(
 
   const showAbout = new Gio.SimpleAction({ name: 'show-about' });
   showAbout.connect('activate', () => {
-    const about = new Adw.AboutWindow({
-      application_icon: 'addon-box',
-      application_name: APP_FULLNAME,
-      developer_name: `Kinten Le`,
-      license_type: Gtk.License.GPL_3_0,
-      version: VERSION,
-      issue_url: 'https://github.com/kinten108101/steam-vpk/issues',
-      developers: [ 'Kinten Le <kinten108101@protonmail.com>' ],
-      transient_for: parent_window || null,
-      release_notes: '',
-    });
-    about.present();
+    AboutWindow({
+      parent_window,
+    }).present();
   });
   action_map.add_action(showAbout);
 
