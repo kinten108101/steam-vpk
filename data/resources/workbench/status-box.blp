@@ -85,6 +85,12 @@ Adw.Window {
           Adw.ActionRow {
             title: 'Clear';
             icon-name: 'large-brush-symbolic';
+
+            [suffix]
+            Gtk.Button {
+              valign: center;
+              label: _('Start');
+            }
           }
         }
       }
