@@ -9,6 +9,8 @@ Adw.Window {
       orientation: vertical;
 
       Adw.HeaderBar {
+        show-end-title-buttons: false;
+        show-start-title-buttons: false;
         title-widget:
           Gtk.Overlay status-box-overlay {
             child:
@@ -69,6 +71,13 @@ Adw.Window {
                 }
               };
           };
+
+        [end]
+        Gtk.WindowControls {
+          valign: start;
+          margin-top: 4;
+          side: end;
+        }
       }
 
       Adw.PreferencesPage {
