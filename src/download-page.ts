@@ -101,21 +101,28 @@ class RepositoryItem extends GObject.Object {
   {
     name,
     creator,
-    description,
     id,
   }:
   {
     name: string;
     creator: string;
-    description: string;
     id: string;
   }) {
-    super({ name, creator, description, id });
+    super({ name, creator, id });
+    this.id_gvariant = GLib.Variant.new_string(id);
   }
 
   set_use_state(val: UseStates) {
     //if (val === this.use_state) return;
     this.use_state = val;
+  }
+}
+
+abstract class ViewmodelError extends Error{}
+
+class MissingFieldError extends ViewmodelError {
+  constructor(name: string) {
+    super(`Missing required field \"${name}\" for viewmodel item`);
   }
 }
 
@@ -146,8 +153,8 @@ export class RepositoryListStore extends Gtk.FlattenListModel {
   constructor() {
     super({
       model: (() => {
-        const local_addons = new Gio.ListStore();
-        const remote_addons = new Gio.ListStore();
+        const local_addons = new Gio.ListStore({ item_type: RepositoryItem.$gtype });
+        const remote_addons = new Gio.ListStore({ item_type: RepositoryItem.$gtype });
         const model = new Gio.ListStore({ item_type: Gio.ListStore.$gtype });
         model.append(local_addons);
         model.append(remote_addons);
@@ -157,16 +164,40 @@ export class RepositoryListStore extends Gtk.FlattenListModel {
     RepositoryItem;
   }
 
-  get local_addons() {
-    return this.model.get_item(0);
+  get local_addons(): Gio.ListStore<RepositoryItem> {
+    const model = this.model.get_item(0);
+    if (model === null) throw new Error;
+    return model as Gio.ListStore;
   }
 
-  get remote_addons() {
-    return this.model.get_item(1);
+  get remote_addons(): Gio.ListStore<RepositoryItem> {
+    const model = this.model.get_item(1);
+    if (model === null) throw new Error;
+    return model as Gio.ListStore;
   }
 
   append() {
 
+  }
+
+  refill(items: any[]) {
+    this.local_addons.remove_all();
+    this.remote_addons.remove_all();
+    items.forEach(x => {
+      const is_remote = x['publishedfileid'] !== undefined;
+      const id = x['stvpkid'];
+      if (id === undefined) throw new MissingFieldError('stvpkid');
+      const name = x['title'];
+      if (name === undefined) throw new MissingFieldError('title');
+      const creator = 'Unavailable';
+      const item = new RepositoryItem({
+        id,
+        name,
+        creator,
+      })
+      if (is_remote) this.remote_addons.append(item);
+      else this.local_addons.append(item);
+    })
   }
 }
 
@@ -201,7 +232,6 @@ export class DownloadPage extends Adw.PreferencesPage {
         (<[string, Gtk.Widget, string][]>[
           ['name', widget.title, 'label'],
           ['creator', widget.subtitle, 'label'],
-          ['description', widget.description, 'label'],
           ['use-state', widget.use_button, 'state'],
           ['id-gvariant', widget, 'id_gvariant'],
         ]).forEach(([prop, child, child_prop]) => {
