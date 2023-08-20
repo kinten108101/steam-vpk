@@ -37,6 +37,7 @@ import { promise_wrap } from './steam-vpk-utils/utils.js';
 import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
 import { AddonDetailsPagePresenter } from './addon-details-present.js';
 import AddonDetailsActions from './actions/addon-details.js';
+import HeaderBox from './headerbox.js';
 
 export default function Window(
 { application,
@@ -158,6 +159,18 @@ export default function Window(
 
 
   return window;
+  HeaderBox({
+    parent_window,
+    action_map,
+    reveal_toggle: profile_bar.primary_button,
+    build_entry: builder.get_typed_object<Adw.Bin>('headerbox_build_entry'),
+    disable_all: () => {
+
+    },
+    reenable_all: () => {
+
+    },
+  });
 }
 
 function WindowActions(

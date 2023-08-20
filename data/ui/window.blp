@@ -77,6 +77,11 @@ Adw.ApplicationWindow window {
                           orientation: vertical;
                           hexpand: true;
                           halign: fill;
+                          valign: start;
+
+
+
+
 
                           Gtk.Box {
                             spacing: 8;
@@ -91,11 +96,17 @@ Adw.ApplicationWindow window {
                             }
                           }
 
-                          $StvpkInjectConsole inject-console {}
+                          Adw.Bin headerbox_build_entry {}
 
-                          Adw.ViewSwitcher view-switcher {
-                            policy: wide;
-                            stack: win-view-stack;
+                          Gtk.Revealer view_switcher_revealer {
+                            transition-type: slide_up;
+                            transition-duration: 200;
+                            reveal-child: true;
+                            child:
+                              Adw.ViewSwitcher view_switcher {
+                                policy: wide;
+                                stack: win-view-stack;
+                              };
                           }
                         }
                       }
@@ -223,3 +234,4 @@ Adw.ApplicationWindow window {
 
 
 
+$StvpkInjectConsole inject-console {}

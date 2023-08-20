@@ -38,6 +38,7 @@ script = [
   'download-page.ts',
   'download-window.ts',
   'gtk.ts',
+  'headerbox.ts',
   'inject-button-set.ts',
   'inject-console-presenter.ts',
   'inject-console.ts',
