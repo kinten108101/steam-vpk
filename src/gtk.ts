@@ -6,7 +6,8 @@ import { DownloadPage } from './download-page.js';
 import { ProfileBar } from './profile-bar.js';
 import InjectConsole from './inject-console.js';
 import InjectButtonSet from './inject-button-set.js';
-import { FieldRow } from './field-row.js';
+import { param_spec_string, registerClass, GtkTemplate } from './steam-vpk-utils/utils.js';
+import { APP_RDNN } from './const.js';
 
 export const TOAST_TIMEOUT_X_SHORT = 2;
 export const TOAST_TIMEOUT_SHORT = 3;
@@ -16,6 +17,23 @@ export function update_group_with_list(model: Gio.ListModel, group: Adw.Preferen
     group.set_visible(false);
   } else {
     group.set_visible(true);
+  }
+}
+
+export class FieldRow extends Adw.ActionRow {
+  static [GObject.properties] = {
+    value: param_spec_string({ name: 'value', blurb: 'Markup is allowed' }),
+  };
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/field-row.ui`;
+
+  static {
+    registerClass({}, this);
+  }
+
+  value!: string;
+
+  set_value(val: string) {
+    this.value = val;
   }
 }
 

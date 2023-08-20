@@ -3,9 +3,7 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-
 import TypedBuilder from './typed-builder.js';
-
 import * as Consts from './const.js';
 import { g_param_default, registerClass } from './steam-vpk-utils/utils.js';
 
@@ -52,7 +50,7 @@ const list_action_objs = (application: Gtk.Application): ActionInfo[] => {
   return actions;
 }
 
-export default function debug_window_implement(
+export default function DebugWindow(
 {
   application,
 }:

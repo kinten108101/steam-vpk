@@ -6,249 +6,286 @@ Gtk.Box page {
   styles ['addon-details']
   orientation: vertical;
 
-  Adw.HeaderBar {
-    styles ['flat']
-    title-widget:
-      Adw.WindowTitle {
-        title: '';
-      };
-
-    [start]
-    Gtk.Button {
-      icon-name: 'left-large-symbolic';
-      action-name: 'win.back';
-    }
-  }
-
-  Adw.PreferencesPage {
-    Adw.PreferencesGroup {
-      Adw.PreferencesRow {
-        child:
-          Gtk.Box {
-            spacing: 8;
-            margin-start: 12;
-            margin-end: 12;
-            margin-top: 8;
-            margin-bottom: 8;
-            Gtk.Image {
-              valign: start;
-              icon-name: 'media-flash';
-              pixel-size: 64;
-            }
-            Gtk.Box {
-              margin-top: 4;
-              orientation: vertical;
-              halign: fill;
-              Gtk.Box {
-                halign: fill;
-
-                Gtk.Box {
-                  hexpand: true;
-                  orientation: vertical;
-                  Gtk.Label title {
-                    halign: start;
-                    label: _('广州增城 （Zengcheng）Lv7.3');
-                    ellipsize: end;
-                    lines: 1;
-                    styles ['addon-title']
-                  }
-                  Gtk.Label subtitle {
-                    halign: start;
-                    label: _('zengcheng-lv7-3@爱都有罪love');
-                    ellipsize: end; lines: 1;
-                    styles ['dim-label', 'addon-subtitle']
-                  }
-                }
-
-                Gtk.Box {
-                  visible: true;
-                  margin-start: 8;
-                  orientation: vertical;
-                  halign: end;
-                  Gtk.Label used {
-                    halign: end;
-                    justify: right;
-                    label: '824.618 MB Used';
-                    ellipsize: start; lines: 1;
-                  }
-                  Gtk.Label {
-                    halign: end;
-                    justify: right;
-                    use-markup: true;
-                    label: '<span size=\'small\'>31.5 GB Total</span>';
-                    styles ['dim-label']
-                    ellipsize: start; lines: 1;
-                  }
-                }
-              }
-
-              Gtk.ProgressBar{
-                visible: true;
-                margin-top: 12;
-              }
-
-              Gtk.Box tags {
-                visible: false;
-                margin-top: 12;
-                margin-bottom: 4;
-                Gtk.Button tag-empty {
-                  visible: false;
-                  label: _('Empty');
-                  styles ['tag']
-                }
-              }
-            }
-          };
-      } // preferences row
-
-      $StvpkFieldRow stvpkid {
-        icon-name: 'fingerprint-symbolic';
-        title: _('Internal ID');
-        //subtitle: _('For add-on management.');
-        value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
-
-        [suffix]
-        Gtk.Button stvpkid-copy {
-          icon-name: 'edit-copy-symbolic';
-          action-name: 'win.addon-details.copy-string';
-          action-target: bind (data as <$StvpkBuilderData>).id;
-          valign: center;
+  Gtk.Stack headerbar-stack {
+    transition-type: crossfade;
+    Gtk.StackPage {
+      name: 'flat';
+      child:
+        Adw.HeaderBar {
           styles ['flat']
-        }
-      }
+          title-widget:
+            Adw.WindowTitle {
+              title: '';
+            };
 
-      $StvpkFieldRow steamid {
-        visible: false;
-        icon-name: 'fingerprint-symbolic';
-        title: _('Steamworks ID');
-        //subtitle: _('For vanity data and other resources.');
-        value: '2396847377'; // placeholder
-
-        [suffix]
-        Gtk.Button steamid-copy {
-          icon-name: 'edit-copy-symbolic';
-          action-name: 'win.addon-details.copy-string';
-          action-target: bind (data as <$StvpkBuilderData>).steamid;
-          valign: center;
-          styles ['flat']
-        }
-      }
-
-      Adw.ActionRow visit-steam-row {
-        visible: false;
-        title: _('View in Workshop');
-        subtitle: ''; // placeholder
-        activatable-widget: visit-steam-button;
-
-        [suffix]
-        Gtk.Button visit-steam-button {
-          action-name: 'win.addon-details.visit-website';
-          action-target: bind (data as <$StvpkBuilderData>).steam-url;
-          icon-name: 'step-out-symbolic';
-          valign: center;
-          styles ['flat']
-        }
-      }
-
-      Adw.ActionRow {
-        title: _('Open in Explorer');
-        activatable-widget: explore-button;
-
-        [suffix]
-        Gtk.Button explore-button {
-          icon-name: 'folder-symbolic';
-          action-name: 'win.addon-details.explore-fs';
-          action-target: bind (data as <$StvpkBuilderData>).subdir-uri;
-          valign: center;
-          styles ['flat']
-        }
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _('Archives');
-      header-suffix:
-        Gtk.Box {
-          spacing: 8;
-          margin-bottom: 4;
+          [start]
           Gtk.Button {
-            icon-name: 'plus-large-symbolic';
+            icon-name: 'left-large-symbolic';
+            action-name: 'win.back';
           }
         };
 
-      Gtk.ListBox {
-        styles ['boxed-list']
-        Adw.ActionRow {
-          icon-name: 'list-drag-handle';
-          title: 'l4d2.vpk';
-        }
-      }
     }
 
-    Adw.PreferencesGroup {
-      visible: false;
+    Gtk.StackPage {
+      name: 'full';
+      child:
+        Adw.HeaderBar {
+          styles ['flat']
+          title-widget:
+            Adw.WindowTitle wintitle-full {
+              title: 'Zhengcheng Lv 7.2'; // placeholder
+            };
 
-      Adw.PreferencesRow {
-        child:
-          Adw.ViewSwitcher {
-            stack: info-stack;
-            policy: narrow;
-          };
-      }
+          [start]
+          Gtk.Button {
+            icon-name: 'left-large-symbolic';
+            action-name: 'win.back';
+          }
+        };
+    }
+  }
 
+  Gtk.ScrolledWindow scroller {
+    vexpand: true;
+    Adw.Clamp {
+      maximum-size: 572;
+      Gtk.Box {
+        margin-bottom: 24;
+        margin-top: 24;
+        orientation: vertical;
+        spacing: 24;
+        Adw.PreferencesGroup {
+          Adw.PreferencesRow {
+            child:
+              Gtk.Box {
+                spacing: 8;
+                margin-start: 12;
+                margin-end: 12;
+                margin-top: 8;
+                margin-bottom: 8;
+                Gtk.Image {
+                  valign: start;
+                  icon-name: 'media-flash';
+                  pixel-size: 64;
+                }
+                Gtk.Box {
+                  margin-top: 4;
+                  orientation: vertical;
+                  halign: fill;
+                  Gtk.Box {
+                    halign: fill;
 
-
-      Adw.PreferencesRow {
-        child:
-          Gtk.ScrolledWindow {
-            min-content-height: 300;
-            Adw.ViewStack info-stack {
-              Adw.ViewStackPage {
-                title: 'Description';
-                child:
-                  Gtk.Box{
-                    Gtk.Label {
-                      visible: false;
-                      label: '人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命和全回部精力都献给了人生最答宝贵的事业——为人类的解放而奋斗。\r\n\r\nzc_m1\r\nzc_m2\r\nzc_m3\r\nzc_m4\r\nzc_m5\r\n\r\nBGM：海阔天空、迎春花、今年胜旧年、十五的月亮（潮汕版）、Fell for U\r\n\r\n解决闪退问题：1，选项视频使用推荐设置，2，取消订阅个别导致闪退mod\r\n\r\n\r\n\r\n\r\n[h1]\r\n用爱发电，喜欢的话可以滑到下面支持一下[/h1]\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n\r\n\r\n\r\n[img]https://steamuserimages-a.akamaihd.net/ugc/1835783016842632429/F12AB8102EFBFE245D75EAF600CF0283F49D1874/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]';
-                      wrap: true;
-                      ellipsize: end;
-
+                    Gtk.Box {
+                      hexpand: true;
+                      orientation: vertical;
+                      Gtk.Label title {
+                        halign: start;
+                        label: '广州增城 （Zengcheng）Lv7.3'; // placeholder
+                        ellipsize: end;
+                        lines: 1;
+                        styles ['addon-title']
+                      }
+                      Gtk.Label subtitle {
+                        halign: start;
+                        label: '21love'; // placeholder
+                        ellipsize: end; lines: 1;
+                        styles ['dim-label', 'addon-subtitle']
+                      }
                     }
-                  };
-              }
-              Adw.ViewStackPage {
-                icon-name: 'package-x-generic-symbolic';
-                title: _('Archives');
-                child: Gtk.Box{};
-              }
-              Adw.ViewStackPage {
-                title: _('Note');
-                child: Gtk.Box{};
-              }
+
+                    Gtk.Box {
+                      visible: true;
+                      margin-start: 8;
+                      orientation: vertical;
+                      halign: end;
+                      Gtk.Label used {
+                        halign: end;
+                        justify: right;
+                        label: '824.618 MB Used';
+                        ellipsize: start; lines: 1;
+                      }
+                      Gtk.Label {
+                        halign: end;
+                        justify: right;
+                        use-markup: true;
+                        label: '<span size=\'small\'>31.5 GB Total</span>';
+                        styles ['dim-label']
+                        ellipsize: start; lines: 1;
+                      }
+                    }
+                  }
+
+                  Gtk.ProgressBar{
+                    visible: true;
+                    margin-top: 12;
+                  }
+
+                  Gtk.Box tags {
+                    visible: false;
+                    margin-top: 12;
+                    margin-bottom: 4;
+                    Gtk.Button tag-empty {
+                      visible: false;
+                      label: _('Empty');
+                      styles ['tag']
+                    }
+                  }
+                }
+              };
+          } // preferences row
+
+          $StvpkFieldRow stvpkid {
+            icon-name: 'fingerprint-symbolic';
+            title: _('Internal ID');
+            //subtitle: _('For add-on management.');
+            value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
+
+            [suffix]
+            Gtk.Button stvpkid-copy {
+              icon-name: 'edit-copy-symbolic';
+              action-name: 'win.addon-details.copy-string';
+              action-target: bind (data as <$StvpkBuilderData>).id;
+              valign: center;
+              styles ['flat']
             }
-          };
-      } // stackview preferencesrow
-    }
+          }
 
-    Adw.PreferencesGroup {
-      title: _('Danger Zone');
-      styles ['danger-zone']
+          $StvpkFieldRow steamid {
+            visible: false;
+            icon-name: 'fingerprint-symbolic';
+            title: _('Steamworks ID');
+            //subtitle: _('For vanity data and other resources.');
+            value: '2396847377'; // placeholder
 
-      Adw.ActionRow delete-row {
-        title: _('Delete this add-on');
-        subtitle: _('Add-on content will be moved to Trash.');
+            [suffix]
+            Gtk.Button steamid-copy {
+              icon-name: 'edit-copy-symbolic';
+              action-name: 'win.addon-details.copy-string';
+              action-target: bind (data as <$StvpkBuilderData>).steamid;
+              valign: center;
+              styles ['flat']
+            }
+          }
 
-        [suffix]
-        Gtk.Button delete-button {
-          action-name: 'win.addons.trash';
-          action-target: bind (data as <$StvpkBuilderData>).id;
-          valign: center;
-          label: _('Delete');
-          styles ['destructive-action']
+          Adw.ActionRow visit-steam-row {
+            visible: false;
+            title: _('View in Workshop');
+            subtitle: ''; // placeholder
+            activatable-widget: visit-steam-button;
+
+            [suffix]
+            Gtk.Button visit-steam-button {
+              action-name: 'win.addon-details.visit-website';
+              action-target: bind (data as <$StvpkBuilderData>).steam-url;
+              icon-name: 'step-out-symbolic';
+              valign: center;
+              styles ['flat']
+            }
+          }
+
+          Adw.ActionRow {
+            title: _('Open in Explorer');
+            activatable-widget: explore-button;
+
+            [suffix]
+            Gtk.Button explore-button {
+              icon-name: 'folder-symbolic';
+              action-name: 'win.addon-details.explore-fs';
+              action-target: bind (data as <$StvpkBuilderData>).subdir-uri;
+              valign: center;
+              styles ['flat']
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          title: _('Archives');
+          header-suffix:
+            Gtk.Box {
+              spacing: 8;
+              margin-bottom: 4;
+              Gtk.Button {
+                icon-name: 'plus-large-symbolic';
+              }
+            };
+
+          Gtk.ListBox archive-list {
+            styles ['boxed-list']
+            selection-mode: none;
+            Adw.ActionRow {
+              icon-name: 'list-drag-handle';
+              title: 'l4d2.vpk';
+            }
+          }
+        }
+
+        Adw.PreferencesGroup {
+          visible: false;
+
+          Adw.PreferencesRow {
+            child:
+              Adw.ViewSwitcher {
+                stack: info-stack;
+                policy: narrow;
+              };
+          }
+
+
+
+          Adw.PreferencesRow {
+            child:
+              Gtk.ScrolledWindow {
+                min-content-height: 300;
+                Adw.ViewStack info-stack {
+                  Adw.ViewStackPage {
+                    title: 'Description';
+                    child:
+                      Gtk.Box{
+                        Gtk.Label {
+                          visible: false;
+                          label: '人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命和全回部精力都献给了人生最答宝贵的事业——为人类的解放而奋斗。\r\n\r\nzc_m1\r\nzc_m2\r\nzc_m3\r\nzc_m4\r\nzc_m5\r\n\r\nBGM：海阔天空、迎春花、今年胜旧年、十五的月亮（潮汕版）、Fell for U\r\n\r\n解决闪退问题：1，选项视频使用推荐设置，2，取消订阅个别导致闪退mod\r\n\r\n\r\n\r\n\r\n[h1]\r\n用爱发电，喜欢的话可以滑到下面支持一下[/h1]\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n》\r\n\r\n\r\n\r\n[img]https://steamuserimages-a.akamaihd.net/ugc/1835783016842632429/F12AB8102EFBFE245D75EAF600CF0283F49D1874/?imw=5000&imh=5000&ima=fit&impolicy=Letterbox&imcolor=%23000000&letterbox=false[/img]';
+                          wrap: true;
+                          ellipsize: end;
+
+                        }
+                      };
+                  }
+                  Adw.ViewStackPage {
+                    icon-name: 'package-x-generic-symbolic';
+                    title: _('Archives');
+                    child: Gtk.Box{};
+                  }
+                  Adw.ViewStackPage {
+                    title: _('Note');
+                    child: Gtk.Box{};
+                  }
+                }
+              };
+          } // stackview preferencesrow
+        }
+
+        Adw.PreferencesGroup {
+          title: _('Danger Zone');
+          styles ['danger-zone']
+
+          Adw.ActionRow delete-row {
+            title: _('Delete this add-on');
+            subtitle: _('Add-on content will be moved to Trash.');
+
+            [suffix]
+            Gtk.Button delete-button {
+              action-name: 'win.addons.trash';
+              action-target: bind (data as <$StvpkBuilderData>).id;
+              valign: center;
+              label: _('Delete');
+              styles ['destructive-action']
+            }
+          }
         }
       }
     }
-  } // preferencespage
+  }
 
 }
 

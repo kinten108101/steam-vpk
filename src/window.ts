@@ -22,16 +22,19 @@ import AddonsPanelDiskAllocateModal from './dialogs/allocate.js';
 import { AddonsPanelDiskPage } from './addons-panel.js';
 import profile_window_implement from './profile-window.js';
 import { DownloadWindowActions } from './download-window.js';
-import AddonDetailsPage from './addon-details-page.js';
 import AddonStorageActions from './actions/addon-storage-controls.js';
 import StackController from './stack-controller.js';
 import TypedBuilder from './typed-builder.js';
 import InjectConsolePresenter from './inject-console-presenter.js';
-import { DBusMonitor, ProxyManager } from './api.js';
+import { BackendPortal, DBusMonitor, ProxyManager } from './api.js';
 import InjectorActions from './actions/injector-actions.js';
 import { SettingsActions } from './actions/settings-actions.js';
 import { ProfileBar } from './profile-bar.js';
 import AboutWindow from './about.js';
+import { promise_wrap } from './steam-vpk-utils/utils.js';
+import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
+import { AddonDetailsPagePresenter } from './addon-details-present.js';
+import AddonDetailsActions from './actions/addon-details.js';
 
 export default function Window(
 { application,
@@ -81,12 +84,22 @@ export default function Window(
     parent_window,
   });
 
-  AddonDetailsPage({
-    page_slot: leaflet.get_child_by_name('addon-details-page') as Adw.Bin,
+  const addon_details_builder = AddonDetailsLeafletPage({
+    leaflet_page_entry: leaflet.get_child_by_name('addon-details-page') as Adw.Bin,
+  });
+  const addon_details_present = AddonDetailsPagePresenter({
+    toaster,
+    builder_cont: addon_details_builder,
+    action_map,
+    leaflet,
+    leaflet_page: 'addon-details-page',
+  });
+  AddonDetailsActions({
     toaster,
     action_map,
+    parent_window,
+    present_details: addon_details_present,
   });
-
   AddonStorageActions({
     action_map,
     parent_window,
@@ -170,6 +183,18 @@ function WindowActions(
     prefWin.present();
   });
   action_map.add_action(showPreferences);
+
+  const addons_service = BackendPortal({
+    interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
+  });
+
+  const reloadAddons = new Gio.SimpleAction({
+    name: 'reload-addons',
+  });
+  reloadAddons.connect('activate', () => promise_wrap(async () => {
+    await addons_service.call_async('ForceUpdate');
+  }));
+  action_map.add_action(reloadAddons);
 
   const showAbout = new Gio.SimpleAction({ name: 'show-about' });
   showAbout.connect('activate', () => {

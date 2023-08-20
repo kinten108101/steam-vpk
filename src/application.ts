@@ -4,14 +4,13 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
 
-import debug_window_implement from './debug-window.js';
-
 import {
   APP_FULLNAME,
   APP_ID,
   APP_RDNN,
   BUILD_TYPE,
   SERVER_NAME,
+  SERVER_PATH,
   VERSION,
 } from './const.js';
 import {
@@ -22,6 +21,8 @@ import Shortcuts from './shortcuts.js';
 import Window from './window.js';
 import { widget_ensure } from './gtk.js';
 import { DBusMonitor, ProxyManager } from './api.js';
+import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
+import DebugWindow from './debug-window.js';
 
 export default function Application() {
   const application = new Adw.Application({
@@ -32,8 +33,16 @@ export default function Application() {
   const monitor = new DBusMonitor();
   const proxies = new ProxyManager();
 
-  debug_window_implement({
-    application,
+
+  application.connect('notify::is-registered', () => {
+    if (application.is_registered) {
+      // dbus registered
+      const connection = application.get_dbus_connection();
+      if (connection === null) throw new Error
+      ListenPortalResponses({
+        connection,
+      }).start();
+    }
   });
 
   application.connect('startup', () => {
@@ -83,8 +92,13 @@ export default function Application() {
       }
     });
     application.add_action(devel);
+
+    DebugWindow({
+      application,
+    });
+
     monitor.start().catch(error => log_error(error));
-    proxies.register_proxy(`${SERVER_NAME}.Injector`).catch(error => log_error(error));
+    proxies.register_proxy(`${SERVER_PATH}/injector`, `${SERVER_NAME}.Injector`).catch(error => log_error(error));
   });
 
   const create_new_window = () => {
