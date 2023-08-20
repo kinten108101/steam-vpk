@@ -1,0 +1,417 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow window {
+  default-width: 864;
+
+  content:
+    Gtk.Box {
+      orientation: vertical;
+      height-request: 1;
+
+      Adw.HeaderBar {
+        show-end-title-buttons: false;
+        show-start-title-buttons: false;
+        title-widget:
+          Gtk.CenterBox {
+            [center]
+            Adw.Clamp {
+              maximum-size: 400;
+
+              Gtk.Box {
+                orientation: vertical;
+                valign: start;
+
+                Gtk.Revealer headerbox_revealer {
+                  transition-duration: 200;
+                  transition-type: slide_down;
+                  reveal-child: false;
+                  child:
+                    Gtk.Revealer content_revealer {
+                      transition-duration: 200;
+                      transition-type: crossfade;
+                      reveal-child: false;
+                      vexpand: true;
+                      child:
+                        Adw.ViewStack view_stack {
+                          Adw.ViewStackPage {
+                            name: 'default_view';
+                            child:
+                              Gtk.Box {
+                                styles ['headerbox']
+                                orientation: vertical;
+
+                                Gtk.Overlay status-box-overlay {
+                                  child:
+                                    Gtk.Box box_content {
+                                      styles ['default-view']
+                                      spacing: 12;
+
+                                      Gtk.Box viewswitcher-boundbox {
+                                        width-request: 36;
+                                      }
+
+                                      Adw.ViewStack box-stack {
+                                        vexpand: true;
+
+                                        Adw.ViewStackPage {
+                                          name: 'status_box';
+                                          child:
+                                            Gtk.Box {
+                                              styles ['status-box']
+                                              orientation: vertical;
+                                              spacing: 4;
+
+                                              Gtk.ScrolledWindow {
+                                                styles ['noscrollbar', 'metal-fade-right']
+                                                margin-end: 8;
+                                                vscrollbar-policy: never;
+
+                                                Gtk.Label {
+                                                  halign: start;
+                                                  xalign: 0;
+                                                  label: 'A Problem Has Occurred';
+                                                  styles ['title']
+                                                }
+                                              }
+
+
+                                              Gtk.ScrolledWindow message-scroller {
+                                                min-content-height: 1;
+                                                max-content-height: 160;
+                                                vexpand: true;
+                                                // r
+                                                propagate-natural-height: true;
+                                                // r
+                                                hscrollbar-policy: never;
+
+                                                Gtk.Box {
+                                                  orientation: vertical;
+                                                  margin-end: 24;
+
+                                                  Gtk.Label {
+                                                    visible: true;
+                                                    xalign: 0;
+                                                    yalign: 0;
+                                                    //label: 'Unknown error code.';
+                                                    label: 'No data found! Ensure your drives are connected or use \"Set location\". To redownload, remove the torrent and re-add it.';
+                                                    wrap: true;
+                                                    styles ['description']
+                                                  }
+
+                                                  Gtk.Box read-spacing {
+                                                    height-request: 44;
+                                                  }
+                                                }
+                                              }
+                                            };
+                                        }
+
+                                        Adw.ViewStackPage {
+                                          name: 'inject_console_box';
+                                          child:
+                                            Gtk.Box {
+                                              visible: true;
+                                              margin-top: 4;
+                                              margin-bottom: 4;
+
+                                              Gtk.ScrolledWindow {
+                                                min-content-height: 1;
+                                                max-content-height: 160;
+                                                vexpand: true;
+                                                // r
+                                                propagate-natural-height: true;
+                                                // r
+                                                hscrollbar-policy: never;
+
+                                                Gtk.Box {
+                                                  orientation: vertical;
+
+                                                  Gtk.Label output {
+                                                    halign: fill;
+                                                    xalign: 0;
+                                                    valign: fill;
+                                                    yalign: 0;
+                                                    justify: left;
+                                                    use-markup: true;
+                                                    hexpand: true;
+                                                    //label: '';
+                                                    label: '<span font-size=\'small\'>Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nDone in 312ms.</span>';
+                                                    wrap: true;
+                                                    wrap-mode: char;
+                                                    selectable: true;
+                                                    styles ['monospace']
+                                                  }
+
+                                                  Gtk.Box {
+                                                    height-request: 44;
+                                                  }
+                                                }
+                                              }
+                                            };
+                                        }
+                                      }
+                                    };
+                                }
+                              };
+                          }
+
+                          Adw.ViewStackPage {
+                            name: 'popped_view';
+                            child:
+                              Gtk.Box {
+                                styles ['headerbox', 'popped-view']
+
+
+                                Gtk.Box {
+                                  valign: end;
+                                  halign: end;
+
+                                  Gtk.Box {
+                                    halign: fill;
+                                    hexpand: true;
+
+                                  }
+
+                                  Gtk.Button {
+                                    visible: false;
+                                    halign: end;
+                                    tooltip-text: 'Re-attach window';
+                                    styles ['flat', 'compact-button', 'hollow-full']
+
+                                    Gtk.Image {
+                                      icon-name: 'pip-out-symbolic';
+                                      pixel-size: 24;
+                                      margin-top: 4;
+                                      margin-bottom: 4;
+                                    }
+                                  }
+                                }
+                              }
+                          }
+                        };
+                    };
+                }
+
+                Gtk.Label {
+                  label: 'Example Label (Gravity Test)';
+                }
+              }
+            }
+          };
+
+        [start]
+        Gtk.ToggleButton reveal_toggle {
+          label: 'Reveal';
+          action-name: 'win.reveal';
+          valign: start;
+        }
+
+        [end]
+        Gtk.WindowControls {
+          valign: start;
+          margin-top: 4;
+          side: end;
+        }
+      }
+
+      Adw.PreferencesPage {
+        Adw.PreferencesGroup {
+          Adw.ActionRow {
+            title: 'Example Button';
+            icon-name: 'large-brush-symbolic';
+
+            [suffix]
+            Gtk.Button {
+              valign: center;
+              label: _('Example Action');
+            }
+          }
+        }
+      }
+    };
+}
+
+Gtk.Box viewstackswitcher_layer {
+  styles ['hollow-full']
+  orientation: vertical;
+  halign: start;
+  valign: end;
+
+  Gtk.Revealer {
+    reveal-child: true;
+    child:
+      Gtk.Box {
+        orientation: vertical;
+
+        Gtk.ToggleButton button_status {
+          styles ['icon', 'red']
+          icon-name: 'error-symbolic';
+          halign: center;
+          action-name: 'win.box_switch';
+          action-target: '"status_box"';
+          tooltip-text: _('Status');
+        }
+
+        Gtk.ToggleButton button_console {
+          styles ['icon', 'transition-final-console']
+          icon-name: 'terminal-symbolic';
+          halign: center;
+          action-name: 'win.box_switch';
+          action-target: '"inject_console_box"';
+          tooltip-text: _('Output');
+        }
+
+        Gtk.Box {
+          hexpand: false;
+          height-request: 40;
+        }
+      };
+  }
+}
+
+Gtk.Box toolbar_layer {
+  vexpand: false;
+  valign: end;
+  halign: fill;
+
+  Gtk.Revealer {
+    reveal-child: true;
+    child:
+      Gtk.Box panel {
+        styles ['panel', 'hollow-full']
+        vexpand: false;
+        spacing: 4;
+
+        Gtk.ScrolledWindow {
+          margin-end: 4;
+          hexpand: true;
+          vscrollbar-policy: never;
+
+          Gtk.Box {
+            spacing: 4;
+
+            Gtk.Box {
+              margin-start: 4;
+              margin-end: 8;
+              spacing: 4;
+
+              Gtk.Label {
+                use-markup: true;
+                label: '<b>MyLeft4dead1</b>';
+              }
+            }
+
+            Gtk.Button {
+              visible: true;
+              styles ['flat', 'compact-button']
+
+              Gtk.Box {
+                spacing: 4;
+
+                Gtk.Image {
+                  icon-name: 'flash-memory-symbolic';
+                  pixel-size: 24;
+                }
+
+                Gtk.Label {
+                  styles ['count']
+                  use-markup: true;
+                  label: '27';
+                  tooltip-text: 'Number of Add-ons (27)';
+                }
+              }
+            }
+          }
+        }
+
+        Gtk.Button status_control_button {
+          visible: false;
+          styles ['flat','compact-button']
+
+          Gtk.Image {
+            icon-name: 'cross-filled-symbolic';
+            pixel-size: 24;
+          }
+        }
+
+        Gtk.Button {
+          styles ['flat', 'compact-button']
+          action-name: 'win.detach';
+          tooltip-text: _('Detach panel');
+
+          Gtk.Image {
+            icon-name: 'pip-in-symbolic';
+            pixel-size: 24;
+          }
+        }
+      };
+  }
+}
+
+Gtk.Box shade {
+  orientation: vertical;
+  valign: end;
+
+  Gtk.Box {
+    styles ['transition']
+    height-request: 54;
+  }
+}
+
+Adw.Window hub_full {
+  default-width: 500;
+  modal: true;
+  content:
+    Gtk.Box{
+      orientation: vertical;
+      Adw.HeaderBar {
+        show-start-title-buttons: false;
+        show-end-title-buttons: false;
+        styles ['flat']
+        title-widget:
+
+          Adw.ViewSwitcher {
+            stack: modal_stack;
+            policy: wide;
+          };
+
+        [end]
+        Gtk.Button {
+          styles ['flat']
+          icon-name: 'pip-out-symbolic';
+          action-name: 'modal.attach';
+        }
+      }
+
+      Adw.ViewStack modal_stack {
+        Adw.ViewStackPage {
+          name: 'status_page';
+          title: _('Status');
+          icon-name: 'info-symbolic';
+          child:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                Adw.ActionRow {
+                  title: 'hey';
+                }
+              }
+            };
+        }
+
+        Adw.ViewStackPage {
+          name: 'console_page';
+          title: _('Output');
+          icon-name: 'terminal-symbolic';
+          child:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                Adw.ActionRow {
+                  title: 'hey';
+                }
+              }
+            };
+        }
+      }
+    };
+}
