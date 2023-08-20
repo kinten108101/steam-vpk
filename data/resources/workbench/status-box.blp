@@ -22,8 +22,6 @@ Adw.Window {
                   orientation: vertical;
 
                   Gtk.Box {
-                    margin-top: 12;
-                    margin-bottom: 12;
                     Gtk.Image {
                       styles ['icon']
                       icon-name: 'error-symbolic';
@@ -46,28 +44,38 @@ Adw.Window {
 
 
                       Gtk.ScrolledWindow message-scroller {
-                        min-content-height: 150;
-                        max-content-height: 300;
+                        min-content-height: 32;
+                        max-content-height: 150;
+                        // r
                         propagate-natural-height: true;
+                        // r
+                        hscrollbar-policy: never;
 
-                        Gtk.Label {
-                          xalign: 0;
-                          yalign: 0;
-                          justify: left;
-                          //label: 'Unknown error code';
-                          label: 'No data found! Ensure your drives are connected or use \"Set location\". To redownload, remove the torrent and re-add it.';
-                          margin-bottom: 36;
-                          wrap: true;
-                          styles ['description']
+                        Gtk.Box {
+                          orientation: vertical;
+                          margin-end: 24;
+
+                          Gtk.Label {
+                            visible: true;
+                            xalign: 0;
+                            yalign: 0;
+                            //label: 'Unknown error code.';
+                            label: 'No data found! Ensure your drives are connected or use \"Set location\". To redownload, remove the torrent and re-add it.';
+                            wrap: true;
+                            styles ['description']
+                          }
+
+                          Gtk.Box readbility-spacing {
+                            height-request: 12;
+                          }
                         }
                       }
 
-
-
+                      Gtk.Box toolbar-boundbox {
+                        height-request: 36;
+                      }
                     }
                   }
-
-
                 }
               };
           };
@@ -102,8 +110,15 @@ Gtk.Box show {
   valign: end;
   styles ['show']
 
+
+
   Gtk.Box {
-    styles ['panel', 'transition']
+    styles ['transition-final']
+    height-request: 24;
+  }
+
+  Gtk.Box {
+    styles ['panel', 'transition-first']
     vexpand: false;
     margin-start: 12;
     margin-end: 12;

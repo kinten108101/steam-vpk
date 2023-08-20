@@ -3,6 +3,8 @@
   box-shadow: none;
   margin-top: 12px;
   margin-bottom: 12px;
+  padding-top: 12px;
+  padding-bottom: 12px;
   border-radius: 12px;
 }
 
@@ -20,14 +22,15 @@
   color: mix(@red_1, @dark_1, 0.3);
   font-weight: bold;
   font-size: small;
-  line-height: 1.2em;
+  line-height: 1.35em;
 }
 
 .peek-button {
   color: @white_2;
 }
 
-.status-box scrolledwindow undershoot.bottom {
+.status-box scrolledwindow {
+  padding: 0px;
 }
 
 .show {
@@ -45,12 +48,20 @@
   font-weight: normal;
 }
 
-.transition {
+.transition-final {
   background: linear-gradient(
     to top,
-    #4a4a4a 0%,
-    alpha(#4a4a4a, 0.9) 50%,
+    alpha(#4a4a4a, 0.9) 0%,
     alpha(#4a4a4a, 0) 100%
+  );
+}
+
+.transition-first {
+  background: linear-gradient(
+    to top,
+    alpha(#4a4a4a, 1) 0%,
+    alpha(#4a4a4a, 1) 70%,
+    alpha(#4a4a4a, 0.9) 100%
   );
 }
 
@@ -63,7 +74,6 @@
 }
 
 .status-box scrollbar {
-  margin-bottom: 36px;
 }
 
 .show scrolledwindow undershoot.right {
