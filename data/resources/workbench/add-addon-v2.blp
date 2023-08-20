@@ -1,0 +1,66 @@
+using Gtk 4.0;
+using Adw 1;
+
+Adw.ApplicationWindow window {
+  default-width: 600;
+  modal: true;
+
+  content:
+    Adw.Leaflet leaflet {
+      Adw.LeafletPage {
+        name: 'input-url';
+        child:
+          Gtk.Box {
+            orientation: vertical;
+
+            Adw.HeaderBar {
+              decoration-layout: 'icon:close';
+              [start]
+              Gtk.Button {
+                label: _('Cancel');
+                action-name: 'window.close';
+              }
+              [end]
+              Gtk.Button {
+                styles ['suggested-action']
+                label: _('Fetch');
+                action-name: 'win.validate';
+              }
+            }
+
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                title: _('Published File ID');
+                header-suffix:
+                  Gtk.ToggleButton {
+                    styles ['flat']
+                    icon-name: 'settings-symbolic';
+                  };
+
+                Gtk.Entry {
+                  placeholder-text: 'https://steamcommunity.com/sharedfiles/filedetails/?id=<file-id-here>';
+                  hexpand: true;
+                }
+              }
+            }
+          };
+      }
+
+      Adw.LeafletPage {
+        name: 'preview-download';
+        child:
+          Gtk.Box {
+            orientation: vertical;
+
+            Adw.HeaderBar {
+              [start]
+              Gtk.Button {
+                label: _('Retry');
+                action-name: 'win.retry';
+              }
+            }
+          };
+      }
+    };
+
+}
