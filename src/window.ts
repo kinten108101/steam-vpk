@@ -31,6 +31,8 @@ import InjectorActions from './actions/injector-actions.js';
 import { SettingsActions } from './actions/settings-actions.js';
 import { ProfileBar } from './profile-bar.js';
 import AboutWindow from './about.js';
+import DownloadPagePresent from './download-page-present.js';
+import { DownloadPage } from './download-page.js';
 import { promise_wrap } from './steam-vpk-utils/utils.js';
 import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
 import { AddonDetailsPagePresenter } from './addon-details-present.js';
@@ -67,11 +69,17 @@ export default function Window(
     .get_typed_object<InjectButtonSet>('inject-button-set');
   const profile_bar = builder
     .get_typed_object<ProfileBar>('profileBar');
+  const download_page = builder
+    .get_typed_object<DownloadPage>('downloadPage');
 
   StackController({
     stack: win_view_stack,
     action_map,
     application,
+  });
+
+  DownloadPagePresent({
+    model: download_page.addons,
   })
 
   AddonsPanelDiskPage({

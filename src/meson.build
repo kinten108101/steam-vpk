@@ -43,6 +43,7 @@ script = [
   'inject-console.ts',
   'launchpad.ts',
   'main.ts',
+  'markup.ts',
   'navigate-row.ts',
   'preferences-window.ts',
   'profile-bar.ts',
