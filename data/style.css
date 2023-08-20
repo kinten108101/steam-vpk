@@ -158,12 +158,6 @@ preferencesgroup.danger-zone list {
   font-weight: bold;
 }
 
-.thin-buttons button {
-  padding-bottom: 0;
-  padding-top: 0;
-  font-weight: bold;
-}
-
 .profile-bar {
   padding: 0px;
   min-height: 0px;
