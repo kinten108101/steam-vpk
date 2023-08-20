@@ -8,49 +8,60 @@ template $StvpkProfileBar : Adw.Bin {
     maximum-size: 16;
     styles ['profile-bar']
     Gtk.Box {
-      halign: fill;
-      Gtk.Button {
-        vexpand: true;
+      orientation: vertical;
+      Gtk.Box {
         halign: fill;
-        hexpand: true;
-        styles ['flat', 'profile-button']
-
-        Gtk.Box {
+        Gtk.ToggleButton primary_button {
+          vexpand: true;
           halign: fill;
-          spacing: 4;
+          hexpand: true;
+          styles ['flat', 'profile-button']
+          action-name: 'win.reveal';
 
           Gtk.Box {
-            halign: start;
-            orientation: vertical;
-            valign: center;
-
-            Gtk.Image {
-              icon-name: 'pan-up-symbolic';
-              pixel-size: 12;
-            }
-
-            Gtk.Image {
-              icon-name: 'pan-down-symbolic';
-              pixel-size: 12;
-            }
-          }
-
-          Gtk.Label profile_label {
-            hexpand: true;
             halign: fill;
-            xalign: 0;
-            label: 'I\'m scared of drawing so I\'m programming instead!';
-            ellipsize: end;
-            styles ['profile-name']
+            spacing: 4;
+
+            Gtk.Box {
+              halign: start;
+              orientation: vertical;
+              valign: center;
+
+              Gtk.Image {
+                icon-name: 'pan-up-symbolic';
+                pixel-size: 12;
+              }
+
+              Gtk.Image {
+                icon-name: 'pan-down-symbolic';
+                pixel-size: 12;
+              }
+            }
+
+            Gtk.ScrolledWindow {
+              hscrollbar-policy: external;
+              vscrollbar-policy: never;
+              hexpand: true;
+              Gtk.Label profile_label {
+                hexpand: true;
+                halign: fill;
+                xalign: 0;
+                label: 'I\'m scared of drawing so I\'m programming instead!';
+
+                styles ['profile-name']
+              }
+            }
+
+
           }
         }
-      }
 
-      Gtk.Button {
-        vexpand: true;
-        halign: end;
-        styles ['flat', 'menu-button']
-        icon-name: 'pan-down-symbolic';
+        Gtk.Button {
+          vexpand: true;
+          halign: end;
+          styles ['flat', 'menu-button']
+          icon-name: 'pan-down-symbolic';
+        }
       }
     }
   }

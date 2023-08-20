@@ -2,25 +2,26 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { GtkChildren, GtkTemplate, registerClass } from './steam-vpk-utils/utils.js';
+import { GtkChildren, GtkTemplate, param_spec_boolean, registerClass } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 
 export class ProfileBar extends Adw.Bin {
+  static [GObject.properties] = {
+    active: param_spec_boolean({ name: 'active' }),
+  };
+
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/profile-bar.ui`;
 
-  static [GtkChildren] = [ 'profile_label' ];
+  static [GtkChildren] = [ 'profile_label', 'primary_button' ];
 
   static {
     registerClass({}, this);
   };
 
-  [child: string]: any;
-
-  get_typed_template_child<T extends GObject.Object>(name: string): T | undefined {
-    return this[name] as T | undefined;
-  }
+  profile_label!: Gtk.Label;
+  primary_button!: Gtk.ToggleButton;
 
   send_status_update(msg: string) {
-    this.get_typed_template_child<Gtk.Label>('profile_label')?.set_label(msg);
+    this.profile_label.set_label(msg);
   }
 }
