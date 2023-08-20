@@ -8,6 +8,7 @@ interface = [
   'ui/add-addon-preview-download.blp',
   'ui/add-addon-url.blp',
   'ui/add-addon.blp',
+  'ui/addon-details-archive-list-row.blp',
   'ui/addon-details-context-label.blp',
   'ui/addon-details-lozenge.blp',
   'ui/addon-details-peek-file.blp',

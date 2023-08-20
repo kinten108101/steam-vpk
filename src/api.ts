@@ -6,6 +6,7 @@ import { SERVER_NAME, SERVER_PATH } from './const.js';
 import {
   WeakRefMap,
 } from './steam-vpk-utils/weakrefmap.js';
+import { dbus_params } from './steam-vpk-utils/dbus-utils.js';
 
 Gio._promisify(Gio.DBusProxy, 'new_for_bus', 'new_for_bus_finish');
 Gio._promisify(Gio.DBusProxy.prototype, 'call', 'call_finish');
@@ -69,11 +70,11 @@ export class ProxyManager {
   proxies: Set<PrettyProxy> = new Set;
   interface_map: WeakRefMap<string, PrettyProxy> = new WeakRefMap;
 
-  async register_proxy(interface_name: string) {
+  async register_proxy(obj_path: string, interface_name: string) {
     const proxy = new PrettyProxy;
     this.proxies.add(proxy);
     this.interface_map.set(interface_name, proxy);
-    await proxy.makeProxy(SERVER_NAME, SERVER_PATH, interface_name);
+    await proxy.makeProxy(SERVER_NAME, obj_path, interface_name);
   }
 
   get_proxy(interface_name: string) {
@@ -187,4 +188,77 @@ function jsval2gvariant(val: any) {
   } else {
     throw new Error(`Could not convert JS value to GVariant. Received ${val}.`);
   }
+}
+
+export type BackendInterfaces =
+  'com.github.kinten108101.SteamVPK.Server.Injector' |
+  'com.github.kinten108101.SteamVPK.Server.Addons' |
+  'com.github.kinten108101.SteamVPK.Server.Workshop' |
+  'com.github.kinten108101.SteamVPK.Server.Disk';
+
+function guess_object_path(interface_name: BackendInterfaces) {
+  switch (interface_name) {
+  case 'com.github.kinten108101.SteamVPK.Server.Injector':
+    return '/com/github/kinten108101/SteamVPK/Server/injector';
+  case 'com.github.kinten108101.SteamVPK.Server.Addons':
+    return '/com/github/kinten108101/SteamVPK/Server/addons';
+  case 'com.github.kinten108101.SteamVPK.Server.Workshop':
+    return '/com/github/kinten108101/SteamVPK/Server/workshop';
+  case 'com.github.kinten108101.SteamVPK.Server.Disk':
+    return '/com/github/kinten108101/SteamVPK/Server/disk';
+  }
+}
+
+export function BackendPortal(
+{ interface_name,
+}:
+{ interface_name: BackendInterfaces;
+}) {
+  const obj_path = guess_object_path(interface_name);
+
+  async function call_async(method: string, return_type: string | null = null, ...args: any[]) {
+    // @ts-ignore
+    return (<Promise<GLib.Variant>>Gio.DBus.session.call(
+      SERVER_NAME,
+      obj_path,
+      interface_name,
+      method,
+      args.length > 0 ? dbus_params(...args) : null,
+      return_type !== null ? GLib.VariantType.new(return_type) : null,
+      Gio.DBusCallFlags.NONE,
+      1000,
+      null))
+      .then(reply => {
+        const result = reply.recursiveUnpack() as any[];
+        if (result.length === 0) return undefined;
+        else if (result.length === 1) return result[0];
+        else return result;
+      });
+  }
+
+  function subscribe(signal: string, cb: (...args: any[]) => void) {
+    return Gio.DBus.session.signal_subscribe(
+      SERVER_NAME,
+      interface_name,
+      signal,
+      obj_path,
+      null,
+      Gio.DBusSignalFlags.NONE,
+      (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
+        const vals = params.recursiveUnpack() as any[];
+        cb(...vals);
+      });
+  }
+
+  function unsubscribe(id: number) {
+    return Gio.DBus.session.signal_unsubscribe(id);
+  }
+
+  const proxy = {
+    call_async,
+    subscribe,
+    unsubscribe,
+  };
+
+  return proxy;
 }

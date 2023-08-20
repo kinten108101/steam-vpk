@@ -5,58 +5,45 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import TypedBuilder from '../typed-builder.js';
-import { APP_RDNN } from '../const.js';
 import {
   g_variant_unpack,
-  param_spec_variant,
   promise_wrap,
-  registerClass,
 } from '../steam-vpk-utils/utils.js';
 import { Toast } from '../toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../gtk.js';
+
+Gio._promisify(Gtk.UriLauncher.prototype, 'launch', 'launch_finish');
 
 /**
  * Implement the addon-details group of actions.
  */
 export default function
-addon_details_implement(
-{ leaflet,
-  leaflet_details_page,
-  page_slot,
-  toaster,
+AddonDetailsActions(
+{ toaster,
   action_map,
   parent_window,
+  present_details,
 }:
-{ leaflet: Adw.Leaflet;
-  leaflet_details_page: string;
-  page_slot: Adw.Bin;
-  toaster?: Adw.ToastOverlay;
+{ toaster?: Adw.ToastOverlay;
   action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
+  present_details?: (arg0: string) => any;
 }) {
-  const builder = new TypedBuilder();
-  builder.add_from_resource(`${APP_RDNN}/ui/addon-details.ui`);
-  const page = builder.get_typed_object<Gtk.Box>('page');
-  page_slot.child = page;
-
-  const present = AddonDetailsPagePresenter({
-    toaster,
-    builder_cont: builder,
-    action_map,
-    leaflet,
-    leaflet_page: leaflet_details_page,
-  })
-
-  const seeDetails = new Gio.SimpleAction({
-    name: 'addon-details.see-details',
-    parameter_type: GLib.VariantType.new('s'),
-  });
-  seeDetails.connect('activate', (_action, parameter) => {
-    const id = g_variant_unpack<string>(parameter, 'string');
-    present(id);
-  });
-  action_map.add_action(seeDetails);
+  if (present_details !== undefined) {
+    const seeDetails = new Gio.SimpleAction({
+      name: 'addon-details.see-details',
+      parameter_type: GLib.VariantType.new('s'),
+    });
+    seeDetails.connect('activate', (_action, parameter) => {
+      promise_wrap(async () => {
+        const id = g_variant_unpack<string>(parameter, 'string');
+        await present_details(id);
+      });
+    });
+    action_map.add_action(seeDetails);
+  } else {
+    console.log('Skipped implementation of addon-details.see-details.')
+  }
 
   const visit_website = new Gio.SimpleAction({
     name: 'addon-details.visit-website',
@@ -95,82 +82,10 @@ addon_details_implement(
     parameter_type: GLib.VariantType.new('s'),
   });
   explore_fs.connect('activate', (_action, parameter) => {
-    const uri = g_variant_unpack<string>(parameter, 'string');
-    Gtk.show_uri(parent_window || null, uri, Gdk.CURRENT_TIME);
+    promise_wrap(async () => {
+      const path = g_variant_unpack<string>(parameter, 'string');
+      Gtk.show_uri(parent_window || null, `file://${path}`, Gdk.CURRENT_TIME);
+    });
   });
   action_map.add_action(explore_fs);
 }
-
-class BuilderData extends GObject.Object {
-  static [GObject.properties] = {
-    id: param_spec_variant({
-      name: 'id',
-      type: GLib.VariantType.new('s'),
-      default_value: GLib.Variant.new_string('identifier'),
-    }),
-    steamid: param_spec_variant({
-      name: 'steamid',
-      type: GLib.VariantType.new('s'),
-      default_value: GLib.Variant.new_string('steam id'),
-    }),
-    steam_url: param_spec_variant({
-      name: 'steam-url',
-      type: GLib.VariantType.new('s'),
-      default_value: GLib.Variant.new_string('steam url'),
-    }),
-    subdir_uri: param_spec_variant({
-      name: 'subdir-uri',
-      type: GLib.VariantType.new('s'),
-      default_value: GLib.Variant.new_string('subdir uri'),
-    }),
-  };
-
-  static {
-    registerClass({}, this);
-  }
-
-  id?: GLib.Variant;
-  steamid?: GLib.Variant;
-  steam_url?: GLib.Variant;
-  subdir_uri?: GLib.Variant;
-}
-
-registerClass({
-  GTypeName: 'StvpkNavigateRow',
-  Template: `resource://${APP_RDNN}/ui/navigate-row.ui`,
-}, class extends Adw.ActionRow {});
-
-function AddonDetailsPagePresenter(
-{ toaster,
-  builder_cont,
-  action_map,
-  leaflet,
-  leaflet_page,
-}:
-{ toaster?: Adw.ToastOverlay;
-  builder_cont?: TypedBuilder;
-  action_map: Gio.ActionMap;
-  leaflet: Adw.Leaflet;
-  leaflet_page: string;
-}) {
-  function reset() {
-
-  }
-
-  function present(id: string) {
-    reset();
-    id;
-    toaster;
-    builder_cont;
-    action_map;
-    BuilderData;
-
-    //leaflet.set_visible_child_name('addon-details-page');
-    leaflet.set_visible_child_name(leaflet_page);
-  }
-
-  return present;
-}
-
-
-

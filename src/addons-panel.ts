@@ -6,7 +6,7 @@ import {
   registerClass,
 } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
-import { FieldRow } from './field-row.js';
+import { FieldRow } from './gtk.js';
 import TypedBuilder from './typed-builder.js';
 
 export default class AddonsPanel extends Adw.PreferencesGroup {
