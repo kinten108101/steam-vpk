@@ -12,7 +12,6 @@ export default function HeaderBox(
   build_entry,
   disable_all,
   reenable_all,
-  view_switcher_revealer,
 }:
 { parent_window: Gtk.Window;
   action_map: Gio.ActionMap;
@@ -132,93 +131,36 @@ export default function HeaderBox(
     animation: 'popin' | 'pushdown';
   }) {
     if (typeof config !== "object") return {};
-    if (config.animation === "popin" && view_switcher_revealer) {
-      headerbox_revealer.connect("notify::child-revealed", () => {
-        if (!headerbox_revealer.get_child_revealed()) {
-          view_switcher_revealer?.set_reveal_child(true);
-          return;
-        }
-        content_revealer.set_reveal_child(true);
-      });
 
-      content_revealer.connect("notify::child-revealed", () => {
-        if (content_revealer.get_child_revealed()) return;
-        headerbox_revealer.set_reveal_child(false);
-        reveal_toggle.set_sensitive(true);
-        reveal_toggle.set_active(false);
-      });
-
-      view_switcher_revealer?.connect('notify::child-revealed', () => {
-        if (view_switcher_revealer?.get_child_revealed()) return;
-        headerbox_revealer.set_reveal_child(true);
-        reveal_toggle.set_sensitive(true);
-        reveal_toggle.set_active(true);
-      });
-
-      function reveal_headerbox(val: boolean) {
-        if (val === true) {
-          disable_all();
-          reveal_toggle.set_sensitive(false);
-          view_switcher_revealer?.set_reveal_child(false);
-        } else if (val === false) {
-          reveal_toggle.set_sensitive(false);
-          content_revealer.set_reveal_child(false);
-          reenable_all();
-        }
-      }
-
-      return {
-        reveal_headerbox,
-      };
-    } else if (config.animation === "popin" && !view_switcher_revealer) {
-      headerbox_revealer.connect("notify::child-revealed", () => {
-        if (!headerbox_revealer.get_child_revealed()) return;
-        content_revealer.set_reveal_child(true);
-        reveal_toggle.set_sensitive(true);
-        reveal_toggle.set_active(true);
-      });
-
-      content_revealer.connect("notify::child-revealed", () => {
-        if (content_revealer.get_child_revealed()) return;
-        headerbox_revealer.set_reveal_child(false);
-        reveal_toggle.set_sensitive(true);
-        reveal_toggle.set_active(false);
-      });
-
-      function reveal_headerbox(val: boolean) {
-        if (val === true) {
-          disable_all();
-          reveal_toggle.set_sensitive(false);
-          headerbox_revealer.set_reveal_child(true);
-        } else if (val === false) {
-          reveal_toggle.set_sensitive(false);
-          content_revealer.set_reveal_child(false);
-          reenable_all();
-        }
-      }
-
-      return {
-        reveal_headerbox,
-      };
-    } else if (config.animation === "pushdown") {
-      headerbox_revealer.set_reveal_child(false);
+    headerbox_revealer.connect("notify::child-revealed", () => {
+      if (!headerbox_revealer.get_child_revealed()) return;
       content_revealer.set_reveal_child(true);
+      reveal_toggle.set_sensitive(true);
+      reveal_toggle.set_active(true);
+    });
 
-      function reveal_headerbox(val: boolean) {
-        if (val === true) {
-          disable_all();
-          headerbox_revealer.set_reveal_child(true);
-        } else if (val === false) {
-          headerbox_revealer.set_reveal_child(false);
-          reenable_all();
-        }
+    content_revealer.connect("notify::child-revealed", () => {
+      if (content_revealer.get_child_revealed()) return;
+      headerbox_revealer.set_reveal_child(false);
+      reveal_toggle.set_sensitive(true);
+      reveal_toggle.set_active(false);
+    });
+
+    function reveal_headerbox(val: boolean) {
+      if (val === true) {
+        disable_all();
+        reveal_toggle.set_sensitive(false);
+        headerbox_revealer.set_reveal_child(true);
+      } else if (val === false) {
+        reveal_toggle.set_sensitive(false);
+        content_revealer.set_reveal_child(false);
+        reenable_all();
       }
-
-      return {
-        reveal_headerbox,
-      };
     }
-    return {};
+
+    return {
+      reveal_headerbox,
+    };
   }
 
   const controller = headerbox_setup({
