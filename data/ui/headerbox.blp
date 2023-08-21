@@ -134,6 +134,136 @@ Gtk.Box headerbox {
                           }
                         }
                       };
+
+                    [overlay]
+                    Gtk.Box shade {
+                      orientation: vertical;
+                      valign: end;
+
+                      Gtk.Box {
+                        styles ['transition']
+                        height-request: 54;
+                      }
+                    }
+
+                    [overlay]
+                    Gtk.Box toolbar_layer {
+                      vexpand: false;
+                      valign: end;
+                      halign: fill;
+
+                      Gtk.Revealer {
+                        reveal-child: true;
+                        child:
+                          Gtk.Box panel {
+                            styles ['panel', 'hollow-full']
+                            vexpand: false;
+                            spacing: 4;
+
+                            Gtk.ScrolledWindow {
+                              margin-end: 4;
+                              hexpand: true;
+                              vscrollbar-policy: never;
+
+                              Gtk.Box {
+                                spacing: 4;
+
+                                Gtk.Box {
+                                  margin-start: 4;
+                                  margin-end: 8;
+                                  spacing: 4;
+
+                                  Gtk.Label {
+                                    use-markup: true;
+                                    label: '<b>MyLeft4dead1</b>';
+                                  }
+                                }
+
+                                Gtk.Button {
+                                  visible: true;
+                                  styles ['flat', 'compact-button']
+
+                                  Gtk.Box {
+                                    spacing: 4;
+
+                                    Gtk.Image {
+                                      icon-name: 'flash-memory-symbolic';
+                                      pixel-size: 24;
+                                    }
+
+                                    Gtk.Label {
+                                      styles ['count']
+                                      use-markup: true;
+                                      label: '27';
+                                      tooltip-text: 'Number of Add-ons (27)';
+                                    }
+                                  }
+                                }
+                              }
+                            }
+
+                            Gtk.Button status_control_button {
+                              visible: false;
+                              styles ['flat','compact-button']
+
+                              Gtk.Image {
+                                icon-name: 'cross-filled-symbolic';
+                                pixel-size: 24;
+                              }
+                            }
+
+                            Gtk.Button {
+                              styles ['flat', 'compact-button']
+                              action-name: 'win.detach';
+                              tooltip-text: _('Detach panel');
+
+                              Gtk.Image {
+                                icon-name: 'pip-in-symbolic';
+                                pixel-size: 24;
+                              }
+                            }
+                          };
+                      }
+                    }
+
+                    [overlay]
+                    Gtk.Box viewstackswitcher_layer {
+                      styles ['hollow-full']
+                      orientation: vertical;
+                      halign: start;
+                      valign: end;
+
+                      Gtk.Revealer {
+                        reveal-child: true;
+                        child:
+                          Gtk.Box {
+                            orientation: vertical;
+
+                            Gtk.ToggleButton button_status {
+                              styles ['icon', 'red']
+                              icon-name: 'error-symbolic';
+                              halign: center;
+                              action-name: 'win.box_switch';
+                              action-target: '"status_box"';
+                              tooltip-text: _('Status');
+                            }
+
+                            Gtk.ToggleButton button_console {
+                              styles ['icon', 'transition-final-console']
+                              icon-name: 'terminal-symbolic';
+                              halign: center;
+                              action-name: 'win.box_switch';
+                              action-target: '"inject_console_box"';
+                              tooltip-text: _('Output');
+                            }
+
+                            Gtk.Box {
+                              hexpand: false;
+                              height-request: 40;
+                            }
+                          };
+                      }
+                    }
                   }
                 };
             }
@@ -173,133 +303,6 @@ Gtk.Box headerbox {
             }
           };
       };
-  }
-}
-
-Gtk.Box viewstackswitcher_layer {
-  styles ['hollow-full']
-  orientation: vertical;
-  halign: start;
-  valign: end;
-
-  Gtk.Revealer {
-    reveal-child: true;
-    child:
-      Gtk.Box {
-        orientation: vertical;
-
-        Gtk.ToggleButton button_status {
-          styles ['icon', 'red']
-          icon-name: 'error-symbolic';
-          halign: center;
-          action-name: 'win.box_switch';
-          action-target: '"status_box"';
-          tooltip-text: _('Status');
-        }
-
-        Gtk.ToggleButton button_console {
-          styles ['icon', 'transition-final-console']
-          icon-name: 'terminal-symbolic';
-          halign: center;
-          action-name: 'win.box_switch';
-          action-target: '"inject_console_box"';
-          tooltip-text: _('Output');
-        }
-
-        Gtk.Box {
-          hexpand: false;
-          height-request: 40;
-        }
-      };
-  }
-}
-
-Gtk.Box toolbar_layer {
-  vexpand: false;
-  valign: end;
-  halign: fill;
-
-  Gtk.Revealer {
-    reveal-child: true;
-    child:
-      Gtk.Box panel {
-        styles ['panel', 'hollow-full']
-        vexpand: false;
-        spacing: 4;
-
-        Gtk.ScrolledWindow {
-          margin-end: 4;
-          hexpand: true;
-          vscrollbar-policy: never;
-
-          Gtk.Box {
-            spacing: 4;
-
-            Gtk.Box {
-              margin-start: 4;
-              margin-end: 8;
-              spacing: 4;
-
-              Gtk.Label {
-                use-markup: true;
-                label: '<b>MyLeft4dead1</b>';
-              }
-            }
-
-            Gtk.Button {
-              visible: true;
-              styles ['flat', 'compact-button']
-
-              Gtk.Box {
-                spacing: 4;
-
-                Gtk.Image {
-                  icon-name: 'flash-memory-symbolic';
-                  pixel-size: 24;
-                }
-
-                Gtk.Label {
-                  styles ['count']
-                  use-markup: true;
-                  label: '27';
-                  tooltip-text: 'Number of Add-ons (27)';
-                }
-              }
-            }
-          }
-        }
-
-        Gtk.Button status_control_button {
-          visible: false;
-          styles ['flat','compact-button']
-
-          Gtk.Image {
-            icon-name: 'cross-filled-symbolic';
-            pixel-size: 24;
-          }
-        }
-
-        Gtk.Button {
-          styles ['flat', 'compact-button']
-          action-name: 'win.detach';
-          tooltip-text: _('Detach panel');
-
-          Gtk.Image {
-            icon-name: 'pip-in-symbolic';
-            pixel-size: 24;
-          }
-        }
-      };
-  }
-}
-
-Gtk.Box shade {
-  orientation: vertical;
-  valign: end;
-
-  Gtk.Box {
-    styles ['transition']
-    height-request: 54;
   }
 }
 

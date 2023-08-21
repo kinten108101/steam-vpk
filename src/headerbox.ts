@@ -28,21 +28,6 @@ export default function HeaderBox(
 
   const headerbox = builder.get_typed_object<Gtk.Box>('headerbox');
   build_entry.set_child(headerbox);
-  /**
-   * Overlays
-   */
-
-  const status_box_overlay = builder.get_typed_object<Gtk.Overlay>(
-    "status-box-overlay"
-  );
-  const shade = builder.get_typed_object<Gtk.Box>("shade");
-  status_box_overlay.add_overlay(shade);
-  const toolbar_layer = builder.get_typed_object<Gtk.Box>("toolbar_layer");
-  status_box_overlay.add_overlay(toolbar_layer);
-  const viewstackswitcher_layer = builder.get_typed_object<Gtk.Box>(
-    "viewstackswitcher_layer"
-  );
-  status_box_overlay.add_overlay(viewstackswitcher_layer);
 
   /**
    * Box Stack
