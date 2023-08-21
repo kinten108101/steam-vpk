@@ -1,5 +1,4 @@
 import Gtk from 'gi://Gtk';
-import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
@@ -7,7 +6,6 @@ import Adw from 'gi://Adw';
 import {
   APP_FULLNAME,
   APP_ID,
-  APP_RDNN,
   BUILD_TYPE,
   SERVER_NAME,
   SERVER_PATH,
@@ -49,18 +47,6 @@ export default function Application() {
     console.info(`${APP_FULLNAME} (${APP_ID})`);
     console.info(`build-type: ${BUILD_TYPE}`);
     console.info(`version: ${VERSION}`);
-
-    const provider = new Gtk.CssProvider();
-    provider.load_from_resource(`${APP_RDNN}/css/style.css`);
-
-    const defaultDisplay: Gdk.Display | null = Gdk.Display.get_default();
-    if (!defaultDisplay) throw new Error('Could not retrieve Gdk.Display');
-
-    Gtk.StyleContext.add_provider_for_display(
-      defaultDisplay,
-      provider,
-      Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
-    );
 
     Shortcuts({
       application,
