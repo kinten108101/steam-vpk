@@ -9,6 +9,7 @@ import './addons-panel.js';
 import {
   GtkChildren,
   GtkTemplate,
+  param_spec_boolean,
   param_spec_object,
   param_spec_string,
   param_spec_variant,
@@ -61,8 +62,11 @@ export class UseButton extends Gtk.Button {
   }
 }
 
-class RepositoryItem extends GObject.Object {
+export class RepositoryItem extends GObject.Object {
   static [GObject.properties] = {
+    isRemote: param_spec_boolean({
+      name: 'is_remote',
+    }),
     name: param_spec_string({
       name: 'name',
     }),
@@ -90,6 +94,7 @@ class RepositoryItem extends GObject.Object {
     registerClass({}, this);
   }
 
+  is_remote!: boolean;
   name!: string;
   creator!: string;
   description!: string;
@@ -97,32 +102,19 @@ class RepositoryItem extends GObject.Object {
   id!: string;
   id_gvariant!: GLib.Variant;
 
-  constructor(
-  {
-    name,
-    creator,
-    id,
-  }:
-  {
+  constructor(params: {
+    is_remote: boolean;
     name: string;
     creator: string;
     id: string;
   }) {
-    super({ name, creator, id });
-    this.id_gvariant = GLib.Variant.new_string(id);
+    super(params);
+    this.id_gvariant = GLib.Variant.new_string(params.id);
   }
 
   set_use_state(val: UseStates) {
     //if (val === this.use_state) return;
     this.use_state = val;
-  }
-}
-
-abstract class ViewmodelError extends Error{}
-
-class MissingFieldError extends ViewmodelError {
-  constructor(name: string) {
-    super(`Missing required field \"${name}\" for viewmodel item`);
   }
 }
 
@@ -180,23 +172,12 @@ export class RepositoryListStore extends Gtk.FlattenListModel {
 
   }
 
-  refill(items: any[]) {
+  refill(items: RepositoryItem[]) {
     this.local_addons.remove_all();
     this.remote_addons.remove_all();
     items.forEach(x => {
-      const is_remote = x['publishedfileid'] !== undefined;
-      const id = x['stvpkid'];
-      if (id === undefined) throw new MissingFieldError('stvpkid');
-      const name = x['title'];
-      if (name === undefined) throw new MissingFieldError('title');
-      const creator = 'Unavailable';
-      const item = new RepositoryItem({
-        id,
-        name,
-        creator,
-      })
-      if (is_remote) this.remote_addons.append(item);
-      else this.local_addons.append(item);
+      if (x.is_remote) this.remote_addons.append(x);
+      else this.local_addons.append(x);
     })
   }
 }
