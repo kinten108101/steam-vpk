@@ -162,7 +162,6 @@ export default function Window(
   });
 
 
-  return window;
   HeaderBox({
     parent_window,
     action_map,
@@ -175,6 +174,7 @@ export default function Window(
 
     },
   });
+  return window;
 }
 
 function WindowActions(
