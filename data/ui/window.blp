@@ -58,61 +58,62 @@ Adw.ApplicationWindow window {
             Adw.ToastOverlay {
               vexpand: true;
 
-              Gtk.Box {
-                orientation: vertical;
-                Adw.HeaderBar header-bar {
-                  centering-policy: strict;
-                  show-start-title-buttons: false;
-                  show-end-title-buttons: false;
-                  title-widget:
-                    Gtk.CenterBox {
+              Gtk.Overlay {
+                [overlay]
+                Gtk.Box {
+                  orientation: vertical;
+                  valign: start;
 
-                      [center]
-                      Adw.Clamp {
-                        maximum-size: 100;
+                  Adw.HeaderBar header-bar {
+                    vexpand: false;
+                    centering-policy: strict;
+                    show-start-title-buttons: false;
+                    show-end-title-buttons: false;
+                    title-widget:
+                      Gtk.CenterBox {
 
-                        Gtk.Box {
-                          margin-top: 4;
-                          margin-bottom: 4;
-                          margin-start: 4;
-                          margin-end: 4;
-                          orientation: vertical;
-                          hexpand: true;
-                          halign: fill;
-                          valign: start;
-
-
-
-
+                        [center]
+                        Adw.Clamp {
+                          maximum-size: 100;
 
                           Gtk.Box {
-                            spacing: 8;
+                            margin-top: 4;
+                            margin-bottom: 4;
+                            margin-start: 4;
+                            margin-end: 4;
+                            orientation: vertical;
+                            hexpand: true;
+                            halign: fill;
+                            valign: start;
 
-                            $StvpkProfileBar profileBar {
-                              valign: center;
-                              vexpand: false;
+                            Gtk.Box {
+                              spacing: 8;
+
+                              $StvpkProfileBar profileBar {
+                                valign: center;
+                                vexpand: false;
+                              }
+
+                              $StvpkInjectButtonSet inject-button-set {
+                                valign: start;
+                              }
                             }
 
-                            $StvpkInjectButtonSet inject-button-set {
-                              valign: start;
+                            Adw.Bin headerbox_build_entry {}
+
+                            Gtk.Revealer view_switcher_revealer {
+                              transition-type: slide_up;
+                              transition-duration: 200;
+                              reveal-child: true;
+                              child:
+                                Adw.ViewSwitcher view_switcher {
+                                  policy: wide;
+                                  stack: win-view-stack;
+                                };
                             }
-                          }
-
-                          Adw.Bin headerbox_build_entry {}
-
-                          Gtk.Revealer view_switcher_revealer {
-                            transition-type: slide_up;
-                            transition-duration: 200;
-                            reveal-child: true;
-                            child:
-                              Adw.ViewSwitcher view_switcher {
-                                policy: wide;
-                                stack: win-view-stack;
-                              };
                           }
                         }
-                      }
-                    };
+                      };
 
                     [start]
                     Gtk.MenuButton {
@@ -127,61 +128,87 @@ Adw.ApplicationWindow window {
 
                       styles ['flat', 'thin-button']
                     }
-                  }
 
-                  [end]
-                  Gtk.WindowControls {
-                    valign: start;
-                    margin-top: 4;
-                    side: end;
-                  }
+                    [end]
+                    Gtk.WindowControls {
+                      valign: start;
+                      margin-top: 4;
+                      side: end;
+                    }
 
-                  [end]
-                  Gtk.MenuButton {
-                    valign: start;
-                    margin-top: 4;
-                    icon-name: "open-menu-symbolic";
-                    popover:
-                      Gtk.PopoverMenu main_menu {
-                        menu-model: primary-menu;
-                      };
-                  }
+                    [end]
+                    Gtk.MenuButton {
+                      valign: start;
+                      margin-top: 4;
+                      icon-name: "open-menu-symbolic";
+                      popover:
+                        Gtk.PopoverMenu main_menu {
+                          menu-model: primary-menu;
+                        };
+                    }
 
-                  [end]
-                  Gtk.ToggleButton {
-                    valign: start;
-                    margin-top: 4;
-                    visible: false;
-                    can-focus: true;
-                    icon-name: "system-search-symbolic";
-                  }
-                }
-
-                Gtk.SearchBar secondary-bar {
-                  search-mode-enabled: false;
-
-                  Gtk.CenterBox {
-
+                    [end]
+                    Gtk.ToggleButton {
+                      valign: start;
+                      margin-top: 4;
+                      visible: false;
+                      can-focus: true;
+                      icon-name: "system-search-symbolic";
+                    }
                   }
                 }
 
-                Adw.ViewStack win-view-stack {
-                  vexpand: true;
+                child:
+                  Gtk.Box {
+                    orientation: vertical;
 
-                  Adw.ViewStackPage {
-                    name: "main-page";
-                    title: _("Load-order");
-                    icon-name: "map-symbolic";
-                    child: $StvpkLaunchpadPage launchpadPage {};
-                  }
+                    Gtk.Box {
+                      // barebone recreation to add space.
+                      // Currently no way to set height programmatically
+                      sensitive: false;
+                      orientation: vertical;
+                      margin-top: 8;
+                      margin-bottom: 8;
+                      spacing: 16;
 
-                  Adw.ViewStackPage {
-                    name: "download-page";
-                    title: _("Browse");
-                    icon-name: "harddisk-symbolic";
-                    child: $StvpkDownloadPage downloadPage {};
-                  }
-                }
+                      Gtk.Box {
+                        spacing: 8;
+
+                        $StvpkProfileBar {
+                          valign: center;
+                          vexpand: false;
+                        }
+
+                        $StvpkInjectButtonSet {
+                          valign: start;
+                        }
+                      }
+
+                      Adw.ViewSwitcher {
+                        sensitive: false;
+                        policy: wide;
+                        stack: win-view-stack;
+                      }
+                    }
+
+                    Adw.ViewStack win-view-stack {
+                      vexpand: true;
+
+                      Adw.ViewStackPage {
+                        name: "main-page";
+                        title: _("Load-order");
+                        icon-name: "map-symbolic";
+                        child: $StvpkLaunchpadPage launchpadPage {};
+                      }
+
+                      Adw.ViewStackPage {
+                        name: "download-page";
+                        title: _("Browse");
+                        icon-name: "harddisk-symbolic";
+                        child: $StvpkDownloadPage downloadPage {};
+                      }
+                    }
+                  };
               }
             }
 
