@@ -45,7 +45,6 @@ Dependencies:
 - gtk4 ^4.10.3
 - libadwaita ^1.3.3
 - libsoup ^3.4.2
-- libpanel ^1.1.0 (https://gitlab.gnome.org/GNOME/libpanel)
 - blueprint-compiler ^0.8.0 (https://gitlab.gnome.org/jwestman/blueprint-compiler)
 - glib-compile-schemas
 
