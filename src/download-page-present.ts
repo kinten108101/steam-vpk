@@ -34,6 +34,7 @@ export default function DownloadPagePresent(
         id,
         name,
         creator,
+        description: x['description'] || '',
       });
       return item;
     });

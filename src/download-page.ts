@@ -107,6 +107,7 @@ export class RepositoryItem extends GObject.Object {
     name: string;
     creator: string;
     id: string;
+    description: string;
   }) {
     super(params);
     this.id_gvariant = GLib.Variant.new_string(params.id);
@@ -215,6 +216,7 @@ export class DownloadPage extends Adw.PreferencesPage {
           ['creator', widget.subtitle, 'label'],
           ['use-state', widget.use_button, 'state'],
           ['id-gvariant', widget, 'id_gvariant'],
+          ['description', widget.description, 'label'],
         ]).forEach(([prop, child, child_prop]) => {
           item.bind_property(prop, child, child_prop, flags);
         });
