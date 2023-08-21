@@ -1,0 +1,60 @@
+// Adapted from https://github.com/sonnyp/Commit/blob/52bedf0a2bc3a456f4d17350bd386abb0475c8e4/src/ThemeSelector.blp
+
+using Gtk 4.0;
+
+template $StvpkThemeSelector : Gtk.Widget {
+  hexpand: true;
+
+  Gtk.Box box {
+    hexpand: true;
+    orientation: horizontal;
+    spacing: 12;
+
+    Gtk.CheckButton follow {
+      styles ['theme-selector', 'follow']
+
+      hexpand: true;
+      halign: center;
+      focus-on-click: false;
+      action-name: 'app.color-scheme';
+      action-target: '0';
+      tooltip-text: _('Follow system style');
+
+      accessibility {
+        label: _('Follow system style');
+      }
+    }
+
+    Gtk.CheckButton {
+      styles ['theme-selector', 'light']
+
+      hexpand: true;
+      halign: center;
+      group: follow;
+      focus-on-click: false;
+      action-name: 'app.color-scheme';
+      action-target: '1';
+      tooltip-text: _('Light style');
+
+      accessibility {
+        label: _('Light style');
+      }
+    }
+
+    Gtk.CheckButton {
+      styles ['theme-selector', 'dark']
+
+      hexpand: true;
+      halign: center;
+      group: follow;
+      focus-on-click: false;
+      action-name: 'app.color-scheme';
+      action-target: '4';
+      tooltip-text: _('Dark style');
+
+      accessibility {
+        label: _('Dark style');
+      }
+    }
+  }
+}

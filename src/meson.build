@@ -53,6 +53,7 @@ script = [
   'shortcuts.ts',
   'spinning-button.ts',
   'stack-controller.ts',
+  'themeselector.ts',
   'toast-builder.ts',
   'typed-builder.ts',
   'view-model-binder.ts',

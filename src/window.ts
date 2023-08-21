@@ -38,6 +38,7 @@ import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
 import { AddonDetailsPagePresenter } from './addon-details-present.js';
 import AddonDetailsActions from './actions/addon-details.js';
 import HeaderBox from './headerbox.js';
+import ThemeSelector from './themeselector.js';
 
 export default function Window(
 { application,
@@ -72,6 +73,9 @@ export default function Window(
     .get_typed_object<ProfileBar>('profileBar');
   const download_page = builder
     .get_typed_object<DownloadPage>('downloadPage');
+
+  const main_menu = builder.get_typed_object<Gtk.PopoverMenu>('main_menu');
+  main_menu.add_child(new ThemeSelector(), 'themeselector');
 
   StackController({
     stack: win_view_stack,

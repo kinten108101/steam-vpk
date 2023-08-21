@@ -30,7 +30,9 @@ export default function Application() {
 
   const monitor = new DBusMonitor();
   const proxies = new ProxyManager();
-
+  const settings = new Gio.Settings({
+    schema_id: APP_ID,
+  })
 
   application.connect('notify::is-registered', () => {
     if (application.is_registered) {
@@ -78,6 +80,14 @@ export default function Application() {
       }
     });
     application.add_action(devel);
+
+    application.add_action(settings.create_action('color-scheme'));
+    const style_manager = Adw.StyleManager.get_default();
+    const update_theme = () => {
+      style_manager.set_color_scheme(settings.get_int('color-scheme') as Adw.ColorScheme);
+    };
+    settings.connect('changed::color-scheme', update_theme);
+    update_theme();
 
     DebugWindow({
       application,

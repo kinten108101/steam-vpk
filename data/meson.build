@@ -35,6 +35,7 @@ interface = [
   'ui/profile-bar.blp',
   'ui/profile-window.blp',
   'ui/repository-page.blp',
+  'ui/themeselector.blp',
   'ui/window.blp',
 ]
 
@@ -104,4 +105,11 @@ desktop_file = configure_file(
   configuration: desktop_conf,
   install: true,
   install_dir: datadir / 'applications',
+)
+
+configure_file(
+  input: 'resource.gschema.xml',
+  output: 'com.github.kinten108101.SteamVPK.gschema.xml',
+  copy: true,
+  install_dir: datadir / 'glib-2.0' / 'schemas',
 )
