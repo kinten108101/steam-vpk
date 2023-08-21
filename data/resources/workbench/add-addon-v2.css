@@ -1,0 +1,18 @@
+#download-page-row {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+
+.dialog-heading {
+  font-size: large;
+  font-weight: bolder;
+}
+
+box.pikacaption {
+}
+
+.pikacaption label.heading {
+  color: @blue_2;
+  font-weight: bold;
+  font-size: small;
+}
