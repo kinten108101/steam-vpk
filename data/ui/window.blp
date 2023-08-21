@@ -114,19 +114,18 @@ Adw.ApplicationWindow window {
                       }
                     };
 
-                  [start]
-                  Gtk.MenuButton {
-                    valign: start;
-                    margin-top: 4;
-                    visible: true;
-                    margin-start: 4;
-                    always-show-arrow: false;
-                    menu-model: add_menu;
-                    styles ['new-button', 'flat', 'thin-button']
+                    [start]
+                    Gtk.MenuButton {
+                      valign: start;
+                      margin-top: 4;
+                      visible: true;
+                      margin-start: 4;
+                      always-show-arrow: true;
+                      label: _('New');
+                      menu-model: add_menu;
+                      tooltip-text: _('Add or Import add-on');
 
-                    Adw.ButtonContent {
-                      label: _("New");
-                      icon-name: "list-add-symbolic";
+                      styles ['flat', 'thin-button']
                     }
                   }
 

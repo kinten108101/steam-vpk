@@ -118,11 +118,6 @@ preferencesgroup.danger-zone list {
   border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
-.new-button {
-  padding-bottom: 0px;
-  padding-top: 0px;
-}
-
 .launchpad-row .icon {
   background-color: @blue_3;
   border-radius: 999px;
