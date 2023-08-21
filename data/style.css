@@ -417,3 +417,7 @@ checkbutton.theme-selector radio:checked {
   background-color: @theme_selected_bg_color;
   color: @theme_selected_fg_color;
 }
+
+#primary-view-switcher {
+  margin-top: -2px;
+}

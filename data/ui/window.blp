@@ -107,6 +107,7 @@ Adw.ApplicationWindow window {
                               reveal-child: true;
                               child:
                                 Adw.ViewSwitcher view_switcher {
+                                  name: 'primary-view-switcher';
                                   policy: wide;
                                   stack: win-view-stack;
                                 };
@@ -186,6 +187,7 @@ Adw.ApplicationWindow window {
 
                       Adw.ViewSwitcher {
                         sensitive: false;
+                        name: 'primary-view-switcher';
                         policy: wide;
                         stack: win-view-stack;
                       }
