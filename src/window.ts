@@ -37,17 +37,21 @@ import { promise_wrap } from './steam-vpk-utils/utils.js';
 import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
 import { AddonDetailsPagePresenter } from './addon-details-present.js';
 import AddonDetailsActions from './actions/addon-details.js';
-import HeaderBox from './headerbox.js';
+import HeaderBox, { HeaderBoxActions } from './headerbox.js';
 import ThemeSelector from './themeselector.js';
+import StatusPresent from './status-present.js';
+import StatusManager, { StatusActions } from './status.js';
 
 export default function Window(
 { application,
   monitor,
   proxies,
+  status_manager,
 }:
 { application: Gtk.Application;
   monitor: DBusMonitor;
   proxies: ProxyManager;
+  status_manager: StatusManager;
 }) {
   monitor;
   const builder = new TypedBuilder();
@@ -73,6 +77,8 @@ export default function Window(
     .get_typed_object<ProfileBar>('profileBar');
   const download_page = builder
     .get_typed_object<DownloadPage>('downloadPage');
+  const headerbox = builder
+    .get_typed_object<HeaderBox>('headerbox');
 
   const main_menu = builder.get_typed_object<Gtk.PopoverMenu>('main_menu');
   main_menu.add_child(new ThemeSelector(), 'themeselector');
@@ -159,23 +165,24 @@ export default function Window(
     profile_bar,
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
     monitor,
+    status_manager,
   });
 
-
-  const headerbox_controller = HeaderBox({
-    parent_window,
+  HeaderBoxActions({
     action_map,
-    reveal_toggle: profile_bar.primary_button,
-    build_entry: builder.get_typed_object<Adw.Bin>('headerbox_build_entry'),
-    disable_all: () => {
-
-    },
-    reenable_all: () => {
-
-    },
+    headerbox,
+    parent_window,
+  }).init_headerbox();
+  StatusPresent({
+    status_manager,
+    headerbox,
+  }).init_headerbox();
+  StatusActions({
+    action_map,
+    status_manager,
   });
-  headerbox_controller.init();
-  headerbox_controller.set_empty_status();
+
+
   return window;
 }
 

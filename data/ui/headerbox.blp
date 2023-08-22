@@ -1,7 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-Gtk.Box headerbox {
+template $StvpkHeaderBox : Gtk.Box {
   Gtk.Revealer headerbox_revealer {
     transition-duration: 200;
     transition-type: slide_down;
@@ -20,10 +20,10 @@ Gtk.Box headerbox {
               name: 'default_view';
               child:
                 Gtk.Box {
-                  styles ['default-view', 'headerbox']
+                  styles ['default-view', 'headerbox-card']
                   orientation: vertical;
 
-                  Gtk.Overlay status-box-overlay {
+                  Gtk.Overlay {
                     child:
                       Adw.ViewStack content_type_stack {
                         Adw.ViewStackPage {
@@ -61,11 +61,12 @@ Gtk.Box headerbox {
                               styles ['default-content']
                               spacing: 12;
 
-                              Gtk.Box viewswitcher-boundbox {
+                              Gtk.Box {
+                                // viewswitcher boundbox
                                 width-request: 36;
                               }
 
-                              Adw.ViewStack box-stack {
+                              Adw.ViewStack box_stack {
                                 vexpand: true;
 
                                 Adw.ViewStackPage {
@@ -90,7 +91,7 @@ Gtk.Box headerbox {
                                       }
 
 
-                                      Gtk.ScrolledWindow message-scroller {
+                                      Gtk.ScrolledWindow {
                                         min-content-height: 1;
                                         max-content-height: 160;
                                         vexpand: true;
@@ -248,7 +249,7 @@ Gtk.Box headerbox {
 
                             Gtk.Button {
                               styles ['flat', 'compact-button']
-                              action-name: 'win.detach';
+                              action-name: 'win.headerbox.detach';
                               tooltip-text: _('Detach panel');
 
                               Gtk.Image {
@@ -277,16 +278,16 @@ Gtk.Box headerbox {
                               styles ['icon', 'red']
                               icon-name: 'error-symbolic';
                               halign: center;
-                              action-name: 'win.box_switch';
+                              action-name: 'win.headerbox.box-switch';
                               action-target: '"status_box"';
                               tooltip-text: _('Status');
                             }
 
                             Gtk.ToggleButton button_console {
-                              styles ['icon', 'transition-final-console']
+                              styles ['icon']
                               icon-name: 'terminal-symbolic';
                               halign: center;
-                              action-name: 'win.box_switch';
+                              action-name: 'win.headerbox.box-switch';
                               action-target: '"inject_console_box"';
                               tooltip-text: _('Output');
                             }
@@ -323,7 +324,7 @@ Gtk.Box headerbox {
                       halign: end;
                       tooltip-text: 'Re-attach window';
                       styles ['flat', 'compact-button', 'hollow-full']
-                      action-name: 'win.attach';
+                      action-name: 'win.headerbox.attach';
 
                       Gtk.Image {
                         icon-name: 'pip-out-symbolic';
@@ -340,7 +341,7 @@ Gtk.Box headerbox {
   }
 }
 
-Adw.Window hub_full {
+Adw.Window detachable {
   default-width: 500;
   content:
     Gtk.Box{
@@ -360,7 +361,7 @@ Adw.Window hub_full {
         Gtk.Button {
           styles ['flat']
           icon-name: 'pip-out-symbolic';
-          action-name: 'modal.attach';
+          action-name: 'modal.headerbox.attach';
         }
       }
 

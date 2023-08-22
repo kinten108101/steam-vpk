@@ -99,7 +99,9 @@ Adw.ApplicationWindow window {
                               }
                             }
 
-                            Adw.Bin headerbox_build_entry {}
+                            $StvpkHeaderBox headerbox {
+                              reveal-toggle: bind ((profileBar as <$StvpkProfileBar>).primary-button as <Gtk.ToggleButton>);
+                            }
 
                             Gtk.Revealer view_switcher_revealer {
                               transition-type: slide_up;

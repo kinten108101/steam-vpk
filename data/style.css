@@ -211,7 +211,7 @@ preferencesgroup.danger-zone list {
 @define-color metalcard #d8d8d8;
 @define-color metalcard-dark #4a4a4a;
 
-.headerbox {
+headerbox .headerbox-card {
   background-color: @metalcard;
   box-shadow: none;
   padding-top: 4px;
@@ -221,59 +221,59 @@ preferencesgroup.danger-zone list {
   border-radius: 12px;
 }
 
-.popped-view {
+headerbox .popped-view {
   background-color: @metalcard-dark;
   color: @light_1;
 }
 
-.default-view {
+headerbox .default-view {
 }
 
-.default-content {
+headerbox .default-content {
   margin-top: 8px;
 }
 
-.status-box {
+headerbox .status-box {
 }
 
-.icon {
+headerbox .icon {
   margin: 0;
   padding-top: 12px;
   padding-bottom: 12px;
 }
 
-.icon.red {
+headerbox .icon.red {
   color: @red_5;
 }
 
-.status-box label.title {
+headerbox .status-box label.title {
   padding-left: 0;
   font-weight: bolder;
 }
 
-.status-box label.description {
+headerbox .status-box label.description {
   font-weight: bold;
   font-size: small;
   line-height: 1.3em;
 }
 
-.status-box.red label.title {
+headerbox .status-box.red label.title {
   color: @red_5;
 }
 
-.status-box.red label.description {
+headerbox .status-box.red label.description {
   color: mix(@red_5, @dark_1, 0.3);
 }
 
-.peek-button {
+headerbox .peek-button {
   color: @white_2;
 }
 
-.status-box scrolledwindow {
+headerbox .status-box scrolledwindow {
   padding: 0px;
 }
 
-.metal-fade-right undershoot.right {
+headerbox .metal-fade-right undershoot.right {
   background: linear-gradient(
     to right,
     alpha(@metalcard, 0) 0%,
@@ -281,7 +281,7 @@ preferencesgroup.danger-zone list {
   );
 }
 
-.metal-fade-top undershoot.top {
+headerbox .metal-fade-top undershoot.top {
   background: linear-gradient(
     to top,
     alpha(@metalcard, 0) 0%,
@@ -294,44 +294,44 @@ scrolledwindow.noscrollbar scrollbar {
   opacity: 0;
 }
 
-.panel {
+headerbox .panel {
   /*background-color: @metalcard;*/
   border-radius: 0px 0px 12px 12px;
 }
 
-.hollow {
+headerbox .hollow {
   color: alpha(currentColor, 0.7);
   transition-property: color;
   transition-delay: 1s;
   transition-duration: 500ms;
 }
 
-.hollow:hover {
+headerbox .hollow:hover {
   color: alpha(currentColor, 1);
   transition-property: color;
   transition-delay: 0s;
   transition-duration: 300ms;
 }
 
-.hollow-full {
+headerbox .hollow-full {
   opacity: 0.6;
   transition-property: opacity;
   transition-delay: 1s;
   transition-duration: 500ms;
 }
 
-.hollow-full:hover {
+headerbox .hollow-full:hover {
   opacity: 1;
   transition-property: opacity;
   transition-delay: 0s;
   transition-duration: 300ms;
 }
 
-.panel .profile-name {
+headerbox .panel .profile-name {
   font-weight: normal;
 }
 
-.transition {
+headerbox .transition {
   background: linear-gradient(
     to top,
     alpha(@metalcard, 1) 0%,
@@ -340,19 +340,19 @@ scrolledwindow.noscrollbar scrollbar {
   );
 }
 
-.compact-button {
+headerbox .compact-button {
   padding: 0px 12px;
 }
 
-.count {
+headerbox .count {
   font-weight: normal;
 }
 
-.status-box scrollbar {
+headerbox .status-box scrollbar {
   margin-bottom: 36px;
 }
 
-.panel scrolledwindow undershoot.right {
+headerbox .panel scrolledwindow undershoot.right {
   background: linear-gradient(
     to right,
     alpha(@metalcard, 0) 0%,
@@ -361,7 +361,7 @@ scrolledwindow.noscrollbar scrollbar {
   );
 }
 
-.panel scrolledwindow undershoot.left {
+headerbox .panel scrolledwindow undershoot.left {
   background: linear-gradient(
     to left,
     alpha(@metalcard, 0) 0%,
@@ -370,10 +370,10 @@ scrolledwindow.noscrollbar scrollbar {
   );
 }
 
-.panel scrollbar {
+headerbox .panel scrollbar {
   opacity: 0;
 }
-.status-box scrolledwindow {
+headerbox .status-box scrolledwindow {
   padding: 0px;
 }
 

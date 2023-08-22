@@ -21,6 +21,7 @@ import { widget_ensure } from './gtk.js';
 import { DBusMonitor, ProxyManager } from './api.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './debug-window.js';
+import StatusManager from './status.js';
 
 export default function Application() {
   const application = new Adw.Application({
@@ -32,7 +33,8 @@ export default function Application() {
   const proxies = new ProxyManager();
   const settings = new Gio.Settings({
     schema_id: APP_ID,
-  })
+  });
+  const status_manager = new StatusManager();
 
   application.connect('notify::is-registered', () => {
     if (application.is_registered) {
@@ -101,6 +103,7 @@ export default function Application() {
     widget_ensure();
     const mainWindow = Window({
       application,
+      status_manager,
       monitor,
       proxies,
     });

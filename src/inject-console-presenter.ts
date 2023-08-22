@@ -2,6 +2,7 @@ import { DBusMonitor, PrettyProxy } from './api.js';
 import InjectButtonSet from './inject-button-set.js';
 import InjectConsole from './inject-console.js';
 import { ProfileBar } from './profile-bar.js';
+import StatusManager from './status.js';
 import { promise_wrap } from './steam-vpk-utils/utils.js';
 
 export default function InjectConsolePresenter(
@@ -10,23 +11,27 @@ export default function InjectConsolePresenter(
   profile_bar,
   proxy,
   monitor,
+  status_manager,
 }:
 { inject_console?: InjectConsole;
   inject_button_set?: InjectButtonSet;
   profile_bar?: ProfileBar;
   proxy: PrettyProxy;
   monitor: DBusMonitor;
+  status_manager: StatusManager;
 }) {
   const injections = new Map<string, {
     using_logs_changed: number | undefined;
     using_cancellable: number | undefined;
   }>();
   const owner_map: WeakMap<InjectConsole, string> = new WeakMap();
+  let connect_error: string;
   monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
     promise_wrap(async () => {
       if (!connected) {
         // unavailable
         profile_bar?.send_status_update('Disconnected');
+        connect_error = status_manager.add_error('Disconnected', 'Could not connect to daemon. Make sure that you\'ve installed Add-on Box.');
         // TODO(kinten): Disable actions instead?
         inject_button_set?.make_sensitive(false);
       } else {
@@ -36,16 +41,18 @@ export default function InjectConsolePresenter(
         let has = true;
         if (last_injection !== undefined) {
           const result: [boolean] | undefined = await proxy.service_call_async('Has', last_injection);
-          if (result === undefined) throw new Error('wow');
+          if (result === undefined) throw new Error;
           ([has] = result);
         }
         if (last_injection === undefined || (last_injection !== undefined && !has)) {
           profile_bar?.send_status_update('State lost');
+          status_manager.clear_status(connect_error);
           inject_console?.reset();
           inject_button_set?.reset();
           return;
         }
         profile_bar?.send_status_update('Reconnected');
+        status_manager.clear_status(connect_error);
         inject_button_set?.make_sensitive(true);
       }
     });
@@ -87,6 +94,4 @@ export default function InjectConsolePresenter(
     injections.delete(id);
     if (inject_console) owner_map.delete(inject_console);
   });
-
-  console.log('presenter implemented');
 }
