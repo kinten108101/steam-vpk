@@ -40,16 +40,22 @@
 }
 
 .status-box label.title {
-  color: @red_5;
   padding-left: 0; /* no idea why theres padding here, have to remove it */
   font-weight: bolder;
 }
 
 .status-box label.description {
-  color: mix(@red_5, @dark_1, 0.3);
   font-weight: bold;
   font-size: small;
   line-height: 1.35em;
+}
+
+.status-box label.title {
+  color: @red_5;
+}
+
+.status-box label.description {
+  color: mix(@red_5, @dark_1, 0.3);
 }
 
 .peek-button {
@@ -162,4 +168,8 @@ scrolledwindow.noscrollbar scrollbar {
 }
 .status-box scrolledwindow {
   padding: 0px;
+}
+
+.empty-status {
+  opacity: 0.1;
 }
