@@ -38,7 +38,6 @@ export default function HeaderBox(
 
   const box_stack = builder.get_typed_object<Adw.ViewStack>("box-stack");
   const update_panel = () => {
-    console.log((new Date()).getTime());
     if (box_stack.get_visible_child_name() === "status_box") {
       status_control_button.set_visible(true);
       return;
@@ -148,7 +147,6 @@ export default function HeaderBox(
         return arr;
       }
       const _classes = set2arr(css);
-      console.log(_classes);
       return _classes;
     }
     const [style, icon_name]: [string, string] = (() => {
