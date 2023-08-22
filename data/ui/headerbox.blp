@@ -20,118 +20,152 @@ Gtk.Box headerbox {
               name: 'default_view';
               child:
                 Gtk.Box {
-                  styles ['headerbox']
+                  styles ['default-view', 'headerbox']
                   orientation: vertical;
 
                   Gtk.Overlay status-box-overlay {
                     child:
-                      Gtk.Box box_content {
-                        styles ['default-view']
-                        spacing: 12;
+                      Adw.ViewStack content_type_stack {
+                        Adw.ViewStackPage {
+                          name: 'empty_content';
+                          child:
+                            Gtk.Box {
+                              orientation: vertical;
 
-                        Gtk.Box viewswitcher-boundbox {
-                          width-request: 36;
+                              Gtk.ScrolledWindow {
+                                styles ['empty-status']
+                                vexpand: true;
+                                propagate-natural-height: true;
+                                hscrollbar-policy: never;
+
+                                Gtk.Box {
+                                  valign: center;
+                                  halign: center;
+                                  orientation: vertical;
+
+                                  Gtk.Image {
+                                    valign: center;
+                                    halign: center;
+                                    icon-name: 'background-app-sleepyface-symbolic';
+                                    pixel-size: 96;
+                                  }
+                                }
+                              }
+                            };
                         }
 
-                        Adw.ViewStack box-stack {
-                          vexpand: true;
+                        Adw.ViewStackPage {
+                          name: 'default_content';
+                          child:
+                            Gtk.Box box_content {
+                              styles ['default-content']
+                              spacing: 12;
 
-                          Adw.ViewStackPage {
-                            name: 'status_box';
-                            child:
-                              Gtk.Box {
-                                styles ['status-box']
-                                orientation: vertical;
-                                spacing: 4;
+                              Gtk.Box viewswitcher-boundbox {
+                                width-request: 36;
+                              }
 
-                                Gtk.ScrolledWindow {
-                                  styles ['noscrollbar', 'metal-fade-right']
-                                  margin-end: 8;
-                                  vscrollbar-policy: never;
+                              Adw.ViewStack box-stack {
+                                vexpand: true;
 
-                                  Gtk.Label {
-                                    halign: start;
-                                    xalign: 0;
-                                    label: 'A Problem Has Occurred';
-                                    styles ['title']
-                                  }
+                                Adw.ViewStackPage {
+                                  name: 'status_box';
+                                  child:
+                                    Gtk.Box status_box {
+                                      styles ['status-box']
+                                      orientation: vertical;
+                                      spacing: 4;
+
+                                      Gtk.ScrolledWindow {
+                                        styles ['noscrollbar', 'metal-fade-right']
+                                        margin-end: 8;
+                                        vscrollbar-policy: never;
+
+                                        Gtk.Label status_title {
+                                          halign: start;
+                                          xalign: 0;
+                                          label: 'A Problem Has Occurred';
+                                          styles ['title']
+                                        }
+                                      }
+
+
+                                      Gtk.ScrolledWindow message-scroller {
+                                        min-content-height: 1;
+                                        max-content-height: 160;
+                                        vexpand: true;
+                                        // r
+                                        propagate-natural-height: true;
+                                        // r
+                                        hscrollbar-policy: never;
+
+                                        Gtk.Box {
+                                          orientation: vertical;
+                                          margin-end: 24;
+
+                                          Gtk.Label status_description {
+                                            visible: true;
+                                            xalign: 0;
+                                            yalign: 0;
+                                            //label: 'Unknown error code.';
+                                            label: 'No data found! Ensure your drives are connected or use \"Set location\". To redownload, remove the torrent and re-add it.';
+                                            wrap: true;
+                                            styles ['description']
+                                          }
+
+                                          Gtk.Box read-spacing {
+                                            height-request: 44;
+                                          }
+                                        }
+                                      }
+                                    };
                                 }
 
-
-                                Gtk.ScrolledWindow message-scroller {
-                                  min-content-height: 1;
-                                  max-content-height: 160;
-                                  vexpand: true;
-                                  // r
-                                  propagate-natural-height: true;
-                                  // r
-                                  hscrollbar-policy: never;
-
-                                  Gtk.Box {
-                                    orientation: vertical;
-                                    margin-end: 24;
-
-                                    Gtk.Label {
-                                      visible: true;
-                                      xalign: 0;
-                                      yalign: 0;
-                                      //label: 'Unknown error code.';
-                                      label: 'No data found! Ensure your drives are connected or use \"Set location\". To redownload, remove the torrent and re-add it.';
-                                      wrap: true;
-                                      styles ['description']
-                                    }
-
-                                    Gtk.Box read-spacing {
-                                      height-request: 44;
-                                    }
-                                  }
-                                }
-                              };
-                          }
-
-                          Adw.ViewStackPage {
-                            name: 'inject_console_box';
-                            child:
-                              Gtk.Box {
-                                visible: true;
-                                margin-top: 4;
-                                margin-bottom: 4;
-
-                                Gtk.ScrolledWindow {
-                                  min-content-height: 1;
-                                  max-content-height: 160;
-                                  vexpand: true;
-                                  // r
-                                  propagate-natural-height: true;
-                                  // r
-                                  hscrollbar-policy: never;
-
-                                  Gtk.Box {
-                                    orientation: vertical;
-
-                                    Gtk.Label output {
-                                      halign: fill;
-                                      xalign: 0;
-                                      valign: fill;
-                                      yalign: 0;
-                                      justify: left;
-                                      use-markup: true;
-                                      hexpand: true;
-                                      //label: '';
-                                      label: '<span font-size=\'small\'>Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nDone in 312ms.</span>';
-                                      wrap: true;
-                                      wrap-mode: char;
-                                      selectable: true;
-                                      styles ['monospace']
-                                    }
-
+                                Adw.ViewStackPage {
+                                  name: 'inject_console_box';
+                                  child:
                                     Gtk.Box {
-                                      height-request: 44;
-                                    }
-                                  }
+                                      visible: true;
+                                      margin-top: 4;
+                                      margin-bottom: 4;
+
+                                      Gtk.ScrolledWindow {
+                                        min-content-height: 1;
+                                        max-content-height: 160;
+                                        vexpand: true;
+                                        // r
+                                        propagate-natural-height: true;
+                                        // r
+                                        hscrollbar-policy: never;
+
+                                        Gtk.Box {
+                                          orientation: vertical;
+
+                                          Gtk.Label output {
+                                            halign: fill;
+                                            xalign: 0;
+                                            valign: fill;
+                                            yalign: 0;
+                                            justify: left;
+                                            use-markup: true;
+                                            hexpand: true;
+                                            //label: '';
+                                            label: '<span font-size=\'small\'>Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nDone in 312ms.</span>';
+                                            wrap: true;
+                                            wrap-mode: char;
+                                            selectable: true;
+                                            styles ['monospace']
+                                          }
+
+                                          Gtk.Box {
+                                            height-request: 44;
+                                          }
+                                        }
+                                      }
+                                    };
                                 }
-                              };
-                          }
+                              }
+                            };
                         }
                       };
 

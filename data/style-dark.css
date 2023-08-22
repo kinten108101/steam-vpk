@@ -9,10 +9,10 @@
   color: @red_1;
 }
 
-.status-box label.title {
+.status-box.red label.title {
   color: @red_1;
 }
 
-.status-box label.description {
+.status-box.red label.description {
   color: mix(@red_1, @dark_1, 0.3);
 }

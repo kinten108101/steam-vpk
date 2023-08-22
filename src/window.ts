@@ -162,7 +162,7 @@ export default function Window(
   });
 
 
-  HeaderBox({
+  const headerbox_controller = HeaderBox({
     parent_window,
     action_map,
     reveal_toggle: profile_bar.primary_button,
@@ -174,6 +174,8 @@ export default function Window(
 
     },
   });
+  headerbox_controller.init();
+  headerbox_controller.set_empty_status();
   return window;
 }
 

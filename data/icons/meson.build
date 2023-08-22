@@ -1,6 +1,7 @@
 icons = [
   'addon-box.svg',
   'arrow2-up-symbolic.svg',
+  'background-app-sleepyface-symbolic.svg',
   'build-alt-symbolic.svg',
   'cloud-disabled-symbolic.svg',
   'cloud-filled-symbolic.svg',
@@ -17,6 +18,7 @@ icons = [
   'pip-out-symbolic.svg',
   'play-large-symbolic.svg',
   'puzzle-piece-symbolic.svg',
+  'question-round-symbolic.svg',
   'refresh-large-symbolic.svg',
   'run-start-symbolic.svg',
   'step-out-symbolic.svg',

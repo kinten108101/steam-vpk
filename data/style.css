@@ -203,12 +203,10 @@ preferencesgroup.danger-zone list {
   border-top: 1px inset alpha(@dark_5, 0.5);
 }
 
-/*
-
-HeaderBox
-headerbox
-
-*/
+/**
+ * HeaderBox
+ * headerbox
+ */
 
 @define-color metalcard #d8d8d8;
 @define-color metalcard-dark #4a4a4a;
@@ -216,7 +214,7 @@ headerbox
 .headerbox {
   background-color: @metalcard;
   box-shadow: none;
-  padding-top: 12px;
+  padding-top: 4px;
   padding-bottom: 4px;
   padding-left: 12px;
   padding-right: 12px;
@@ -229,6 +227,10 @@ headerbox
 }
 
 .default-view {
+}
+
+.default-content {
+  margin-top: 8px;
 }
 
 .status-box {
@@ -245,16 +247,22 @@ headerbox
 }
 
 .status-box label.title {
-  color: @red_5;
   padding-left: 0;
   font-weight: bolder;
 }
 
 .status-box label.description {
-  color: mix(@red_5, @dark_1, 0.3);
   font-weight: bold;
   font-size: small;
   line-height: 1.3em;
+}
+
+.status-box.red label.title {
+  color: @red_5;
+}
+
+.status-box.red label.description {
+  color: mix(@red_5, @dark_1, 0.3);
 }
 
 .peek-button {
@@ -420,4 +428,8 @@ checkbutton.theme-selector radio:checked {
 
 #primary-view-switcher {
   margin-top: -2px;
+}
+
+.empty-status {
+  opacity: 0.1;
 }
