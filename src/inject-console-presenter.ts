@@ -12,9 +12,9 @@ export default function InjectConsolePresenter(
   monitor,
   status_manager,
 }:
-{ inject_console?: HeaderboxConsole;
+{ inject_console: HeaderboxConsole;
   headerbox: HeaderBox;
-  inject_button_set?: InjectButtonSet;
+  inject_button_set: InjectButtonSet;
   proxy: PrettyProxy;
   monitor: DBusMonitor;
   status_manager: StatusManager;
@@ -30,7 +30,7 @@ export default function InjectConsolePresenter(
       if (!connected) {
         // unavailable
         // TODO(kinten): Disable actions instead?
-        inject_button_set?.make_sensitive(false);
+        inject_button_set.make_sensitive(false);
       } else {
         // available
         let last_injection: string | undefined = undefined;
@@ -42,11 +42,11 @@ export default function InjectConsolePresenter(
           ([has] = result);
         }
         if (last_injection === undefined || (last_injection !== undefined && !has)) {
-          inject_console?.reset();
-          inject_button_set?.reset();
+          inject_console.reset();
+          inject_button_set.reset();
           return;
         }
-        inject_button_set?.make_sensitive(true);
+        inject_button_set.make_sensitive(true);
       }
     });
   })
@@ -55,30 +55,30 @@ export default function InjectConsolePresenter(
     const tracker = status_manager.add_build_tracker();
     if (inject_console) owner_map.set(inject_console, id);
     const using_logs_changed = proxy.service_connect('LogsChanged', (_obj, _id, msg) => {
-      inject_console?.add_line(msg);
+      inject_console.add_line(msg);
     });
     const using_cancellable = proxy.service_connect('Cancelled', () => {
-      inject_button_set?.hold_set_spinning(true);
+      inject_button_set.hold_set_spinning(true);
     });
     injections.set(id, {
       using_logs_changed,
       using_cancellable,
       tracker,
     });
-    inject_console?.clean_output();
-    inject_button_set?.set_id(id);
+    inject_console.clean_output();
+    inject_button_set.set_id(id);
   });
   proxy.service_connect('SessionStart', (_obj) => {
     headerbox.open_with_box('inject_console_box');
-    inject_button_set?.set_state_button(InjectButtonSet.Buttons.hold);
+    inject_button_set.set_state_button(InjectButtonSet.Buttons.hold);
   });
   proxy.service_connect('SessionEnd', (_obj) => {
-    inject_button_set?.set_state_button(InjectButtonSet.Buttons.done);
+    inject_button_set.set_state_button(InjectButtonSet.Buttons.done);
   });
   proxy.service_connect('SessionFinished', (_obj) => {
     if (headerbox.current_box === 'inject_console_box')
       headerbox.reveal_headerbox(false);
-    inject_button_set?.reset();
+    inject_button_set.reset();
   });
   proxy.service_connect('RunningCleanup', (_obj, id: string) => {
     const mem = injections.get(id);
@@ -91,7 +91,7 @@ export default function InjectConsolePresenter(
   });
 
   function init() {
-    inject_console?.reset();
+    inject_console.reset();
     return services;
   }
 
