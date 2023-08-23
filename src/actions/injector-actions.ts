@@ -5,19 +5,18 @@ import { PrettyProxy } from '../api.js';
 
 export default function InjectorActions(
 { proxy,
-  action_map,
 }:
 { proxy: PrettyProxy,
-  action_map: Gio.ActionMap;
-}
-) {
+}) {
+  const actions: Gio.Action[] = [];
+
   const run = new Gio.SimpleAction({ name: 'injector.run' });
   run.connect('activate', () => {
     promise_wrap(async () => {
       await proxy.service_call_async('Run');
     });
   });
-  action_map.add_action(run);
+  actions.push(run);
 
   const done = new Gio.SimpleAction({ name: 'injector.done', parameter_type: GLib.VariantType.new('s') });
   done.connect('activate', (_action, parameter) => {
@@ -26,7 +25,7 @@ export default function InjectorActions(
       await proxy.service_call_async('Done', id);
     });
   });
-  action_map.add_action(done);
+  actions.push(done);
 
   const cancel = new Gio.SimpleAction({ name: 'injector.cancel', parameter_type: GLib.VariantType.new('s') });
   cancel.connect('activate', (_action, parameter) => {
@@ -35,7 +34,7 @@ export default function InjectorActions(
       await proxy.service_call_async('Cancel', id);
     });
   });
-  action_map.add_action(cancel);
+  actions.push(cancel);
 
   // TODO(kinten): Radio to choose strategy instead of activating
   const run_game = new Gio.SimpleAction({ name: 'injector.inject-with-game' });
@@ -44,7 +43,18 @@ export default function InjectorActions(
       await proxy.service_call_async('RunWithGame');
     });
   });
-  action_map.add_action(run_game);
+  actions.push(run_game);
 
-  return action_map;
+  function export2actionMap(action_map: Gio.ActionMap) {
+    actions.forEach(x => {
+      action_map.add_action(x);
+    });
+    return services;
+  }
+
+  const services = {
+    export2actionMap,
+  }
+
+  return services;
 }

@@ -146,9 +146,7 @@ export default function Window(
 
   InjectorActions({
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
-    action_map,
-  });
-
+  }).export2actionMap(action_map);
   InjectConsolePresenter({
     inject_console: headerbox.console_box,
     headerbox,
