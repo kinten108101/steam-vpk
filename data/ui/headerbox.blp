@@ -13,7 +13,7 @@ template $StvpkHeaderBox : Gtk.Box {
         reveal-child: false;
         vexpand: true;
         child:
-          Adw.ViewStack view_stack {
+          Adw.ViewStack frame_stack {
             margin-top: 4;
             margin-bottom: 6;
             Adw.ViewStackPage {
@@ -70,7 +70,7 @@ template $StvpkHeaderBox : Gtk.Box {
                                 vexpand: true;
 
                                 Adw.ViewStackPage {
-                                  name: 'status_box';
+                                  name: 'status::default';
                                   child:
                                     Gtk.Box status_box {
                                       styles ['status-box']
@@ -121,7 +121,7 @@ template $StvpkHeaderBox : Gtk.Box {
                                 }
 
                                 Adw.ViewStackPage {
-                                  name: 'inject_console_box';
+                                  name: 'console::default';
                                   child:
                                     $StvpkHeaderboxConsole console_box {};
                                 }
@@ -197,13 +197,22 @@ template $StvpkHeaderBox : Gtk.Box {
                               }
                             }
 
-                            Gtk.Button status_control_button {
-                              visible: false;
-                              styles ['flat','compact-button']
+                            Adw.ViewStack panel_controls {
+                              Adw.ViewStackPage {
+                                name: 'default';
+                                child: Gtk.Box {};
+                              }
 
-                              Gtk.Image {
-                                icon-name: 'cross-filled-symbolic';
-                                pixel-size: 24;
+                              Adw.ViewStackPage {
+                                name: 'status::clear';
+                                child:
+                                  Gtk.Box {
+                                    Gtk.Button {
+                                      styles ['compact-button']
+                                      label: _('Clear');
+                                      action-name: 'win.status.pop';
+                                    }
+                                  };
                               }
                             }
 
@@ -248,7 +257,7 @@ template $StvpkHeaderBox : Gtk.Box {
                               icon-name: 'terminal-symbolic';
                               halign: center;
                               action-name: 'win.headerbox.box-switch';
-                              action-target: '"inject_console_box"';
+                              action-target: '"console_box"';
                               tooltip-text: _('Output');
                             }
 

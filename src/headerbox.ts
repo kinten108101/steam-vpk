@@ -68,13 +68,41 @@ export class HeaderboxConsole extends Gtk.Box {
     this.lines = [];
     this.emit('lines-changed');
   }
-
 }
 
+export type BoxPages = 'status_box' | 'console_box';
+export type BoxSchemes =
+  'status::default' |
+  'console::default';
+export type PanelSchemes = 'status::clear' | 'default';
+
 class BoxPage extends GObject.Object {
+  static make_default(
+    type: BoxPages,
+    external_deps: {
+      button: Gtk.ToggleButton;
+    }) {
+    switch (type) {
+    case 'status_box':
+      return new BoxPage({
+        button: external_deps.button,
+        box: 'status::default',
+        panel: 'default',
+      });
+    case 'console_box':
+      return new BoxPage({
+        button: external_deps.button,
+        box: 'console::default',
+        panel: 'default',
+      });
+    }
+  }
+
   static [GObject.properties] = {
     button: param_spec_object({ name: 'button', objectType: Gtk.ToggleButton.$gtype }),
-    empty: param_spec_boolean({ name: 'empty', default_value: false }),
+    empty: param_spec_boolean({ name: 'empty', default_value: true }),
+    box: param_spec_string<BoxSchemes>({ name: 'box' }),
+    panel: param_spec_string<PanelSchemes>({ name: 'panel' }),
   }
 
   static {
@@ -83,20 +111,48 @@ class BoxPage extends GObject.Object {
 
   button!: Gtk.ToggleButton;
   empty!: boolean;
+  box!: BoxSchemes;
+  panel!: PanelSchemes;
 
   set_empty(val: boolean) {
     if (val === this.empty) return;
     this.empty = val;
   }
+
+  constructor(params: {
+    button: Gtk.ToggleButton;
+    box: BoxSchemes;
+    panel: PanelSchemes;
+  }) {
+    super(params);
+  }
 }
 
-type BoxPages = 'status_box' | 'inject_console_box';
+
+
+export class StatusPage extends GObject.Object {
+  static {
+    registerClass({}, this);
+  }
+
+  set_build() {
+
+  }
+}
 
 export default class HeaderBox extends Gtk.Box {
   static [GObject.properties] = {
-    revealed: param_spec_boolean({ name: 'revealed' }),
-    reveal_toggle: param_spec_object({ name: 'reveal-toggle', objectType: Gtk.ToggleButton.$gtype }),
-    current_box: param_spec_string({ name: 'current-box', default_value: 'status_box' }),
+    revealed: param_spec_boolean({
+      name: 'revealed',
+    }),
+    reveal_toggle: param_spec_object({
+      name: 'reveal-toggle',
+      objectType: Gtk.ToggleButton.$gtype,
+    }),
+    current_page: param_spec_string<BoxPages>({
+      name: 'current-page',
+      default_value: 'status_box',
+    }),
   }
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox.ui`;
   static [GtkCssName] = 'headerbox';
@@ -105,10 +161,17 @@ export default class HeaderBox extends Gtk.Box {
     'console_box',
   ];
   static [GtkInternalChildren] = [
-    'headerbox_revealer', 'content_revealer', 'box_stack',
-    'view_stack', 'button_status', 'button_console',
-    'status_box', 'status_title', 'status_description',
+    'headerbox_revealer',
+    'content_revealer',
+    'box_stack',
+    'frame_stack',
+    'button_status',
+    'button_console',
+    'status_box',
+    'status_title',
+    'status_description',
     'content_type_stack',
+    'panel_controls',
   ];
 
   static {
@@ -123,15 +186,16 @@ export default class HeaderBox extends Gtk.Box {
   _headerbox_revealer!: Gtk.Revealer;
   _content_revealer!: Gtk.Revealer;
   _box_stack!: Adw.ViewStack;
-  _view_stack!: Adw.ViewStack;
+  _frame_stack!: Adw.ViewStack;
   _button_status!: Gtk.ToggleButton;
   _button_console!: Gtk.ToggleButton;
   _status_box!: Gtk.Box;
   _status_title!: Gtk.Label;
   _status_description!: Gtk.Label;
   _content_type_stack!: Adw.ViewStack;
+  _panel_controls!: Adw.ViewStack;
 
-  current_box!: string;
+  current_page!: BoxPages;
   reveal_toggle?: Gtk.ToggleButton;
   revealed: boolean = false;
 
@@ -142,35 +206,46 @@ export default class HeaderBox extends Gtk.Box {
     this._setup_reveal_method();
     this._setup_detachable();
     this._setup_box_switcher();
-    (<[string, Gtk.ToggleButton][]>
+    const arr:
+      [BoxPages, Gtk.ToggleButton, { bind(page: BoxPage): void }?][] =
     [
-      ['status_box', this._button_status],
-      ['inject_console_box', this._button_console],
-    ])
-    .forEach(([box_name, button]) => {
-      const page = new BoxPage({ button });
-      this.pages.set(box_name, page);
-      page.connect('notify::empty', this._update_box_stack.bind(this));
+      ['status_box', this._button_status, undefined],
+      ['console_box', this._button_console, this.console_box],
+    ];
+    arr.forEach(([page_name, button, bindable]) => {
+      const page = BoxPage.make_default(page_name, { button });
+      this.pages.set(page_name, page);
+      [
+        'notify::box',
+        'notify::panel',
+        'notify::empty',
+      ].forEach(noti_sig => {
+        page.connect(noti_sig, this._update_box_stack.bind(this));
+      });
+      bindable?.bind(page);
     });
   }
 
   _setup_box_switcher() {
-    this.connect('notify::current-box', this._update_box_stack.bind(this));
+    this.connect('notify::current-page', this._update_box_stack.bind(this));
   }
 
   _update_box_stack() {
-    this.pages.forEach(({ empty }, key) => {
-      if (key !== this.current_box) return;
-      if (empty) {
-        this._content_type_stack.set_visible_child_name('empty_content');
-        return;
-      }
+    const page = this.pages.get(this.current_page);
+    if (page === undefined) throw new Error;
+    const { empty } = page;
+    if (empty) {
+      this._content_type_stack.set_visible_child_name('empty_content');
+      (<(name: PanelSchemes) => void>
+        this._panel_controls.set_visible_child_name)('default');
+    } else {
       this._content_type_stack.set_visible_child_name('default_content');
-      this._box_stack.set_visible_child_name(key);
-    });
+      this._box_stack.set_visible_child_name(page.box);
+      this._panel_controls.set_visible_child_name(page.panel);
+    }
 
     this.pages.forEach(({ button }, key) => {
-      if (key !== this.current_box) {
+      if (key !== this.current_page) {
         button.set_active(false);
         return;
       }
@@ -181,10 +256,10 @@ export default class HeaderBox extends Gtk.Box {
   _setup_detachable() {
     this.detachable.connect("notify::visible", () => {
       if (this.detachable.get_visible()) {
-        this._view_stack.set_visible_child_name("popped_view");
+        this._frame_stack.set_visible_child_name("popped_view");
         return;
       }
-      this._view_stack.set_visible_child_name("default_view");
+      this._frame_stack.set_visible_child_name("default_view");
     });
   }
 
@@ -222,7 +297,7 @@ export default class HeaderBox extends Gtk.Box {
   }
 
   open_with_box(box_page: BoxPages) {
-    this.current_box = box_page;
+    this.current_page = box_page;
     this.reveal_headerbox(true);
   }
 
@@ -317,8 +392,8 @@ export function HeaderBoxActions(
     parameter_type: GLib.VariantType.new("s"),
   });
   box_switch.connect("activate", (_action, parameter: GLib.Variant) => {
-    const box_name = parameter.deepUnpack() as string;
-    headerbox.current_box = box_name;
+    const box_name = parameter.deepUnpack() as BoxPages;
+    headerbox.current_page = box_name;
   });
   action_map.add_action(box_switch);
 
