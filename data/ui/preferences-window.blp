@@ -9,6 +9,19 @@ Adw.PreferencesWindow window {
     icon-name: "applications-system-symbolic";
     title: _("General");
 
+    Adw.PreferencesGroup {
+      title: _('Window');
+
+      Adw.ActionRow {
+        title: _('Remember Window Size');
+
+        [suffix]
+        Gtk.Switch save_window_size {
+          valign: center;
+        }
+      }
+    }
+
     Adw.PreferencesGroup section_one {
 
       Adw.ActionRow pref_darkmode {
