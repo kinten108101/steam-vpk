@@ -165,6 +165,7 @@ export default function Window(
   StatusPresent({
     status_manager,
     headerbox,
+    profile_bar,
   }).init_headerbox();
   StatusActions({
     action_map,

@@ -3,6 +3,7 @@ import GObject from 'gi://GObject';
 import StatusManager, { ErrorStatus, Status } from "./status.js";
 import type { SignalMethods } from '@girs/gjs';
 import HeaderBox from './headerbox.js';
+import { ProfileBar } from './profile-bar.js';
 
 export interface HeaderboxFactory extends SignalMethods {
   connect(signal: 'bind', cb: ($obj: this, item: Status) => void): number;
@@ -47,9 +48,11 @@ export class HeaderboxFactory {
 export default function StatusPresent(
 { status_manager,
   headerbox,
+  profile_bar,
 }:
 { status_manager: StatusManager;
   headerbox: HeaderBox;
+  profile_bar: ProfileBar;
 }) {
   const factory = new HeaderboxFactory();
   const binding_store: WeakMap<Status, { binds: GObject.Binding[] }> = new WeakMap;
@@ -64,6 +67,7 @@ export default function StatusPresent(
         const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
         (<[string, GObject.Object, string][]>
         [
+          ['short', profile_bar, 'status-request'],
           ['msg', description, 'label'],
         ]).forEach(([src_prop, tgt, tgt_prop]) => {
           const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
@@ -87,6 +91,7 @@ export default function StatusPresent(
     });
   });
   factory.connect('empty', () => {
+    profile_bar.status_request = '';
     headerbox.set_empty_status('status_box', true);
   });
   factory.connect('nonempty', () => {
