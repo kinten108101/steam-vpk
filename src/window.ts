@@ -144,6 +144,21 @@ export default function Window(
     action_map,
   });
 
+  let connect_error: string;
+  monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
+    promise_wrap(async () => {
+      if (!connected) {
+        // unavailable
+        connect_error = status_manager.add_error({
+          short: 'Disconnected',
+          msg: 'Could not connect to daemon. Make sure that you\'ve installed Add-on Box.',
+        });
+      } else {
+        // available
+        status_manager.clear_status(connect_error);
+      }
+    });
+  });
   InjectorActions({
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
   }).export2actionMap(action_map);
@@ -151,12 +166,9 @@ export default function Window(
     inject_console: headerbox.console_box,
     headerbox,
     inject_button_set,
-    profile_bar,
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
     monitor,
-    status_manager,
   }).init();
-
   HeaderBoxActions({
     action_map,
     headerbox,
