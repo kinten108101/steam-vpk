@@ -1,0 +1,139 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkHeaderboxBuild : Gtk.Box {
+  styles ['build-box']
+  orientation: vertical;
+  spacing: 4;
+
+  Gtk.ScrolledWindow {
+    styles ['noscrollbar', 'metal-fade-right']
+    margin-end: 8;
+    vscrollbar-policy: never;
+
+    Gtk.Label {
+      halign: start;
+      xalign: 0;
+      label: 'Injection In Progress';
+      styles ['title']
+    }
+  }
+
+  Gtk.ScrolledWindow {
+    min-content-height: 1;
+    max-content-height: 160;
+    vexpand: true;
+    propagate-natural-height: true;
+    hscrollbar-policy: never;
+
+    Gtk.Box {
+      orientation: vertical;
+      margin-end: 24;
+
+      Gtk.Grid {
+        column-spacing: 12;
+        column-homogeneous: true;
+
+        Gtk.Label {
+          label: _('Time elapsed');
+
+          ellipsize: start;
+
+          halign: end;
+          valign: start;
+
+          styles ['dim-label', 'line']
+          layout {
+            row: 0;
+            column: 0;
+          }
+        }
+
+        Gtk.Label {
+          label: '05:34:26 PM';
+
+          ellipsize: end;
+
+          halign: start;
+          valign: start;
+
+          styles ['line']
+          layout {
+            row: 0;
+            column: 1;
+          }
+        }
+
+        Gtk.Label {
+          label: _('Build status');
+
+          ellipsize: start;
+
+          halign: end;
+          valign: start;
+
+          styles ['dim-label', 'line']
+          layout {
+            row: 1;
+            column: 0;
+          }
+        }
+
+        Gtk.Label {
+          label: 'Loading subdirectory';
+
+          wrap: true;
+          wrap-mode: word_char;
+          lines: 3;
+          ellipsize: end;
+
+          halign: start;
+          valign: start;
+
+          styles ['line']
+          layout {
+            row: 1;
+            column: 1;
+          }
+        }
+
+        Gtk.Label {
+          label: _('Build result');
+
+          ellipsize: start;
+
+          halign: end;
+          valign: start;
+
+          styles ['dim-label', 'line']
+          layout {
+            row: 2;
+            column: 0;
+          }
+        }
+
+        Gtk.Label {
+          label: '';
+
+          wrap: true;
+          wrap-mode: word_char;
+          lines: 3;
+          ellipsize: end;
+
+          halign: start;
+          valign: start;
+
+          styles ['line']
+          layout {
+            row: 2;
+            column: 1;
+          }
+        }
+      }
+
+      Gtk.Box {
+        height-request: 44;
+      }
+    }
+  }
+}

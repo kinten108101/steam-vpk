@@ -70,6 +70,12 @@ template $StvpkHeaderBox : Gtk.Box {
                                 vexpand: true;
 
                                 Adw.ViewStackPage {
+                                  name: 'status::build';
+                                  child:
+                                    $StvpkHeaderboxBuild {};
+                                }
+
+                                Adw.ViewStackPage {
                                   name: 'status::default';
                                   child:
                                     Gtk.Box status_box {

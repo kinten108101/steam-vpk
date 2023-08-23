@@ -168,6 +168,7 @@ export default function Window(
     inject_button_set,
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
     monitor,
+    status_manager,
   }).init();
   HeaderBoxActions({
     action_map,

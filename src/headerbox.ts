@@ -15,6 +15,14 @@ import {
   registerClass,
 } from "./steam-vpk-utils/utils.js";
 
+export class HeaderboxBuild extends Gtk.Box {
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;
+
+  static {
+    registerClass({}, this);
+  }
+}
+
 export class HeaderboxConsole extends Gtk.Box {
   static [GObject.signals] = {
     'lines-changed': {},
@@ -73,6 +81,7 @@ export class HeaderboxConsole extends Gtk.Box {
 export type BoxPages = 'status_box' | 'console_box';
 export type BoxSchemes =
   'status::default' |
+  'status::build' |
   'console::default';
 export type PanelSchemes = 'status::clear' | 'default';
 
@@ -140,6 +149,12 @@ export class StatusPage extends GObject.Object {
   }
 }
 
+export type StatusStyles = 'error' | 'generic' | 'build';
+
+export default interface HeaderBox {
+  bind_status(type: 'error' | 'generic', cb: (obj: this, title: Gtk.Label, description: Gtk.Label) => void): void;
+  bind_status(type: 'build', cb: (obj: this) => void): void;
+}
 export default class HeaderBox extends Gtk.Box {
   static [GObject.properties] = {
     revealed: param_spec_boolean({
@@ -312,9 +327,23 @@ export default class HeaderBox extends Gtk.Box {
     page.set_empty(false);
   }
 
-  bind_status(type: 'error' | 'generic', cb: (obj: this, title: Gtk.Label, description: Gtk.Label) => void) {
-    this._set_status_style(type);
-    cb(this, this._status_title, this._status_description);
+  bind_status(type: StatusStyles, cb: (obj: this, ...args: any[]) => void) {
+    const page = this._pages_get('status_box');
+    if (type === 'error' || type === 'generic') {
+      this._set_status_style(type);
+      page.box = 'status::default';
+      cb(this, this._status_title, this._status_description);
+    } else if (type === 'build') {
+      this._set_status_style('generic');
+      page.box = 'status::build';
+      cb(this);
+    }
+  }
+
+  _pages_get(name: BoxPages) {
+    const page = this.pages.get(name);
+    if (page === undefined) throw new Error('Page does not exist');
+    return page;
   }
 
   _set_status_style(status_type: 'error' | 'generic') {

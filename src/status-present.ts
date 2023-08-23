@@ -1,6 +1,6 @@
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
-import StatusManager, { ErrorStatus, Status } from "./status.js";
+import StatusManager, { BuildStatus, ErrorStatus, Status } from "./status.js";
 import type { SignalMethods } from '@girs/gjs';
 import HeaderBox from './headerbox.js';
 import { ProfileBar } from './profile-bar.js';
@@ -76,8 +76,18 @@ export default function StatusPresent(
         binding_store.set(item, store);
       });
     }
+    function bind_build() {
+      if (!(item instanceof BuildStatus)) return;
+      headerbox.bind_status('build', (_obj) => {
+        console.log('ok');
+      });
+    }
     if (item instanceof ErrorStatus) {
       bind_error();
+      return;
+    }
+    if (item instanceof BuildStatus) {
+      bind_build();
       return;
     }
   });

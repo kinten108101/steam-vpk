@@ -48,6 +48,12 @@ export class ErrorStatus extends Status {
   }
 }
 
+export class BuildStatus extends Status {
+  static {
+    registerClass({}, this);
+  }
+}
+
 export default class StatusManager
 extends Gio.ListStore<Status> {
   static {
@@ -65,6 +71,13 @@ extends Gio.ListStore<Status> {
     this.idmap.set(status.id, status);
     this.append(status);
     return status.id;
+  }
+
+  add_build_tracker() {
+    const status = new BuildStatus();
+    this.idmap.set(status.id, status);
+    this.append(status);
+    return status;
   }
 
   clear_status(id: string): boolean {

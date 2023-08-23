@@ -24,6 +24,7 @@ interface = [
   'ui/download-window-row.blp',
   'ui/download-window.blp',
   'ui/field-row.blp',
+  'ui/headerbox-build.blp',
   'ui/headerbox-console.blp',
   'ui/headerbox.blp',
   'ui/inject-button-set.blp',

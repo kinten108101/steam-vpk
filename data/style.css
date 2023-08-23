@@ -374,6 +374,20 @@ headerbox .status-box scrolledwindow {
   padding: 0px;
 }
 
+headerbox .build-box {
+}
+
+headerbox .build-box label.title {
+  padding-left: 0;
+  font-weight: bolder;
+}
+
+headerbox .build-box label.line {
+  font-weight: bold;
+  font-size: small;
+  line-height: 1.35em;
+}
+
 /* Adapted from https://gitlab.gnome.org/GNOME/gnome-text-editor/-/blob/cd6e111e3142a80f509684e65c104c8b3a097761/src/style.css */
 
 /* ThemeSelector */
