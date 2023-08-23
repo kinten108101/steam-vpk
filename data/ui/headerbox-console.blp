@@ -1,0 +1,39 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkHeaderboxConsole : Box {
+  margin-top: 4;
+  margin-bottom: 4;
+
+  ScrolledWindow {
+    min-content-height: 1;
+    max-content-height: 160;
+    vexpand: true;
+    propagate-natural-height: true;
+    hscrollbar-policy: never;
+
+    Box {
+      orientation: vertical;
+
+      Label output {
+        halign: fill;
+        xalign: 0;
+        valign: fill;
+        yalign: 0;
+        justify: left;
+        use-markup: true;
+        hexpand: true;
+        //label: '';
+        label: '<span font-size=\'small\'>Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nDone in 312ms.</span>';
+        wrap: true;
+        wrap-mode: char;
+        selectable: true;
+        styles ['terminal']
+      }
+
+      Box {
+        height-request: 44;
+      }
+    }
+  }
+}

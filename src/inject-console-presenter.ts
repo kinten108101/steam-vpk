@@ -1,19 +1,21 @@
 import { DBusMonitor, PrettyProxy } from './api.js';
+import HeaderBox, { HeaderboxConsole } from './headerbox.js';
 import InjectButtonSet from './inject-button-set.js';
-import InjectConsole from './inject-console.js';
 import { ProfileBar } from './profile-bar.js';
 import StatusManager from './status.js';
 import { promise_wrap } from './steam-vpk-utils/utils.js';
 
 export default function InjectConsolePresenter(
 { inject_console,
+  headerbox,
   inject_button_set,
   profile_bar,
   proxy,
   monitor,
   status_manager,
 }:
-{ inject_console?: InjectConsole;
+{ inject_console?: HeaderboxConsole;
+  headerbox: HeaderBox;
   inject_button_set?: InjectButtonSet;
   profile_bar?: ProfileBar;
   proxy: PrettyProxy;
@@ -24,7 +26,7 @@ export default function InjectConsolePresenter(
     using_logs_changed: number | undefined;
     using_cancellable: number | undefined;
   }>();
-  const owner_map: WeakMap<InjectConsole, string> = new WeakMap();
+  const owner_map: WeakMap<HeaderboxConsole, string> = new WeakMap();
   let connect_error: string;
   monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
     promise_wrap(async () => {
@@ -74,15 +76,15 @@ export default function InjectConsolePresenter(
     inject_button_set?.set_id(id);
   });
   proxy.service_connect('SessionStart', (_obj) => {
-    inject_console?.set_switch(true);
+    headerbox.open_with_box('inject_console_box');
     inject_button_set?.set_state_button(InjectButtonSet.Buttons.hold);
   });
   proxy.service_connect('SessionEnd', (_obj) => {
-
     inject_button_set?.set_state_button(InjectButtonSet.Buttons.done);
   });
   proxy.service_connect('SessionFinished', (_obj) => {
-    inject_console?.set_switch(false);
+    if (headerbox.current_box === 'inject_console_box')
+      headerbox.reveal_headerbox(false);
     inject_button_set?.reset();
   });
   proxy.service_connect('RunningCleanup', (_obj, id: string) => {
@@ -94,4 +96,15 @@ export default function InjectConsolePresenter(
     injections.delete(id);
     if (inject_console) owner_map.delete(inject_console);
   });
+
+  function init() {
+    inject_console?.reset();
+    return services;
+  }
+
+  const services = {
+    init,
+  };
+
+  return services;
 }

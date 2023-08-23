@@ -15,6 +15,62 @@ import {
   registerClass,
 } from "./steam-vpk-utils/utils.js";
 
+export class HeaderboxConsole extends Gtk.Box {
+  static [GObject.signals] = {
+    'lines-changed': {},
+  };
+
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-console.ui`;
+  static [GtkChildren] = [
+    'output',
+  ];
+  static {
+    registerClass({}, this);
+  }
+
+  lines: string[] = [];
+  output!: Gtk.Label;
+
+  page_data!: BoxPage;
+
+  constructor(params = {}) {
+    super(params);
+    this.connect('lines-changed', this.#render_lines.bind(this));
+  }
+
+  bind(page_data: BoxPage) {
+    this.page_data = page_data;
+  }
+
+  reset() {
+    this.clean_output();
+  }
+
+  #render_lines() {
+    const text = this.lines.reduce((acc, val, i) => {
+      if (i === 0) return `${val}`;
+      return `${acc}\n${val}`;
+    }, '');
+    if (text === '') {
+      this.page_data.set_empty(true);
+    } else {
+      this.page_data.set_empty(false);
+    }
+    this.output?.set_label(text);
+  }
+
+  add_line(line: string) {
+    this.lines.push(line);
+    this.emit('lines-changed');
+  }
+
+  clean_output() {
+    this.lines = [];
+    this.emit('lines-changed');
+  }
+
+}
+
 class BoxPage extends GObject.Object {
   static [GObject.properties] = {
     button: param_spec_object({ name: 'button', objectType: Gtk.ToggleButton.$gtype }),
@@ -27,6 +83,11 @@ class BoxPage extends GObject.Object {
 
   button!: Gtk.ToggleButton;
   empty!: boolean;
+
+  set_empty(val: boolean) {
+    if (val === this.empty) return;
+    this.empty = val;
+  }
 }
 
 type BoxPages = 'status_box' | 'inject_console_box';
@@ -41,6 +102,7 @@ export default class HeaderBox extends Gtk.Box {
   static [GtkCssName] = 'headerbox';
   static [GtkChildren] = [
     'detachable',
+    'console_box',
   ];
   static [GtkInternalChildren] = [
     'headerbox_revealer', 'content_revealer', 'box_stack',
@@ -55,6 +117,7 @@ export default class HeaderBox extends Gtk.Box {
 
   /* children */
   detachable!: Adw.Window;
+  console_box!: HeaderboxConsole;
 
   /* internal children */
   _headerbox_revealer!: Gtk.Revealer;
@@ -148,6 +211,7 @@ export default class HeaderBox extends Gtk.Box {
   }
 
   reveal_headerbox(val: boolean) {
+    if (this.revealed === val) return;
     if (val === true) {
       this.reveal_toggle?.set_sensitive(false);
       this._headerbox_revealer.set_reveal_child(true);
@@ -157,15 +221,20 @@ export default class HeaderBox extends Gtk.Box {
     }
   }
 
+  open_with_box(box_page: BoxPages) {
+    this.current_box = box_page;
+    this.reveal_headerbox(true);
+  }
+
   set_empty_status(page_name: BoxPages, val: boolean) {
     const page = this.pages.get(page_name);
     if (page === undefined) throw new Error;
     if (val) {
       this._set_status_style('generic');
-      page.empty = true;
+      page.set_empty(true);
       return;
     }
-    page.empty = false;
+    page.set_empty(false);
   }
 
   bind_status(type: 'error' | 'generic', cb: (obj: this, title: Gtk.Label, description: Gtk.Label) => void) {

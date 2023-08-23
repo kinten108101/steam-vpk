@@ -41,7 +41,6 @@ script = [
   'headerbox.ts',
   'inject-button-set.ts',
   'inject-console-presenter.ts',
-  'inject-console.ts',
   'launchpad.ts',
   'main.ts',
   'markup.ts',

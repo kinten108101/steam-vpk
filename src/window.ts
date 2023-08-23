@@ -10,9 +10,6 @@ import {
   APP_RDNN,
   SERVER_NAME,
 } from './const.js';
-import InjectConsole, {
-  InjectConsoleActions,
-} from './inject-console.js';
 import ArchiveActions from './actions/archive-controls.js';
 import {
   AddonsPanelDiskActions,
@@ -69,8 +66,6 @@ export default function Window(
     .get_typed_object<Adw.ViewStack>('win-view-stack');
   const leaflet = builder
     .get_typed_object<Adw.Leaflet>('leaflet');
-  const inject_console = builder
-    .get_typed_object<InjectConsole>('inject-console');
   const inject_button_set = builder
     .get_typed_object<InjectButtonSet>('inject-button-set');
   const profile_bar = builder
@@ -145,11 +140,6 @@ export default function Window(
           }) as unknown as { new(): DiskModal },
   });
 
-  InjectConsoleActions({
-    inject_console,
-    action_map,
-  });
-
   ArchiveActions({
     action_map,
   });
@@ -160,13 +150,14 @@ export default function Window(
   });
 
   InjectConsolePresenter({
-    inject_console,
+    inject_console: headerbox.console_box,
+    headerbox,
     inject_button_set,
     profile_bar,
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
     monitor,
     status_manager,
-  });
+  }).init();
 
   HeaderBoxActions({
     action_map,

@@ -95,9 +95,7 @@ template $StvpkHeaderBox : Gtk.Box {
                                         min-content-height: 1;
                                         max-content-height: 160;
                                         vexpand: true;
-                                        // r
                                         propagate-natural-height: true;
-                                        // r
                                         hscrollbar-policy: never;
 
                                         Gtk.Box {
@@ -125,45 +123,7 @@ template $StvpkHeaderBox : Gtk.Box {
                                 Adw.ViewStackPage {
                                   name: 'inject_console_box';
                                   child:
-                                    Gtk.Box {
-                                      visible: true;
-                                      margin-top: 4;
-                                      margin-bottom: 4;
-
-                                      Gtk.ScrolledWindow {
-                                        min-content-height: 1;
-                                        max-content-height: 160;
-                                        vexpand: true;
-                                        // r
-                                        propagate-natural-height: true;
-                                        // r
-                                        hscrollbar-policy: never;
-
-                                        Gtk.Box {
-                                          orientation: vertical;
-
-                                          Gtk.Label output {
-                                            halign: fill;
-                                            xalign: 0;
-                                            valign: fill;
-                                            yalign: 0;
-                                            justify: left;
-                                            use-markup: true;
-                                            hexpand: true;
-                                            //label: '';
-                                            label: '<span font-size=\'small\'>Setting up win32api...\nLoading subdir. Error: dir not found!\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nLoading subdir\nDone in 312ms.</span>';
-                                            wrap: true;
-                                            wrap-mode: char;
-                                            selectable: true;
-                                            styles ['monospace']
-                                          }
-
-                                          Gtk.Box {
-                                            height-request: 44;
-                                          }
-                                        }
-                                      }
-                                    };
+                                    $StvpkHeaderboxConsole console_box {};
                                 }
                               }
                             };
