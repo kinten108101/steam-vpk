@@ -52,24 +52,39 @@ export default function StatusPresent(
   headerbox: HeaderBox;
 }) {
   const factory = new HeaderboxFactory();
-  const binding_store: WeakMap<Status, { bind_desc: GObject.Binding }> = new WeakMap;
+  const binding_store: WeakMap<Status, { binds: GObject.Binding[] }> = new WeakMap;
   factory.connect('bind', (_obj, item) => {
-    if (!(item instanceof ErrorStatus)) return;
-    headerbox.bind_status('error', (_obj, title, description) => {
-      title.set_label('A Problem Has Occurred');
-      const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
-      const bind_desc = item.bind_property('msg', description, 'label', flags);
-      binding_store.set(item, {
-        bind_desc,
+    function bind_error() {
+      if (!(item instanceof ErrorStatus)) return;
+      const store = {
+        binds: [] as GObject.Binding[],
+      };
+      headerbox.bind_status('error', (_obj, title, description) => {
+        title.set_label('A Problem Has Occurred');
+        const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
+        (<[string, GObject.Object, string][]>
+        [
+          ['msg', description, 'label'],
+        ]).forEach(([src_prop, tgt, tgt_prop]) => {
+          const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
+          store.binds.push(binding);
+        });
+        binding_store.set(item, store);
       });
-    });
+    }
+    if (item instanceof ErrorStatus) {
+      bind_error();
+      return;
+    }
   });
   factory.connect('unbind', (_obj, item) => {
     if (item === null) return;
-    const bindings = binding_store.get(item);
-    if (bindings === undefined) return;
-    const { bind_desc } = bindings;
-    bind_desc.unbind();
+    const store = binding_store.get(item);
+    if (store === undefined) return;
+    const { binds } = store;
+    binds.forEach(x => {
+      x.unbind();
+    });
   });
   factory.connect('empty', () => {
     headerbox.set_empty_status('status_box', true);
