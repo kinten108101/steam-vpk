@@ -60,8 +60,8 @@ extends Gio.ListStore<Status> {
     super({ item_type: Status.$gtype });
   }
 
-  add_error(short: string, msg: string) {
-    const status = new ErrorStatus({ short, msg });
+  add_error(...params: ConstructorParameters<typeof ErrorStatus>) {
+    const status = new ErrorStatus(params[0]);
     this.idmap.set(status.id, status);
     this.append(status);
     return status.id;
@@ -91,7 +91,10 @@ export function StatusActions(
   make_error.connect('activate', (_action, parameter) => {
     const msg = parameter?.recursiveUnpack() as string;
     if (msg === undefined) throw new Error;
-    status_manager.add_error('Untitled', msg);
+    status_manager.add_error({
+      short: 'Untitled',
+      msg,
+    });
   });
   action_map.add_action(make_error);
 
