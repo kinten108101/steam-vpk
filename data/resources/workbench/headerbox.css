@@ -50,11 +50,11 @@
   line-height: 1.35em;
 }
 
-.status-box label.title {
+.status-box.red label.title {
   color: @red_5;
 }
 
-.status-box label.description {
+.status-box.red label.description {
   color: mix(@red_5, @dark_1, 0.3);
 }
 
@@ -64,6 +64,19 @@
 
 .status-box scrolledwindow {
   padding: 0px;
+}
+
+.build-box {
+}
+
+.build-box label.title {
+  font-weight: bolder;
+}
+
+.build-box label.line {
+  font-weight: bold;
+  font-size: small;
+  line-height: 1.35em;
 }
 
 .metal-fade-right undershoot.right {

@@ -45,33 +45,6 @@ Adw.ApplicationWindow window {
                                   child:
                                     Adw.ViewStack {
                                       Adw.ViewStackPage {
-                                        name: 'empty_content';
-                                        child:
-                                          Gtk.Box {
-                                            orientation: vertical;
-
-                                            Gtk.ScrolledWindow {
-                                              styles ['empty-status']
-                                              vexpand: true;
-                                              propagate-natural-height: true;
-                                              hscrollbar-policy: never;
-
-                                              Gtk.Box {
-                                                valign: center;
-                                                halign: center;
-                                                orientation: vertical;
-
-                                                Gtk.Image {
-                                                  valign: center;
-                                                  halign: center;
-                                                  icon-name: 'background-app-sleepyface-symbolic';
-                                                  pixel-size: 96;
-                                                }
-                                              }
-                                            }
-                                          };
-                                      }
-                                      Adw.ViewStackPage {
                                         name: 'default_content';
                                         child:
                                           Gtk.Box box_content {
@@ -86,7 +59,125 @@ Adw.ApplicationWindow window {
                                               vexpand: true;
 
                                               Adw.ViewStackPage {
-                                                name: 'status_box';
+                                                name: 'status_box'; // build_box
+                                                child:
+
+
+                                                  Gtk.Box {
+                                                    styles ['build-box']
+                                                    orientation: vertical;
+                                                    spacing: 4;
+
+                                                    Gtk.ScrolledWindow {
+                                                      styles ['noscrollbar', 'metal-fade-right']
+                                                      margin-end: 8;
+                                                      vscrollbar-policy: never;
+
+                                                      Gtk.Label {
+                                                        halign: start;
+                                                        xalign: 0;
+                                                        label: 'Injection In Progress';
+                                                        styles ['title']
+                                                      }
+                                                    }
+
+                                                    Gtk.ScrolledWindow {
+                                                      min-content-height: 1;
+                                                      max-content-height: 160;
+                                                      vexpand: true;
+                                                      // r
+                                                      propagate-natural-height: true;
+                                                      // r
+                                                      hscrollbar-policy: never;
+
+                                                      Gtk.Box {
+                                                        orientation: vertical;
+                                                        margin-end: 24;
+
+                                                        Gtk.Grid {
+                                                          column-spacing: 12;
+                                                          column-homogeneous: true;
+
+                                                          Gtk.Label {
+                                                            styles ['dim-label', 'line']
+                                                            halign: end;
+                                                            valign: start;
+                                                            label: _('Started on');
+                                                            layout {
+                                                              row: 0;
+                                                              column: 0;
+                                                            }
+                                                          }
+
+                                                          Gtk.Label {
+                                                            styles ['line']
+                                                            label: '05:34:26 PM';
+                                                            halign: start;
+                                                            valign: start;
+                                                            layout {
+                                                              row: 0;
+                                                              column: 1;
+                                                            }
+                                                          }
+
+                                                          Gtk.Label {
+                                                            styles ['dim-label', 'line']
+                                                            halign: end;
+                                                            valign: start;
+                                                            label: _('Build status');
+                                                            layout {
+                                                              row: 1;
+                                                              column: 0;
+                                                            }
+                                                          }
+
+                                                          Gtk.Label {
+                                                            styles ['line']
+                                                            halign: start;
+                                                            valign: start;
+                                                            label: 'Loading subdirectory';
+                                                            wrap: true;
+                                                            lines: 3;
+                                                            ellipsize: end;
+                                                            layout {
+                                                              row: 1;
+                                                              column: 1;
+                                                            }
+                                                          }
+
+                                                          Gtk.Label {
+                                                            styles ['dim-label', 'line']
+                                                            halign: end;
+                                                            valign: start;
+                                                            label: _('Build result');
+                                                            layout {
+                                                              row: 2;
+                                                              column: 0;
+                                                            }
+                                                          }
+
+                                                          Gtk.Label {
+                                                            styles ['line']
+                                                            halign: start;
+                                                            valign: start;
+                                                            label: '';
+                                                            layout {
+                                                              row: 2;
+                                                              column: 1;
+                                                            }
+                                                          }
+                                                        }
+
+                                                        Gtk.Box {
+                                                          height-request: 44;
+                                                        }
+                                                      }
+                                                    }
+                                                  };
+                                              }
+
+                                              Adw.ViewStackPage {
+                                                name: '_status_box';
                                                 child:
 
 
@@ -138,8 +229,6 @@ Adw.ApplicationWindow window {
                                                       }
                                                     }
                                                   };
-
-
                                               }
 
                                               Adw.ViewStackPage {
@@ -184,6 +273,34 @@ Adw.ApplicationWindow window {
                                                       }
                                                     }
                                                   };
+                                              }
+                                            }
+                                          };
+                                      }
+
+                                      Adw.ViewStackPage {
+                                        name: 'empty_content';
+                                        child:
+                                          Gtk.Box {
+                                            orientation: vertical;
+
+                                            Gtk.ScrolledWindow {
+                                              styles ['empty-status']
+                                              vexpand: true;
+                                              propagate-natural-height: true;
+                                              hscrollbar-policy: never;
+
+                                              Gtk.Box {
+                                                valign: center;
+                                                halign: center;
+                                                orientation: vertical;
+
+                                                Gtk.Image {
+                                                  valign: center;
+                                                  halign: center;
+                                                  icon-name: 'background-app-sleepyface-symbolic';
+                                                  pixel-size: 96;
+                                                }
                                               }
                                             }
                                           };
@@ -452,3 +569,4 @@ Adw.Window hub_full {
       }
     };
 }
+
