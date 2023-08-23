@@ -112,7 +112,7 @@ preferencesgroup.danger-zone list {
 
 label.terminal {
   font-family: monospace;
-  font-size: small;
+  font-size: smaller;
 }
 
 .launchpad-row .icon {
