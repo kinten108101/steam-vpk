@@ -6,7 +6,6 @@ import StatusManager, { BuildStatus } from './status.js';
 
 export default function InjectConsolePresenter(
 { inject_console,
-  headerbox,
   inject_button_set,
   proxy,
   monitor,
@@ -69,15 +68,12 @@ export default function InjectConsolePresenter(
     inject_button_set.set_id(id);
   });
   proxy.service_connect('SessionStart', (_obj) => {
-    headerbox.open_with_box('inject_console_box');
     inject_button_set.set_state_button(InjectButtonSet.Buttons.hold);
   });
   proxy.service_connect('SessionEnd', (_obj) => {
     inject_button_set.set_state_button(InjectButtonSet.Buttons.done);
   });
   proxy.service_connect('SessionFinished', (_obj) => {
-    if (headerbox.current_box === 'inject_console_box')
-      headerbox.reveal_headerbox(false);
     inject_button_set.reset();
   });
   proxy.service_connect('RunningCleanup', (_obj, id: string) => {
