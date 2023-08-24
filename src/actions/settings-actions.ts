@@ -8,11 +8,13 @@ export function SettingsActions(
 {
   action_map,
   parent_window,
+  main_window,
   settings,
 }:
 {
   action_map: Gio.ActionMap;
   parent_window: Gtk.Window;
+  main_window: Gtk.ApplicationWindow;
   settings?: Gio.Settings;
 }) {
   const set_game_dir = new Gio.SimpleAction({
@@ -51,4 +53,29 @@ export function SettingsActions(
     });
   });
   action_map.add_action(set_game_dir);
+
+  const rw_handlers: number[] = [];
+  const remember_winsize = new Gio.SimpleAction({
+    name: 'settings.remember-winsize',
+    parameter_type: GLib.VariantType.new('b'),
+  });
+  remember_winsize.connect('activate', (_action, parameter: GLib.Variant) => {
+    const val = parameter.recursiveUnpack() as boolean;
+    if (val) {
+      settings?.set_boolean('remember-winsize', true);
+      const using_dh = main_window.connect('notify::default-height', () => {
+        settings?.set_int('default-height', main_window.default_height);
+      });
+      const using_dw = main_window.connect('notify::default-width', () => {
+        settings?.set_int('default-width', main_window.default_width);
+      });
+      rw_handlers.push(using_dh, using_dw);
+    } else {
+      settings?.set_boolean('remember-winsize', false);
+      rw_handlers.forEach(x => {
+        main_window.disconnect(x);
+      });
+    }
+  });
+  action_map.add_action(remember_winsize);
 }

@@ -16,8 +16,10 @@ Adw.PreferencesWindow window {
         title: _('Remember Window Size');
 
         [suffix]
-        Gtk.Switch save_window_size {
+        Gtk.Switch enable_remember_winsize {
           valign: center;
+          action-name: 'pref-win.settings.remember-winsize';
+          action-target: 'false'; // programmed
         }
       }
     }

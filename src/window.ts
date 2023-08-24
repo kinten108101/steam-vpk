@@ -44,17 +44,25 @@ export default function Window(
   monitor,
   proxies,
   status_manager,
+  settings,
 }:
 { application: Gtk.Application;
   monitor: DBusMonitor;
   proxies: ProxyManager;
   status_manager: StatusManager;
+  settings: Gio.Settings,
 }) {
   monitor;
   const builder = new TypedBuilder();
   builder.add_from_resource(`${APP_RDNN}/ui/window.ui`);
   const window = builder.get_typed_object<Adw.ApplicationWindow>('window');
   window.set_application(application);
+  if (settings.get_boolean('remember-winsize')) {
+    window.set_default_size(
+      settings.get_int('default-width'),
+      settings.get_int('default-height'),
+    );
+  }
   const window_group = new Gtk.WindowGroup();
   window_group.add_window(window);
 
@@ -96,6 +104,8 @@ export default function Window(
     action_map,
     leaflet,
     parent_window,
+    main_window: window,
+    settings,
   });
 
   const addon_details_builder = AddonDetailsLeafletPage({
@@ -179,17 +189,20 @@ function WindowActions(
 { action_map,
   leaflet,
   parent_window,
+  main_window,
   settings,
 }:
 { action_map: Gio.ActionMap;
   leaflet: Adw.Leaflet;
   parent_window: Gtk.Window;
+  main_window: Gtk.ApplicationWindow;
   settings?: Gio.Settings;
 }) {
   const group = new Gio.SimpleActionGroup();
   SettingsActions({
     action_map: group,
     parent_window,
+    main_window,
     settings,
   })
   const showPreferences = new Gio.SimpleAction({

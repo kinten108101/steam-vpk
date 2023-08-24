@@ -106,6 +106,7 @@ export default function Application() {
       status_manager,
       monitor,
       proxies,
+      settings,
     });
     mainWindow.present();
   };
