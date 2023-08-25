@@ -4,6 +4,7 @@ import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
 import { APP_RDNN } from './const.js';
+import { BackendPortal } from './api.js';
 
 export default function PreferencesWindow() {
   const builder = new TypedBuilder();
@@ -13,32 +14,38 @@ export default function PreferencesWindow() {
   const window = builder.get_typed_object<Adw.Window>('window');
 
   function bind(
-  { settings,
-    parent_window,
+  { parent_window,
   }:
-  { settings?: Gio.Settings;
-    parent_window: Gtk.Window,
+  { parent_window: Gtk.Window,
   }) {
     window.set_transient_for(parent_window);
-
-    const update_game_dir_path = () => {
-      const val = settings?.get_string('game-dir') || null;
-      if (val === null) return;
-      let dir: Gio.File = Gio.File.new_for_path(val);
-      const name = dir?.get_basename() || null;
-      const display = (() => {
-        if (name === null) return '(None)';
-        return name;
-      })()
-      game_dir_path.set_label(display);
-    };
-    // listen to settings signal notify::game-dir
-    update_game_dir_path();
-
-    settings?.connect('changed', (_obj, key) => {
-      if (key === null) return;
-      if (key === 'game-dir') update_game_dir_path();
+    const settings = BackendPortal({
+      interface_name: 'com.github.kinten108101.SteamVPK.Server.Settings'
     });
+
+    const clear_game_dir = builder.get_typed_object<Gtk.Button>(
+      'clear_game_dir'
+    );
+
+    const update_game_dir_path = (val: string) => {
+      let dir: Gio.File = Gio.File.new_for_path(val);
+      const name = dir.get_basename() || null;
+      if (name === null) {
+        game_dir_path.set_label('(None)');
+        clear_game_dir.set_sensitive(false);
+      } else {
+        game_dir_path.set_label(name);
+        clear_game_dir.set_sensitive(true);
+      }
+    };
+    settings.subscribe('notify::GameDirectory', (dir: string) => {
+      update_game_dir_path(dir);
+    });
+    settings.property_get<string>('GameDirectory')
+      .then((dir) => {
+        update_game_dir_path(dir);
+      })
+      .catch(error => logError(error));
 
     return window_builder;
   }

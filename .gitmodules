@@ -1,3 +1,6 @@
 [submodule "src/steam-vpk-utils"]
 	path = src/steam-vpk-utils
 	url = git@github.com:kinten108101/steam-vpk-utils.git
+[submodule "steam-vpk-server"]
+	path = steam-vpk-server
+	url = git@github.com:kinten108101/steam-vpk-server.git
