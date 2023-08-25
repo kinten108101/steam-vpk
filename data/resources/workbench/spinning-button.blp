@@ -1,0 +1,25 @@
+using Gtk 4.0;
+using Adw 1;
+
+Gtk.Box {
+  Adw.ViewStack stack {
+    Adw.ViewStackPage {
+      name: 'default';
+      child:
+        Gtk.Button {
+          label: _('Validate');
+        };
+    }
+
+    Adw.ViewStackPage {
+      name: 'spinning';
+      child:
+        Gtk.Button {
+          sensitive: false;
+          Gtk.Spinner {
+            spinning: true;
+          }
+        };
+    }
+  }
+}
