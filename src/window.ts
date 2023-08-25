@@ -38,6 +38,7 @@ import HeaderBox, { HeaderBoxActions } from './headerbox.js';
 import ThemeSelector from './themeselector.js';
 import StatusPresent from './status-present.js';
 import StatusManager, { StatusActions } from './status.js';
+import AddAddonAction from './actions/add-addon.js';
 
 export default function Window(
 { application,
@@ -184,6 +185,10 @@ export default function Window(
     action_map,
     status_manager,
   });
+
+  AddAddonAction({
+    parent_window,
+  }).export2actionmap(action_map);
 
 
   return window;

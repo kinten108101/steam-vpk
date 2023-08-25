@@ -1,0 +1,96 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkPreviewDownload : Gtk.Box {
+  orientation: vertical;
+
+  Adw.HeaderBar {
+    decoration-layout: 'icon:close';
+    title-widget:
+      Adw.WindowTitle {
+        title: _('Preview');
+      };
+
+    [start]
+    Gtk.Button retry_button {
+      label: _('Retry');
+    }
+
+    [end]
+    Gtk.Button {
+      styles ['suggested-action']
+      label: _('Download');
+      action-name: 'window.close';
+    }
+  }
+
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      Adw.ActionRow {
+        styles ["download-page-row"]
+        [prefix]
+        Gtk.Grid {
+          hexpand: true;
+          column-spacing: 10;
+
+          Gtk.Box {
+            hexpand: true;
+            orientation: vertical;
+            valign: center;
+
+            Gtk.Label addon_name {
+              styles ["title"]
+              label: '广州增城 （Zengcheng）Lv7.3'; // placeholder
+              ellipsize: end;
+              xalign: 0;
+            }
+
+            Gtk.Label creator {
+              styles ["subtitle"]
+              label: '21lovely'; // placeholder
+              ellipsize: end;
+              xalign: 0;
+            }
+
+            layout {
+              row: 0;
+              column: 1;
+            }
+          }
+
+          Gtk.Label excerpt {
+            visible: true;
+            styles ["dim-label"]
+            label: '人最宝贵的东西是生命。生命对人来说只有一次。因此，人的一生应当这样度过：当一个人回首往事时，不因虚度年华而悔恨，也不因碌碌无为而羞愧；这样，在他临死的时候，能够说，我把整个生命'; // placeholder
+            margin-top: 5;
+
+            single-line-mode: true;
+            use-markup: true;
+            xalign: 0;
+            wrap: true;
+            wrap-mode: word_char;
+            ellipsize: end;
+            lines: 2;
+
+            layout {
+              row: 1;
+              column: 1;
+            }
+          }
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      Adw.ActionRow {
+        title: _('Estimated Size');
+
+        [suffix]
+        Gtk.Label size {
+          use-markup: true;
+          label: '52 MB'; // placeholder
+        }
+      }
+    }
+  }
+}

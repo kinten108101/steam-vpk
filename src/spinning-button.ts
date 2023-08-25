@@ -1,58 +1,51 @@
-import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
-import * as Utils from './steam-vpk-utils/utils.js';
+import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
+import {
+  GtkChildren,
+  GtkInternalChildren,
+  GtkTemplate,
+  param_spec_boolean,
+  param_spec_object,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
+import { APP_RDNN } from './const.js';
 
-export default class SpinningButton extends Gtk.Button {
+export default class SpinningButton extends Gtk.Box {
+  static [GObject.properties] = {
+    spinning: param_spec_boolean({ name: 'spinning' }),
+    button: param_spec_object({ name: 'button', objectType: Gtk.Button.$gtype }),
+  };
+
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/spinning-button.ui`;
+
+  static [GtkInternalChildren] = [
+    'stack',
+  ];
+
+  static [GtkChildren] = [
+    'button',
+  ];
+
   static {
-    Utils.registerClass({
-      Properties: {
-        'is-spinning': GObject.ParamSpec.boolean(
-          'is-spinning', 'is-spinning', 'is-spinning',
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
-      },
-    }, this)
+    registerClass({}, this);
   }
-  private spinner: Gtk.Spinner;
-  label_saved: string;
-  is_spinning!: boolean;
-  post_spinning_sensitivity_getter_override: (() => boolean) | undefined;
 
-  constructor(param = {}) {
-    super(param);
-    this.spinner = new Gtk.Spinner({ spinning: true });
-    this.label_saved = 'aaaaaa'; // FIXME(kinten): Why is this.label empty!?
-    this.connect('notify::label', () => { // workaround
-      this.label_saved = this.get_label() || 'bbbbbb';
-    });
+  spinning!: boolean;
+  button!: Gtk.Button;
+  _stack!: Adw.ViewStack;
+
+  constructor(params = {}) {
+    super(params);
+    this.connect('notify::spinning', this._update_spinning.bind(this));
+    this._update_spinning();
   }
-  /*
 
-  set_spinning(val: boolean) {
-    // here we're mutating gtkbutton to get the desired appearance. Instead we can create another button for different state, then its just turning on and off.
-    if (val) {
-      this.spinner.set_parent(this);
-      this.set_label('');
-      this.set_sensitive(false);
-      return;
+  _update_spinning() {
+    if (this.spinning) {
+      this._stack.set_visible_child_name('spinning');
+    } else {
+      this._stack.set_visible_child_name('default');
     }
-    this.spinner.unparent();
-    if (this.label_saved !== 'aaaaaa') this.set_label(this.label_saved);
-    this.set_sensitive((() => {
-          if (this.post_spinning_sensitivity_getter_override) {
-            return this.post_spinning_sensitivity_getter_override();
-          }
-          return true;
-        })());
-  }
-
-  */
-
-  set_spinning(val: boolean) {
-    if (val) {
-      this.child = this.spinner;
-      return;
-    }
-    // @ts-ignore
-    this.child = null;
   }
 }

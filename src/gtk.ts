@@ -8,6 +8,8 @@ import InjectButtonSet from './inject-button-set.js';
 import { param_spec_string, registerClass, GtkTemplate } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
 import HeaderBox, { HeaderboxBuild, HeaderboxConsole } from './headerbox.js';
+import AddAddonUrl, { PreviewDownload } from './dialogs/add-addon-url.js';
+import SpinningButton from './spinning-button.js';
 
 export const TOAST_TIMEOUT_X_SHORT = 2;
 export const TOAST_TIMEOUT_SHORT = 3;
@@ -46,4 +48,7 @@ export function widget_ensure() {
   GObject.type_ensure(HeaderBox.$gtype);
   GObject.type_ensure(HeaderboxConsole.$gtype);
   GObject.type_ensure(HeaderboxBuild.$gtype);
+  GObject.type_ensure(SpinningButton.$gtype);
+  GObject.type_ensure(AddAddonUrl.$gtype);
+  GObject.type_ensure(PreviewDownload.$gtype);
 }

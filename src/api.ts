@@ -7,6 +7,8 @@ import {
   WeakRefMap,
 } from './steam-vpk-utils/weakrefmap.js';
 import { dbus_params } from './steam-vpk-utils/dbus-utils.js';
+import { getApplication } from './application.js';
+import { get_formatted_unique_name_str } from './steam-vpk-utils/portals.js';
 
 Gio._promisify(Gio.DBusProxy, 'new_for_bus', 'new_for_bus_finish');
 Gio._promisify(Gio.DBusProxy.prototype, 'call', 'call_finish');
@@ -254,10 +256,43 @@ export function BackendPortal(
     return Gio.DBus.session.signal_unsubscribe(id);
   }
 
+  async function async_call(method_name: string, ...args: any[]): Promise<[number, any]> {
+    const dbus = getApplication().get_dbus_connection();
+    if (dbus === null) throw new Error;
+    const name_raw = dbus.get_unique_name();
+    if (name_raw === null) throw new Error;
+    const name = get_formatted_unique_name_str(name_raw + String(Math.round(Math.random() * 1000000)));
+    let using_request: number | undefined = undefined;
+    let using_timeout: GLib.Source | undefined = undefined;
+    return new Promise((resolve, reject) => {
+      using_request = Gio.DBus.session.signal_subscribe(
+        SERVER_NAME,
+        `${SERVER_NAME}.Request`,
+        'Response',
+        `${SERVER_PATH}/request/${name}/${method_name}`,
+        null,
+        Gio.DBusSignalFlags.NONE,
+        (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
+          const vals = params.recursiveUnpack() as [number, any];
+          resolve(vals);
+        });
+      call_async(
+        method_name, null, name, ...args)
+        .catch(error => reject(error));
+      using_timeout = setTimeout(() => {
+        reject(new Error('Server did not respond'));
+      }, 10000);
+    }).finally(() => {
+      if (using_request) Gio.DBus.session.signal_unsubscribe(using_request);
+      if (using_timeout) using_timeout.destroy();
+    }) as Promise<[number, any]>;
+  }
+
   const proxy = {
     call_async,
     subscribe,
     unsubscribe,
+    async_call
   };
 
   return proxy;

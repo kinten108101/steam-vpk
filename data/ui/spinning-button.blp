@@ -1,0 +1,27 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkSpinningButton : Gtk.Box {
+  Adw.ViewStack stack {
+    Adw.ViewStackPage {
+      name: 'default';
+      child:
+        Gtk.Button button {
+          styles ['suggested-action']
+          label: _('Validate');
+        };
+    }
+
+    Adw.ViewStackPage {
+      name: 'spinning';
+      child:
+        Gtk.Button {
+          styles ['suggested-action']
+          sensitive: false;
+          Gtk.Spinner {
+            spinning: true;
+          }
+        };
+    }
+  }
+}

@@ -1,50 +1,67 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkAddAddonUrl : Gtk.Box {
-  orientation: vertical;
-  visible: false;
+template $StvpkAddAddonUrl : Adw.Window {
+  default-width: 600;
+  modal: true;
 
-  Gtk.HeaderBar {
-    show-title-buttons: false;
+  content:
+    Gtk.Stack view_stack {
+      Gtk.StackPage {
+        name: 'input-url';
+        child:
+          Gtk.Box {
+            orientation: vertical;
 
-    [start]
-    Gtk.Button {
-      label: _("Cancel");
-      action-name: 'window.close';
-    }
+            Adw.HeaderBar {
+              decoration-layout: 'icon:close';
+              title-widget:
+                Adw.WindowTitle {
+                  title: _('Import from Workshop');
+                };
 
-    [end]
-    Gtk.Button validateButton {
-      label: _("Validate");
-      styles ["suggested-action"]
-      clicked => $onValidate();
-    }
-  }
+              [start]
+              Gtk.Button {
+                label: _('Cancel');
+                action-name: 'window.close';
+              }
+              [end]
+              $StvpkSpinningButton validate_button {}
+            }
 
-  Gtk.Box {
-    orientation: vertical;
-    margin-start: 12;
-    margin-end: 12;
-    margin-bottom: 16;
-    margin-top: 12;
-    spacing: 12;
-    vexpand: true;
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                title: _('Published File ID');
+                header-suffix:
+                  Gtk.ToggleButton {
+                    styles ['flat']
+                    icon-name: 'settings-symbolic';
+                  };
 
-    Adw.PreferencesGroup {
-      vexpand: true;
-      Adw.EntryRow url {
-        sensitive: true;
-        title: _("Published Item URL");
+                Gtk.Entry url_bar {
+                  placeholder-text: 'https://steamcommunity.com/sharedfiles/filedetails/?id=<file-id-here>';
+                  hexpand: true;
+                }
+              }
+
+              Adw.PreferencesGroup {
+                Gtk.Box {
+                  orientation: vertical;
+                  styles ['pikacaption']
+
+                  Gtk.Label {
+
+                  }
+                }
+              }
+            }
+          };
       }
 
-      Gtk.Label {
-        label: _('URL of the Steam Workshop item that you\'d like to download.');
-        xalign: 0; // left align
-        margin-top: 12;
-        wrap: true;
-        styles ["dim-label", "caption"]
+      Gtk.StackPage {
+        name: 'preview-download';
+        child:
+          $StvpkPreviewDownload preview_download {};
       }
-    }
-  }
+    };
 }

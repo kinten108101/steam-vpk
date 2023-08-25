@@ -5,9 +5,8 @@ interface = [
   'gtk/menus.blp',
   'gtk/help-overlay.blp',
   'ui/add-addon-name.blp',
-  'ui/add-addon-preview-download.blp',
+  'ui/add-addon-url-preview-download.blp',
   'ui/add-addon-url.blp',
-  'ui/add-addon.blp',
   'ui/addon-details-archive-list-row.blp',
   'ui/addon-details-context-label.blp',
   'ui/addon-details-lozenge.blp',
@@ -36,6 +35,7 @@ interface = [
   'ui/profile-bar.blp',
   'ui/profile-window.blp',
   'ui/repository-page.blp',
+  'ui/spinning-button.blp',
   'ui/themeselector.blp',
   'ui/window.blp',
 ]
