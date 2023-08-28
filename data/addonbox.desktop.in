@@ -10,12 +10,3 @@ Exec=@APP_ID@ %U
 StartupNotify=true
 # Translators: Do NOT translate or transliterate this text (these are enum types)!
 X-Purism-FormFactor=Workstation;Mobile;
-
-[Desktop Action hi]
-Name=OK
-Exec=echo hi
-
-[Desktop Action new-wi]
-Name=New Window Lol
-Exec=@APP_ID@ --new-window %U
-
