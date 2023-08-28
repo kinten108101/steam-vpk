@@ -13,12 +13,9 @@ template $StvpkLaunchpadPage : Adw.Bin {
             title: _('Add-ons to Link');
             description: _('Only add-ons listed below are available for linking');
 
-            Gtk.Box {
-              styles ['card']
-
-              Gtk.ListView addonlist {
-                styles ['boxedlist']
-              }
+            Gtk.ListBox addonlist_box {
+              selection-mode: none;
+              styles ['boxed-list']
             }
           }
         };

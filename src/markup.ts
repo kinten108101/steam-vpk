@@ -2,6 +2,10 @@ export function MakeCompatPango(text: string) {
   return text.replaceAll('&', '&amp;').replaceAll('<', '&#60;').replaceAll('>', '&#62;');
 }
 
+export function MakeTitleCompat(text: string) {
+  return MakeCompatPango(text).replaceAll('\\n', '');
+}
+
 export function SteamMd2Pango(text: string) {
   let a = text;
 

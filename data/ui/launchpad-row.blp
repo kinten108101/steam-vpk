@@ -1,13 +1,13 @@
 using Gtk 4.0;
 using Adw 1;
 
-menu move-row-menu {
-  section moveSection {
+menu move_row_menu {
+  section move_section {
     // There are items here but due to API constraints, they must be added programmatically. Just know that there are the move-up and move-down buttons here.
   }
 }
 
-Gtk.Box enterPosition {
+Gtk.Box enter_position {
   orientation: vertical;
   spacing: 8;
   margin-top: 4;
@@ -38,12 +38,9 @@ Gtk.Box enterPosition {
 }
 
 template $StvpkLaunchpadRow: Adw.ExpanderRow {
-  // title: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).name as <string>;
   title-lines: 1;
-  // subtitle: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).id as <string>;
   subtitle-lines: 1;
-  //icon-name: "media-flash";
-  styles ['launchpad-row']
+  styles ['boxedlist-row','launchpad-row']
 
 
   [prefix]
@@ -105,18 +102,18 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
   Gtk.Box {
     spacing: 8;
 
-    Gtk.Button install-archive {
+    Gtk.Button install_archive {
       visible: false;
       icon-name: 'arrow2-up-symbolic';
       tooltip-text: _('Archive auto-install available');
       action-name: 'win.archive.install-archive';
-      // action-target
+      action-target: bind template.id-gvariant;
       valign: center;
       halign: center;
       styles ['lozenge', 'blue', 'opaque']
     }
 
-    Gtk.Button no-archive {
+    Gtk.Button no_archive {
       visible: false;
       icon-name: 'warning-symbolic';
       tooltip-text: _('No archive installed');
@@ -138,8 +135,8 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       visible: true;
       valign: center;
       popover:
-        Gtk.PopoverMenu popoverMenu {
-          menu-model: move-row-menu;
+        Gtk.PopoverMenu popover_menu {
+          menu-model: move_row_menu;
         };
       icon-name: "wrench-wide-symbolic";
       tooltip-text: "Options";
@@ -150,16 +147,13 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
     Gtk.Switch toggle {
       valign: center;
       halign: center;
-      // active: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).enabled as <string>;
-      action-name: 'win.addons.active';
-      action-target: '(\"addon id\", false)';
-      // action-target is set in code
     }
 
-    Gtk.Button remove-small {
+    Gtk.Button remove_small {
       visible: false;
       icon-name: 'cross-filled-symbolic';
       action-name: 'win.addons.remove';
+      action-target: bind template.id-gvariant;
       valign: center;
       styles ['flat']
     }
@@ -167,7 +161,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
   Gtk.ListBoxRow {
     activatable: false;
-    visible: false;
 
     Gtk.Grid {
       styles ["row-content"]
@@ -189,7 +182,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       }
 
       Gtk.Label title_field {
-        // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).last_update as <string>;
         wrap: true;
         wrap-mode: word;
         selectable: true;
@@ -226,7 +218,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
 
         Gtk.Label description_field {
           styles ["multiline"]
-          // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).description as <string>;
           use-markup: true;
           wrap: true;
           wrap-mode: word;
@@ -250,7 +241,6 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       }
 
       Gtk.Label last_update_field {
-        // label: bind ((AddonlistRow.itemk) as <$AddonlistPageItem>).last_update as <string>;
         wrap: true;
         wrap-mode: word;
         selectable: true;
@@ -275,19 +265,19 @@ template $StvpkLaunchpadRow: Adw.ExpanderRow {
       margin-start: 8;
       margin-end: 8;
 
-      Gtk.Button seeDetails {
+      Gtk.Button see_details {
         label: _('See Details');
         styles ['flat']
         action-name: 'win.addon-details.see-details';
-        // action-target set in app code
+        action-target: bind template.id-gvariant;
       }
 
-      Gtk.Button removeAddon {
+      Gtk.Button remove_addon {
         halign: end;
         label: _('Remove');
         styles ['destructive-action']
         action-name: 'win.addons.remove';
-        // action-target set in app code
+        action-target: bind template.id-gvariant;
       }
     }
   }
