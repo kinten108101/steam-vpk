@@ -7,6 +7,7 @@ import {
   WeakRefMap,
 } from './steam-vpk-utils/weakrefmap.js';
 import { dbus_params } from './steam-vpk-utils/dbus-utils.js';
+import { generate_timed_id } from './steam-vpk-utils/utils.js';
 
 Gio._promisify(Gio.DBusProxy, 'new_for_bus', 'new_for_bus_finish');
 Gio._promisify(Gio.DBusProxy.prototype, 'call', 'call_finish');
@@ -194,6 +195,7 @@ export type BackendInterfaces =
   'com.github.kinten108101.SteamVPK.Server.Injector' |
   'com.github.kinten108101.SteamVPK.Server.Addons' |
   'com.github.kinten108101.SteamVPK.Server.Workshop' |
+  'com.github.kinten108101.SteamVPK.Server.Settings' |
   'com.github.kinten108101.SteamVPK.Server.Disk';
 
 function guess_object_path(interface_name: BackendInterfaces) {
@@ -204,6 +206,8 @@ function guess_object_path(interface_name: BackendInterfaces) {
     return '/com/github/kinten108101/SteamVPK/Server/addons';
   case 'com.github.kinten108101.SteamVPK.Server.Workshop':
     return '/com/github/kinten108101/SteamVPK/Server/workshop';
+  case 'com.github.kinten108101.SteamVPK.Server.Settings':
+    return '/com/github/kinten108101/SteamVPK/Server/settings';
   case 'com.github.kinten108101.SteamVPK.Server.Disk':
     return '/com/github/kinten108101/SteamVPK/Server/disk';
   }
@@ -215,6 +219,30 @@ export function BackendPortal(
 { interface_name: BackendInterfaces;
 }) {
   const obj_path = guess_object_path(interface_name);
+
+  const notify_slots: Map<string, ((newval: GLib.Variant) => void)[]> = new Map;
+  const unbind_funcs: Map<number, () => void> = new Map;
+
+  Gio.DBus.session.signal_subscribe(
+    SERVER_NAME,
+    'org.freedesktop.DBus.Properties',
+    'PropertiesChanged',
+    obj_path,
+    null,
+    Gio.DBusSignalFlags.NONE,
+    (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
+      const [_interface_name, changed_properties] = params.recursiveUnpack() as [string, { [name: string]: any }];
+      if (_interface_name !== interface_name) throw new Error('Unexpected inconsistent interface');
+      notify_slots.get(interface_name);
+      for (const prop_name in changed_properties) {
+        const handlers = notify_slots.get(prop_name) || [];
+        const val = changed_properties[prop_name];
+        if (val === undefined) throw new Error('No changed value passed to callback');
+        handlers.forEach(x => {
+          x(val);
+        });
+      }
+    });
 
   async function call_async(method: string, return_type: string | null = null, ...args: any[]) {
     try {
@@ -244,18 +272,71 @@ export function BackendPortal(
   }
 
   function subscribe(signal: string, cb: (...args: any[]) => void) {
+    if (signal.length > 8 && signal.substring(0, 8) === 'notify::') {
+      const prop_name = signal.substring(8);
+      let handlers = notify_slots.get(prop_name);
+      if (handlers === undefined) {
+        handlers = [];
+        notify_slots.set(prop_name, handlers);
+      }
+      handlers.push(cb);
+      const id = generate_timed_id();
+      unbind_funcs.set(id, () => {
+        if (handlers === undefined) return;
+        const idx = handlers.indexOf(cb);
+        if (idx === undefined) return;
+        handlers.splice(idx, 1);
+      });
+      return id;
+    }
+    return Gio.DBus.session.signal_subscribe(
+      SERVER_NAME,
+      interface_name,
+      signal,
+      obj_path,
+      null,
+      Gio.DBusSignalFlags.NONE,
+      (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
+        const vals = params.recursiveUnpack() as any[];
+        cb(...vals);
+      });
+  }
+
+  function unsubscribe(id: number) {
+    const func = unbind_funcs.get(id);
+    if (func === undefined) {
+      try {
+        return Gio.DBus.session.signal_unsubscribe(id);
+      } catch (error) {
+        if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
+          Gio.dbus_error_strip_remote_error(error);
+        }
+        throw error;
+      }
+    }
+    func();
+    unbind_funcs.delete(id);
+  }
+
+  async function property_get<T = any>(name: string) {
     try {
-      return Gio.DBus.session.signal_subscribe(
+      // @ts-ignore
+      const reply: GLib.Variant = await Gio.DBus.session.call(
         SERVER_NAME,
-        interface_name,
-        signal,
         obj_path,
+        'org.freedesktop.DBus.Properties',
+        'Get',
+        new GLib.Variant('(ss)', [
+            interface_name,
+            name,
+        ]),
         null,
-        Gio.DBusSignalFlags.NONE,
-        (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
-          const vals = params.recursiveUnpack() as any[];
-          cb(...vals);
-        });
+        Gio.DBusCallFlags.NONE,
+        -1,
+        null);
+
+      const [value] = reply.recursiveUnpack() as any[];
+      return value as T;
     } catch (error) {
       if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
         Gio.dbus_error_strip_remote_error(error);
@@ -264,9 +345,23 @@ export function BackendPortal(
     }
   }
 
-  function unsubscribe(id: number) {
+  async function property_set(name: string, value: GLib.Variant) {
     try {
-      return Gio.DBus.session.signal_unsubscribe(id);
+      // @ts-ignore
+      await Gio.DBus.session.call(
+        SERVER_NAME,
+        obj_path,
+        'org.freedesktop.DBus.Properties',
+        'Set',
+        new GLib.Variant('(ssv)', [
+            interface_name,
+            name,
+            value,
+        ]),
+        null,
+        Gio.DBusCallFlags.NONE,
+        -1,
+        null);
     } catch (error) {
       if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
         Gio.dbus_error_strip_remote_error(error);
@@ -279,6 +374,8 @@ export function BackendPortal(
     call_async,
     subscribe,
     unsubscribe,
+    property_get,
+    property_set,
   };
 
   return proxy;

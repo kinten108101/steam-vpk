@@ -210,7 +210,7 @@ function WindowActions(
   leaflet: Adw.Leaflet;
   parent_window: Gtk.Window;
   main_window: Gtk.ApplicationWindow;
-  settings?: Gio.Settings;
+  settings: Gio.Settings;
 }) {
   const group = new Gio.SimpleActionGroup();
   SettingsActions({
@@ -218,7 +218,8 @@ function WindowActions(
     parent_window,
     main_window,
     settings,
-  })
+  });
+
   const showPreferences = new Gio.SimpleAction({
     name: 'show-preferences',
   });
@@ -226,7 +227,7 @@ function WindowActions(
     const prefWin = PreferencesWindow()
       .bind({
         parent_window,
-        settings,
+        gsettings: settings,
       })
       .insert_action_group(group)
       .build();

@@ -5,6 +5,7 @@ import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
 import { APP_RDNN } from './const.js';
+import { BackendPortal } from './api.js';
 
 export default function PreferencesWindow() {
   const builder = new TypedBuilder();
@@ -14,45 +15,53 @@ export default function PreferencesWindow() {
   const window = builder.get_typed_object<Adw.Window>('window');
 
   function bind(
-  { settings,
-    parent_window,
+  { parent_window,
+    gsettings,
   }:
-  { settings?: Gio.Settings;
-    parent_window: Gtk.Window,
+  { parent_window: Gtk.Window,
+    gsettings: Gio.Settings;
   }) {
     window.set_transient_for(parent_window);
 
-    const update_game_dir_path = () => {
-      const val = null;
-      if (val === null) return;
+    const backend_settings = BackendPortal({
+      interface_name: 'com.github.kinten108101.SteamVPK.Server.Settings'
+    });
+    const update_game_dir_path = (val: string) => {
       let dir: Gio.File = Gio.File.new_for_path(val);
-      const name = dir?.get_basename() || null;
-      const display = (() => {
-        if (name === null) return '(None)';
-        return name;
-      })()
-      game_dir_path.set_label(display);
+      const name = dir.get_basename() || null;
+      if (name === null) {
+        game_dir_path.set_label('(None)');
+        clear_game_dir.set_sensitive(false);
+      } else {
+        game_dir_path.set_label(name);
+        clear_game_dir.set_sensitive(true);
+      }
     };
-    // listen to settings signal notify::game-dir
-    update_game_dir_path();
+    const clear_game_dir = builder.get_typed_object<Gtk.Button>(
+      'clear_game_dir'
+    );
+    backend_settings.subscribe('notify::GameDirectory', (dir: string) => {
+      update_game_dir_path(dir);
+    });
+    backend_settings.property_get<string>('GameDirectory')
+      .then((dir) => {
+        update_game_dir_path(dir);
+      })
+      .catch(error => logError(error));
 
     const enable_remember_winsize = builder.get_typed_object<Gtk.Switch>(
       'enable_remember_winsize'
     );
-
-    enable_remember_winsize.set_active(settings?.get_boolean('remember-winsize') || false);
+    enable_remember_winsize.set_active(gsettings.get_boolean('remember-winsize') || false);
     const update_remember_winsize = () => {
       enable_remember_winsize.set_action_target_value(
         GLib.Variant.new_boolean(!enable_remember_winsize.get_active())
       );
     };
     update_remember_winsize();
-
-    settings?.connect('changed', (_obj, key) => {
+    gsettings.connect('changed', (_obj, key) => {
       if (key === null) return;
-      if (key === 'game-dir') {
-        update_game_dir_path();
-      } else if (key === 'remember-winsize') {
+      if (key === 'remember-winsize') {
         update_remember_winsize();
       }
     });
