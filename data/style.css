@@ -98,16 +98,16 @@ preferencesgroup.danger-zone list {
   border: 2px solid #e01b24;
 }
 
-.inject-button {
-  padding-bottom: 0px;
-  padding-top: 0px;
-  font-weight: bold;
-  background-color: @green_4;
-  color: white;
+.inject-button-3 .blue > button {
+  color: @blue_2;
 }
 
-.inject-button-2 {
-  color: @blue_2;
+.inject-button-3 .red > button {
+  color: @red_2;
+}
+
+.inject-button-3 .red spinner {
+  color: @dark_5;
 }
 
 label.terminal {

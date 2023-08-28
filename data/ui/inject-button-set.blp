@@ -9,22 +9,22 @@ menu inject-menu {
 }
 
 template $StvpkInjectButtonSet: Gtk.Box {
+  styles ['inject-button-3']
   Adw.SplitButton inject {
     visible: true;
-    styles ['thin-button', 'inject-button-2']
+    styles ['thin-button', 'blue']
     action-name: 'win.injector.run';
     icon-name: 'play-large-symbolic';
   }
 
-  Gtk.Button hold {
+  Adw.SplitButton hold {
     visible: false;
-    styles ['thin-button', 'destructive-action']
+    styles ['thin-button', 'red']
     action-name: 'win.injector.cancel';
     action-target: bind template.id as <GLib.Variant>;
+    icon-name: 'stop-large-symbolic';
 
     Gtk.Box {
-      spacing: 8;
-
       Gtk.Image hold-icon {
         icon-name: 'stop-large-symbolic';
       }
@@ -33,27 +33,14 @@ template $StvpkInjectButtonSet: Gtk.Box {
         visible: false;
         spinning: true;
       }
-
-      Gtk.Label {
-        visible: true;
-        label: 'Abort';
-      }
     }
   }
 
-  Gtk.Button done {
+  Adw.SplitButton done {
     visible: false;
     styles ['thin-button']
     action-name: 'win.injector.done';
     action-target: bind template.id as <GLib.Variant>;
-
-    Gtk.Box {
-      spacing: 8;
-
-      Gtk.Label {
-        visible: true;
-        label: 'Done';
-      }
-    }
+    icon-name: 'checkmark-symbolic';
   }
 }

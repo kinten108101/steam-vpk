@@ -3,6 +3,7 @@ icons = [
   'arrow2-up-symbolic.svg',
   'background-app-sleepyface-symbolic.svg',
   'build-alt-symbolic.svg',
+  'checkmark-symbolic.svg',
   'cloud-disabled-symbolic.svg',
   'cloud-filled-symbolic.svg',
   'cross-filled-symbolic.svg',
