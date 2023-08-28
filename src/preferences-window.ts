@@ -1,3 +1,4 @@
+import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
@@ -22,7 +23,7 @@ export default function PreferencesWindow() {
     window.set_transient_for(parent_window);
 
     const update_game_dir_path = () => {
-      const val = settings?.get_string('game-dir') || null;
+      const val = null;
       if (val === null) return;
       let dir: Gio.File = Gio.File.new_for_path(val);
       const name = dir?.get_basename() || null;
@@ -35,9 +36,25 @@ export default function PreferencesWindow() {
     // listen to settings signal notify::game-dir
     update_game_dir_path();
 
+    const enable_remember_winsize = builder.get_typed_object<Gtk.Switch>(
+      'enable_remember_winsize'
+    );
+
+    enable_remember_winsize.set_active(settings?.get_boolean('remember-winsize') || false);
+    const update_remember_winsize = () => {
+      enable_remember_winsize.set_action_target_value(
+        GLib.Variant.new_boolean(!enable_remember_winsize.get_active())
+      );
+    };
+    update_remember_winsize();
+
     settings?.connect('changed', (_obj, key) => {
       if (key === null) return;
-      if (key === 'game-dir') update_game_dir_path();
+      if (key === 'game-dir') {
+        update_game_dir_path();
+      } else if (key === 'remember-winsize') {
+        update_remember_winsize();
+      }
     });
 
     return window_builder;
