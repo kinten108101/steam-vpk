@@ -1,0 +1,26 @@
+  using Gtk 4.0;
+  using Adw 1;
+
+  Adw.Window window {
+    default-height: 50;
+    content:
+      Gtk.Box {
+        orientation: vertical;
+        Adw.HeaderBar {}
+
+        Adw.PreferencesPage {
+          Adw.PreferencesGroup {
+            Gtk.ListView list {
+              model:
+                Gtk.NoSelection {
+                  model:
+                    Gtk.StringList model {
+                      strings ['Installing Necessary SDKs', 'Upgrading legacy add-ons']
+                    };
+                };
+            }
+          }
+        }
+      };
+  }
+
