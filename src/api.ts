@@ -217,41 +217,62 @@ export function BackendPortal(
   const obj_path = guess_object_path(interface_name);
 
   async function call_async(method: string, return_type: string | null = null, ...args: any[]) {
-    // @ts-ignore
-    return (<Promise<GLib.Variant>>Gio.DBus.session.call(
-      SERVER_NAME,
-      obj_path,
-      interface_name,
-      method,
-      args.length > 0 ? dbus_params(...args) : null,
-      return_type !== null ? GLib.VariantType.new(return_type) : null,
-      Gio.DBusCallFlags.NONE,
-      1000,
-      null))
-      .then(reply => {
-        const result = reply.recursiveUnpack() as any[];
-        if (result.length === 0) return undefined;
-        else if (result.length === 1) return result[0];
-        else return result;
-      });
+    try {
+      // @ts-ignore
+      return (<Promise<GLib.Variant>>Gio.DBus.session.call(
+        SERVER_NAME,
+        obj_path,
+        interface_name,
+        method,
+        args.length > 0 ? dbus_params(...args) : null,
+        return_type !== null ? GLib.VariantType.new(return_type) : null,
+        Gio.DBusCallFlags.NONE,
+        1000,
+        null))
+        .then(reply => {
+          const result = reply.recursiveUnpack() as any[];
+          if (result.length === 0) return undefined;
+          else if (result.length === 1) return result[0];
+          else return result;
+        });
+    } catch (error) {
+      if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
+        Gio.dbus_error_strip_remote_error(error);
+      }
+      throw error;
+    }
   }
 
   function subscribe(signal: string, cb: (...args: any[]) => void) {
-    return Gio.DBus.session.signal_subscribe(
-      SERVER_NAME,
-      interface_name,
-      signal,
-      obj_path,
-      null,
-      Gio.DBusSignalFlags.NONE,
-      (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
-        const vals = params.recursiveUnpack() as any[];
-        cb(...vals);
-      });
+    try {
+      return Gio.DBus.session.signal_subscribe(
+        SERVER_NAME,
+        interface_name,
+        signal,
+        obj_path,
+        null,
+        Gio.DBusSignalFlags.NONE,
+        (_connection, _sender, _path, _iface, _signal, params: GLib.Variant) => {
+          const vals = params.recursiveUnpack() as any[];
+          cb(...vals);
+        });
+    } catch (error) {
+      if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
+        Gio.dbus_error_strip_remote_error(error);
+      }
+      throw error;
+    }
   }
 
   function unsubscribe(id: number) {
-    return Gio.DBus.session.signal_unsubscribe(id);
+    try {
+      return Gio.DBus.session.signal_unsubscribe(id);
+    } catch (error) {
+      if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), error.domain)) {
+        Gio.dbus_error_strip_remote_error(error);
+      }
+      throw error;
+    }
   }
 
   const proxy = {
