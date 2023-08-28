@@ -166,7 +166,7 @@ label.terminal {
   border-radius: 12px;
 }
 
-.boxedlist row {
+.boxedlist .boxedlist-row {
   border-bottom: 0px;
   padding-top: 6px;
   padding-bottom: 6px;
@@ -176,28 +176,28 @@ label.terminal {
   transition-timing-function: ease-in-out;
 }
 
-.boxedlist row:hover {
+.boxedlist .boxedlist-row:hover {
   transition-duration: 200ms;
   transition-property: background-color;
   transition-timing-function: ease-in-out;
 }
 
-.boxedlist row:active {
+.boxedlist .boxedlist-row:active {
   transition-duration: 100ms;
   transition-property: background-color;
   transition-timing-function: ease-in-out;
 }
 
-.boxedlist row:focus:first-child {
+.boxedlist .boxedlist-row:focus:first-child {
   border-radius: 12px 12px 0px 0px;
 }
 
-.boxedlist row:focus:last-child {
+.boxedlist .boxedlist-row:focus:last-child {
   border-radius: 0px 0px 12px 12px;
 }
 
-.boxedlist row:not(:first-child) {
-  border-top: 1px inset alpha(@dark_5, 0.5);
+.boxedlist .boxedlist-row:not(:first-child) {
+  border-top: 1px inset alpha(@light_5, 0.3);
 }
 
 /**
