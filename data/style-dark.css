@@ -5,6 +5,18 @@
 @define-color metalcard #4a4a4a;
 @define-color metalcard-dark #d8d8d8;
 
+/**
+ * inject-button-set
+ */
+
+.inject-button-3 .red spinner {
+  color: @light_1;
+}
+
+/**
+ * headerbox
+ */
+
 .popped-view {
   background-color: #000;
 }
