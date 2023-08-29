@@ -79,7 +79,7 @@ export default function InjectConsolePresenter(
   proxy.service_connect('RunningCleanup', (_obj, id: string) => {
     const mem = injections.get(id);
     if (!mem) return;
-    const { using_logs_changed, using_cancellable, tracker } = mem;
+    const { using_logs_changed, using_cancellable } = mem;
     if (using_logs_changed) proxy.service_disconnect(using_logs_changed);
     if (using_cancellable) proxy.service_disconnect(using_cancellable);
     injections.delete(id);
