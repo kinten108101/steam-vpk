@@ -83,7 +83,6 @@ export class LaunchpadRow extends Adw.ExpanderRow {
     'ztitle',
     'zsubtitle',
     'zexcerpt',
-    'title_field',
     'description_field',
     'last_update_field',
     'toggle',
@@ -104,7 +103,6 @@ export class LaunchpadRow extends Adw.ExpanderRow {
   ztitle!: Gtk.Label;
   zsubtitle!: Gtk.Label;
   zexcerpt!: Gtk.Label;
-  title_field!: Gtk.Label;
   description_field!: Gtk.Label;
   last_update_field!: Gtk.Label;
   toggle!: Gtk.Switch;
@@ -149,12 +147,6 @@ export class LaunchpadRow extends Adw.ExpanderRow {
           return [true, MakeTitleCompat(from.substring(0, 100))];
         }, null as unknown as GObject.TClosure<any, any>),
       item.bind_property('enabled', this.toggle, 'active', flags),
-      item.bind_property_full('name', this.title_field, 'label',
-        flags,
-        (_binding, from: string | null) => {
-          if (from === null) return [false, ''];
-          return [true, SteamMd2Pango(from)];
-        }, null as unknown as GObject.TClosure<any, any>),
       item.bind_property_full('description', this.description_field, 'label',
         flags,
         (_binding, from: string | null) => {
