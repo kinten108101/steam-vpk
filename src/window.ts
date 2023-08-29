@@ -38,6 +38,8 @@ import HeaderBox, { HeaderBoxActions } from './headerbox.js';
 import ThemeSelector from './themeselector.js';
 import StatusPresent from './status-present.js';
 import StatusManager, { StatusActions } from './status.js';
+import LaunchpadPresent from './launchpad-present.js';
+import { LaunchpadPage } from './launchpad.js';
 
 export default function Window(
 { application,
@@ -78,6 +80,8 @@ export default function Window(
     .get_typed_object<InjectButtonSet>('inject-button-set');
   const profile_bar = builder
     .get_typed_object<ProfileBar>('profileBar');
+  const launchpad_page = builder
+    .get_typed_object<LaunchpadPage>('launchpadPage');
   const download_page = builder
     .get_typed_object<DownloadPage>('downloadPage');
   const headerbox = builder
@@ -94,7 +98,11 @@ export default function Window(
 
   DownloadPagePresent({
     model: download_page.addons,
-  })
+  });
+
+  LaunchpadPresent({
+    model: launchpad_page.loadorder,
+  });
 
   AddonsPanelDiskPage({
     leaflet,

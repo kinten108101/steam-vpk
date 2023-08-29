@@ -65,7 +65,7 @@ export class UseButton extends Gtk.Button {
 export class RepositoryItem extends GObject.Object {
   static [GObject.properties] = {
     isRemote: param_spec_boolean({
-      name: 'is_remote',
+      name: 'is-remote',
     }),
     name: param_spec_string({
       name: 'name',
@@ -138,48 +138,68 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
   trash!: Gtk.Button;
 }
 
-export class RepositoryListStore extends Gtk.FlattenListModel {
+export class RepositoryListStore extends Gio.ListStore<RepositoryItem> {
   static {
     registerClass({}, this);
   }
 
+  exists: Map<string, RepositoryItem> = new Map;
+  local_addons: Gtk.FilterListModel;
+  remote_addons: Gtk.FilterListModel;
+
   constructor() {
-    super({
-      model: (() => {
-        const local_addons = new Gio.ListStore({ item_type: RepositoryItem.$gtype });
-        const remote_addons = new Gio.ListStore({ item_type: RepositoryItem.$gtype });
-        const model = new Gio.ListStore({ item_type: Gio.ListStore.$gtype });
-        model.append(local_addons);
-        model.append(remote_addons);
-        return model;
+    super();
+    this.local_addons = new Gtk.FilterListModel({
+      model: this,
+      filter: (() => {
+        const match_func: Gtk.CustomFilterFunc = (item) => {
+          if (!(item instanceof RepositoryItem)) throw new Error;
+          return !item.is_remote;
+        };
+        const filter = new Gtk.CustomFilter();
+        filter.set_filter_func(match_func);
+        return filter;
       })(),
     });
-    RepositoryItem;
-  }
-
-  get local_addons(): Gio.ListStore<RepositoryItem> {
-    const model = this.model.get_item(0);
-    if (model === null) throw new Error;
-    return model as Gio.ListStore;
-  }
-
-  get remote_addons(): Gio.ListStore<RepositoryItem> {
-    const model = this.model.get_item(1);
-    if (model === null) throw new Error;
-    return model as Gio.ListStore;
-  }
-
-  append() {
-
+    this.remote_addons = new Gtk.FilterListModel({
+      model: this,
+      filter: (() => {
+        const match_func: Gtk.CustomFilterFunc = (item) => {
+          if (!(item instanceof RepositoryItem)) throw new Error;
+          return item.is_remote;
+        };
+        const filter = new Gtk.CustomFilter();
+        filter.set_filter_func(match_func);
+        return filter;
+      })(),
+    });
   }
 
   refill(items: RepositoryItem[]) {
-    this.local_addons.remove_all();
-    this.remote_addons.remove_all();
-    items.forEach(x => {
-      if (x.is_remote) this.remote_addons.append(x);
-      else this.local_addons.append(x);
-    })
+    const deletables: Map<string, RepositoryItem> = new Map(this.exists);
+      items.forEach(x => {
+        deletables.delete(x.id);
+        if (this.exists.has(x.id)) {
+          // row-scope update
+        } else {
+          // append
+          this.append(x);
+          this.exists.set(x.id, x);
+        }
+      });
+      deletables.forEach(x => {
+        let i = 0;
+        let item = this.get_item(i);
+        while (item !== x && item !== null) {
+          item = this.get_item(++i);
+        }
+        if (item === null) {
+          console.log('Item not found?');
+          return;
+        }
+        this.remove(i);
+        this.exists.delete(x.id);
+      });
   }
 }
 
