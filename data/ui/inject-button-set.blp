@@ -2,10 +2,14 @@ using Gtk 4.0;
 using Adw 1;
 using GLib 2.0;
 
-menu inject-menu {
+menu inject_menu {
   section {
     item (_('Inject & Start game'), 'win.injector.inject-with-game')
   }
+}
+
+Gtk.PopoverMenu popover_menu {
+  menu-model: inject_menu;
 }
 
 template $StvpkInjectButtonSet: Gtk.Box {
@@ -15,6 +19,7 @@ template $StvpkInjectButtonSet: Gtk.Box {
     styles ['thin-button', 'blue']
     action-name: 'win.injector.run';
     icon-name: 'play-large-symbolic';
+    popover: popover_menu;
   }
 
   Adw.SplitButton hold {
