@@ -218,6 +218,10 @@ headerbox .headerbox-card {
   border-radius: 12px;
 }
 
+headerbox .profile-label {
+  font-weight: bold;
+}
+
 headerbox .popped-view {
   background-color: @metalcard-dark;
   color: @light_1;
