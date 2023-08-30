@@ -32,12 +32,12 @@ export class DBusMonitor {
       SERVER_NAME,
       Gio.BusNameWatcherFlags.NONE,
       () => {
-        console.log('Reconnected!');
+        console.debug('Reconnected!');
         this.connected = true;
         this.emit(DBusMonitor.Signals.connected, this.connected);
       },
       () => {
-        console.log('Disconnected!');
+        console.debug('Disconnected!');
         this.connected = false;
         this.emit(DBusMonitor.Signals.connected, this.connected);
       });
