@@ -1,6 +1,6 @@
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
-import * as Utils from './steam-vpk-utils/utils.js';
+import * as Utils from '../steam-vpk-utils/utils.js';
 
 export default class SpinningButton extends Gtk.Button {
   static {

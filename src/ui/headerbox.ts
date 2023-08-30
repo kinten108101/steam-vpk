@@ -3,7 +3,7 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_RDNN } from './const.js';
+import { APP_RDNN } from '../const.js';
 import {
   GtkChildren,
   GtkCssName,
@@ -13,7 +13,7 @@ import {
   param_spec_object,
   param_spec_string,
   registerClass,
-} from "./steam-vpk-utils/utils.js";
+} from "../steam-vpk-utils/utils.js";
 
 export class HeaderboxBuild extends Gtk.Box {
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;

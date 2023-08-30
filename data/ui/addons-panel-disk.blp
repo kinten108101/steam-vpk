@@ -20,24 +20,9 @@ Gtk.Box page {
 
   Adw.PreferencesPage {
     Adw.PreferencesGroup {
-      title: _('Usage');
       $StvpkFieldRow current-allocation {
         title: _('Current Allocation');
         value: '512 Mb'; // placeholder
-      }
-
-      Adw.ActionRow {
-        title: _('Allocate Size');
-        subtitle: _('Set maximum disk occupation for add-on repository');
-
-        [suffix]
-        Gtk.Button {
-          label: _('Reallocate...');
-          valign: center;
-          action-name: 'win.addons-panel-disk.allocate';
-          action-target: '-1';
-          // will use maybe type
-        }
       }
 
       Adw.ActionRow {
@@ -53,20 +38,6 @@ Gtk.Box page {
           Gtk.Image {
             icon-name: 'step-out-symbolic';
           }
-        }
-      }
-    }
-
-    Adw.PreferencesGroup {
-      title: _('Customization');
-
-      Adw.ActionRow {
-        title: _('Change Repository Avatar');
-
-        [suffix]
-        Gtk.Button {
-          label: _('Pick...');
-          valign: center;
         }
       }
     }

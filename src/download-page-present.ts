@@ -1,5 +1,5 @@
 import { BackendPortal } from './api.js';
-import { RepositoryItem, RepositoryListStore } from './download-page.js';
+import RepositoryList, { RepositoryItem } from './model/repositorylist.js';
 
 abstract class ViewmodelError extends Error{}
 
@@ -13,7 +13,7 @@ export default function DownloadPagePresent(
 { model,
 
 }:
-{ model: RepositoryListStore;
+{ model: RepositoryList;
 
 }) {
   const addons_service = BackendPortal({

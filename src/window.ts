@@ -1,57 +1,56 @@
+import GObject from 'gi://GObject';
+import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import PreferencesWindow from './preferences-window.js';
-import DownloadWindow from './download-window.js';
-import InjectButtonSet from './inject-button-set.js';
+import PreferencesWindow, { SettingsActions } from './preferences-window.js';
+import InjectButtonSet from './ui/inject-button-set.js';
 
 import {
   APP_RDNN,
   SERVER_NAME,
 } from './const.js';
-import ArchiveActions from './actions/archive-controls.js';
-import {
-  AddonsPanelDiskActions,
-  DiskModal,
-} from './actions/addons-panel-actions.js';
-import AddonsPanelDiskAllocateModal from './dialogs/allocate.js';
-import { AddonsPanelDiskPage } from './addons-panel.js';
-import profile_window_implement from './profile-window.js';
-import { DownloadWindowActions } from './download-window.js';
-import AddonStorageActions from './actions/addon-storage-controls.js';
+import { AddonsPanelDiskPage } from './ui/addons-panel.js';
 import StackController from './stack-controller.js';
 import TypedBuilder from './typed-builder.js';
-import InjectConsolePresenter from './inject-console-presenter.js';
+import InjectConsolePresenter, { InjectorActions } from './inject-console-presenter.js';
 import { BackendPortal, DBusMonitor, ProxyManager } from './api.js';
-import InjectorActions from './actions/injector-actions.js';
-import { SettingsActions } from './actions/settings-actions.js';
-import { ProfileBar } from './profile-bar.js';
+import { ProfileBar } from './ui/profile-bar.js';
 import AboutWindow from './about.js';
 import DownloadPagePresent from './download-page-present.js';
 import { DownloadPage } from './download-page.js';
-import { promise_wrap } from './steam-vpk-utils/utils.js';
 import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
-import { AddonDetailsPagePresenter } from './addon-details-present.js';
-import AddonDetailsActions from './actions/addon-details.js';
-import HeaderBox, { HeaderBoxActions } from './headerbox.js';
-import ThemeSelector from './themeselector.js';
-import StatusPresent from './status-present.js';
-import StatusManager, { StatusActions } from './status.js';
+import HeaderBox, { HeaderBoxActions, HeaderboxBuild, HeaderboxConsole } from './ui/headerbox.js';
+import ThemeSelector from './ui/themeselector.js';
+import StatusManager, { StatusActions } from './model/status-manager.js';
 import LaunchpadPresent from './launchpad-present.js';
 import { LaunchpadPage } from './launchpad.js';
+import AddonDetailsActions, { AddonDetailsUpdate } from './addon-details-update.js';
+import StatusBroker from './status-broker.js';
+import AddonStorageControls from './addon-storage-controls.js';
+import { FieldRow } from './ui/field-row.js';
+import ArchiveActions from './archive-controls.js';
+import { AddonsPanelDiskActions } from './addons-panel-actions.js';
+
+GObject.type_ensure(LaunchpadPage.$gtype);
+GObject.type_ensure(DownloadPage.$gtype);
+GObject.type_ensure(ProfileBar.$gtype);
+GObject.type_ensure(InjectButtonSet.$gtype);
+GObject.type_ensure(FieldRow.$gtype);
+GObject.type_ensure(HeaderBox.$gtype);
+GObject.type_ensure(HeaderboxConsole.$gtype);
+GObject.type_ensure(HeaderboxBuild.$gtype);
 
 export default function Window(
 { application,
   monitor,
   proxies,
-  status_manager,
   settings,
 }:
 { application: Gtk.Application;
   monitor: DBusMonitor;
   proxies: ProxyManager;
-  status_manager: StatusManager;
   settings: Gio.Settings,
 }) {
   monitor;
@@ -90,6 +89,8 @@ export default function Window(
   const main_menu = builder.get_typed_object<Gtk.PopoverMenu>('main_menu');
   main_menu.add_child(new ThemeSelector(), 'themeselector');
 
+  const status_manager = new StatusManager();
+
   StackController({
     stack: win_view_stack,
     action_map,
@@ -119,7 +120,7 @@ export default function Window(
   const addon_details_builder = AddonDetailsLeafletPage({
     leaflet_page_entry: leaflet.get_child_by_name('addon-details-page') as Adw.Bin,
   });
-  const addon_details_present = AddonDetailsPagePresenter({
+  const addon_details_present = AddonDetailsUpdate({
     toaster,
     builder_cont: addon_details_builder,
     action_map,
@@ -132,30 +133,27 @@ export default function Window(
     parent_window,
     present_details: addon_details_present,
   });
-  AddonStorageActions({
+  const seeDetails = new Gio.SimpleAction({
+    name: 'addon-details.see-details',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  seeDetails.connect('activate', (_action, parameter) => {
+    (async () => {
+      if (parameter === null) throw new Error;
+      const [id] = parameter.get_string();
+      if (id === null) throw new Error;
+      await addon_details_present(id);
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(seeDetails);
+  AddonStorageControls({
     action_map,
     parent_window,
-  });
-
-  DownloadWindowActions({
-    application,
-    window_group: window.get_group(),
-    action_map,
-    DownloadWindow:
-      DownloadWindow.bind(null, {}),
-  });
-
-  profile_window_implement({
-    main_window: window,
   });
 
   AddonsPanelDiskActions({
     leaflet,
     action_map,
-    Modal: (function() {
-            const { present, close } = AddonsPanelDiskAllocateModal();
-            return { present, close };
-          }) as unknown as { new(): DiskModal },
   });
 
   ArchiveActions({
@@ -164,7 +162,7 @@ export default function Window(
 
   let connect_error: string;
   monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
-    promise_wrap(async () => {
+    (async () => {
       if (!connected) {
         // unavailable
         connect_error = status_manager.add_error({
@@ -175,11 +173,12 @@ export default function Window(
         // available
         status_manager.clear_status(connect_error);
       }
-    });
+    })().catch(error => logError(error));
   });
   InjectorActions({
+    action_map,
     proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
-  }).export2actionMap(action_map);
+  });
   InjectConsolePresenter({
     inject_console: headerbox.console_box,
     headerbox,
@@ -193,7 +192,7 @@ export default function Window(
     headerbox,
     parent_window,
   }).init_headerbox();
-  StatusPresent({
+  StatusBroker({
     status_manager,
     headerbox,
     profile_bar,
@@ -202,7 +201,6 @@ export default function Window(
     action_map,
     status_manager,
   });
-
 
   return window;
 }
@@ -222,11 +220,10 @@ function WindowActions(
 }) {
   const group = new Gio.SimpleActionGroup();
   SettingsActions({
-    action_map: group,
     parent_window,
     main_window,
     settings,
-  });
+  }).export2actionMap(group);
 
   const showPreferences = new Gio.SimpleAction({
     name: 'show-preferences',
@@ -250,9 +247,11 @@ function WindowActions(
   const reloadAddons = new Gio.SimpleAction({
     name: 'reload-addons',
   });
-  reloadAddons.connect('activate', () => promise_wrap(async () => {
-    await addons_service.call_async('ForceUpdate');
-  }));
+  reloadAddons.connect('activate', () => {
+    (async () => {
+      await addons_service.call_async('ForceUpdate');
+    })().catch(error => logError(error));
+  });
   action_map.add_action(reloadAddons);
 
   const showAbout = new Gio.SimpleAction({ name: 'show-about' });

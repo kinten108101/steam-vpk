@@ -11,17 +11,11 @@ import {
   SERVER_PATH,
   VERSION,
 } from './const.js';
-import {
-  g_variant_unpack,
-  log_error,
-} from './steam-vpk-utils/utils.js';
 import Shortcuts from './shortcuts.js';
 import Window from './window.js';
-import { widget_ensure } from './gtk.js';
 import { DBusMonitor, ProxyManager } from './api.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './debug-window.js';
-import StatusManager from './status.js';
 
 export default function Application() {
   const application = new Adw.Application({
@@ -34,11 +28,9 @@ export default function Application() {
   const settings = new Gio.Settings({
     schema_id: APP_ID,
   });
-  const status_manager = new StatusManager();
 
   application.connect('notify::is-registered', () => {
     if (application.is_registered) {
-      // dbus registered
       const connection = application.get_dbus_connection();
       if (connection === null) throw new Error
       ListenPortalResponses({
@@ -68,9 +60,13 @@ export default function Application() {
     new_window.connect('activate', create_new_window);
     application.add_action(new_window);
 
-    const devel = new Gio.SimpleAction({ name: 'devel', parameter_type: GLib.VariantType.new('b') });
+    const devel = new Gio.SimpleAction({
+      name: 'devel',
+      parameter_type: GLib.VariantType.new('b'),
+    });
     devel.connect('activate', (_action, parameter) => {
-      const active = g_variant_unpack<boolean>(parameter, 'boolean');
+      if (parameter === null) throw new Error;
+      const active = parameter.get_boolean();
       if (active === true) {
         application.get_windows().forEach(x => {
           if (x instanceof Gtk.ApplicationWindow) x.add_css_class('devel');
@@ -95,15 +91,16 @@ export default function Application() {
       application,
     });
 
-    monitor.start().catch(error => log_error(error));
-    proxies.register_proxy(`${SERVER_PATH}/injector`, `${SERVER_NAME}.Injector`).catch(error => log_error(error));
+    monitor.start().catch(error => logError(error));
+    proxies.register_proxy(
+      `${SERVER_PATH}/injector`,
+      `${SERVER_NAME}.Injector`,
+    ).catch(error => logError(error));
   });
 
   const create_new_window = () => {
-    widget_ensure();
     const mainWindow = Window({
       application,
-      status_manager,
       monitor,
       proxies,
       settings,

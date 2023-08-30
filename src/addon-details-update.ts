@@ -1,17 +1,19 @@
+import Gdk from 'gi://Gdk';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { log_error, promise_wrap } from './steam-vpk-utils/utils.js';
 import TypedBuilder from './typed-builder.js';
 import { BackendPortal } from './api.js';
 import { APP_RDNN } from './const.js';
 import { Toast } from './toast-builder.js';
-import { FieldRow } from './gtk.js';
 import { BuilderData } from './addon-details-leaflet-page.js';
-import { ArchiveListObj, ArchiveListRow } from './addon-details-archive-list.js';
+import { ArchiveListRow } from './addon-details-archive-list.js';
+import { FieldRow } from './ui/field-row.js';
+import { TOAST_TIMEOUT_SHORT } from './gtk.js';
+import { ArchiveListObj } from './model/archivelist.js';
 
 export function get_from_response<T>(response: any, key: string, type: string) {
   const val = response[key];
@@ -19,7 +21,7 @@ export function get_from_response<T>(response: any, key: string, type: string) {
   return val as T;
 }
 
-export function AddonDetailsPagePresenter(
+export function AddonDetailsUpdate(
 { toaster,
   builder_cont,
   action_map,
@@ -63,17 +65,15 @@ export function AddonDetailsPagePresenter(
     const addon: any = await addon_service
       .call_async('Get', '(a{sv})', id)
         .catch(error => {
-          log_error(error);
+          logError(error);
         });
     if (addon === undefined) {
-      console.warn(`Couldn\'t find add-on \"${id}\". Refuse to navigate. Quitting...`);
       toaster?.add_toast(
         Toast.builder()
         .title('Add-on data cannot be found!')
         .build());
       return;
     }
-    console.log(addon);
 
     currentAddon = id;
     const id_gvariant = GLib.Variant.new_string(id);
@@ -82,10 +82,8 @@ export function AddonDetailsPagePresenter(
     const data = builder.get_typed_object<BuilderData>('data');
     data.id = id_gvariant;
 
-    /*
     const wintitle_full = builder.get_typed_object<Adw.WindowTitle>('wintitle-full');
     wintitle_full.set_title(get_from_response<string>(addon, 'title', 'string'));
-
     const headerbar_stack = builder.get_typed_object<Gtk.Stack>('headerbar-stack');
     const scroller = builder.get_typed_object<Gtk.ScrolledWindow>('scroller');
     const vadj = scroller.get_vadjustment();
@@ -103,7 +101,6 @@ export function AddonDetailsPagePresenter(
     cleanup_actions.set('disuse-vadj-value-changed', () => {
       vadj.disconnect(use_vadj_value_changed);
     });
-    */
 
     const title = builder.get_typed_object<Gtk.Label>('title');
     if (addon.title) title.set_label(addon.title);
@@ -139,7 +136,7 @@ export function AddonDetailsPagePresenter(
           })());
         },
         error => {
-         log_error(error);
+         logError(error);
        });
 
     const tags = builder.get_typed_object<Gtk.Box>('tags');
@@ -153,7 +150,7 @@ export function AddonDetailsPagePresenter(
             tag_empty.set_visible(false);
           }
         })
-        .catch(error => log_error(error))
+        .catch(error => logError(error))
         .finally(() => {
           if (tag_empty.get_visible()) {
             tags.set_visible(true);
@@ -225,7 +222,7 @@ export function AddonDetailsPagePresenter(
   }
 
   addon_service.subscribe('AddonsChangedAfter', (_list: any[]) => {
-    promise_wrap(async () => {
+    (async () => {
       if (currentAddon === undefined) {
         return;
       }
@@ -240,8 +237,68 @@ export function AddonDetailsPagePresenter(
         return;
       }
       back.activate(null);
-    });
+    })().catch(error => logError(error));
   });
 
   return present;
+}
+
+export default function
+AddonDetailsActions(
+{ toaster,
+  action_map,
+  parent_window,
+}:
+{ toaster?: Adw.ToastOverlay;
+  action_map: Gio.ActionMap;
+  parent_window?: Gtk.Window;
+  present_details: (arg0: string) => any;
+}) {
+  const visit_website = new Gio.SimpleAction({
+    name: 'addon-details.visit-website',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  visit_website.connect('activate', (_action, parameter) => {
+    if (parameter === null) throw new Error;
+    const [url] = parameter.get_string();
+    Gtk.show_uri(parent_window || null, url, Gdk.CURRENT_TIME);
+  });
+  action_map.add_action(visit_website);
+
+  const copy_string = new Gio.SimpleAction({
+    name: 'addon-details.copy-string',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  copy_string.connect('activate', (_action, parameter) => {
+    (async () => {
+      if (parameter === null) throw new Error;
+      const [str] = parameter.get_string();
+      if (str === null) throw new Error;
+      const display = Gdk.Display.get_default();
+      if (display === null) return;
+      const val = new GObject.Value();
+      val.init(GObject.TYPE_STRING);
+      val.set_string(str);
+      display.get_clipboard().set_content(Gdk.ContentProvider.new_for_value(val));
+      toaster?.add_toast(
+        Toast.builder()
+        .title('Copied to clipboard')
+        .timeout(TOAST_TIMEOUT_SHORT)
+        .build());
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(copy_string);
+
+  const explore_fs = new Gio.SimpleAction({
+    name: 'addon-details.explore-fs',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  explore_fs.connect('activate', (_action, parameter) => {
+    (async () => {
+      if (parameter === null) throw new Error;
+      const [path] = parameter.get_string();
+      Gtk.show_uri(parent_window || null, `file://${path}`, Gdk.CURRENT_TIME);
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(explore_fs);
 }

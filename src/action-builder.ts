@@ -1,6 +1,5 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import { promise_wrap } from '../steam-vpk-utils/utils.js';
 
 class BuilderPatternError extends Error {
 }
@@ -106,7 +105,8 @@ class SimpleActionBuilder {
       const is_activate_async = this.#get_param_required<boolean>('is-activate-async');
       if (is_activate_async) {
         product.connect('activate', (action, parameter) => {
-          promise_wrap(activate as ActivateAsyncSignalCallback, action, parameter);
+          (activate as ActivateAsyncSignalCallback)(action, parameter)
+            .catch(error => logError(error));
         });
       }
       else {

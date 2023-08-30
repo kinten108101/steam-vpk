@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 import {
   param_spec_string,
   registerClass,
-} from './steam-vpk-utils/utils.js';
+} from '../steam-vpk-utils/utils.js';
 
 export class Status extends GObject.Object {
   static last_id = -1;

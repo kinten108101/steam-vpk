@@ -4,23 +4,18 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import './addons-panel.js';
+import './ui/addons-panel.js';
 
 import {
   GtkChildren,
   GtkTemplate,
-  param_spec_boolean,
   param_spec_object,
   param_spec_string,
   param_spec_variant,
   registerClass,
 } from './steam-vpk-utils/utils.js';
 import { APP_RDNN } from './const.js';
-
-export enum UseStates {
-  USED = 'used',
-  AVAILABLE = 'available',
-};
+import RepositoryList, { UseStates } from './model/repositorylist.js';
 
 export class UseButton extends Gtk.Button {
   static [GObject.properties] = {
@@ -62,63 +57,6 @@ export class UseButton extends Gtk.Button {
   }
 }
 
-export class RepositoryItem extends GObject.Object {
-  static [GObject.properties] = {
-    isRemote: param_spec_boolean({
-      name: 'is-remote',
-    }),
-    name: param_spec_string({
-      name: 'name',
-    }),
-    creator: param_spec_string({
-      name: 'creator',
-    }),
-    description: param_spec_string({
-      name: 'description',
-    }),
-    use_state: param_spec_string({
-      name: 'use-state',
-      default_value: UseStates.AVAILABLE,
-    }),
-    id_gvariant: param_spec_variant({
-      name: 'id-gvariant',
-      type: GLib.VariantType.new('s'),
-      default_value: GLib.Variant.new_string('default id'),
-    }),
-    id: param_spec_string({
-      name: 'id',
-    }),
-  };
-
-  static {
-    registerClass({}, this);
-  }
-
-  is_remote!: boolean;
-  name!: string;
-  creator!: string;
-  description!: string;
-  use_state!: UseStates;
-  id!: string;
-  id_gvariant!: GLib.Variant;
-
-  constructor(params: {
-    is_remote: boolean;
-    name: string;
-    creator: string;
-    id: string;
-    description: string;
-  }) {
-    super(params);
-    this.id_gvariant = GLib.Variant.new_string(params.id);
-  }
-
-  set_use_state(val: UseStates) {
-    //if (val === this.use_state) return;
-    this.use_state = val;
-  }
-}
-
 export class DownloadPageRow extends Gtk.ListBoxRow {
   static [GObject.properties] = {
     id_gvariant: param_spec_variant({
@@ -138,74 +76,9 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
   trash!: Gtk.Button;
 }
 
-export class RepositoryListStore extends Gio.ListStore<RepositoryItem> {
-  static {
-    registerClass({}, this);
-  }
-
-  exists: Map<string, RepositoryItem> = new Map;
-  local_addons: Gtk.FilterListModel;
-  remote_addons: Gtk.FilterListModel;
-
-  constructor() {
-    super();
-    this.local_addons = new Gtk.FilterListModel({
-      model: this,
-      filter: (() => {
-        const match_func: Gtk.CustomFilterFunc = (item) => {
-          if (!(item instanceof RepositoryItem)) throw new Error;
-          return !item.is_remote;
-        };
-        const filter = new Gtk.CustomFilter();
-        filter.set_filter_func(match_func);
-        return filter;
-      })(),
-    });
-    this.remote_addons = new Gtk.FilterListModel({
-      model: this,
-      filter: (() => {
-        const match_func: Gtk.CustomFilterFunc = (item) => {
-          if (!(item instanceof RepositoryItem)) throw new Error;
-          return item.is_remote;
-        };
-        const filter = new Gtk.CustomFilter();
-        filter.set_filter_func(match_func);
-        return filter;
-      })(),
-    });
-  }
-
-  refill(items: RepositoryItem[]) {
-    const deletables: Map<string, RepositoryItem> = new Map(this.exists);
-      items.forEach(x => {
-        deletables.delete(x.id);
-        if (this.exists.has(x.id)) {
-          // row-scope update
-        } else {
-          // append
-          this.append(x);
-          this.exists.set(x.id, x);
-        }
-      });
-      deletables.forEach(x => {
-        let i = 0;
-        let item = this.get_item(i);
-        while (item !== x && item !== null) {
-          item = this.get_item(++i);
-        }
-        if (item === null) {
-          console.log('Item not found?');
-          return;
-        }
-        this.remove(i);
-        this.exists.delete(x.id);
-      });
-  }
-}
-
 export class DownloadPage extends Adw.PreferencesPage {
   static [GObject.properties] = {
-    addons: param_spec_object({ name: 'addons', objectType: RepositoryListStore.$gtype }),
+    addons: param_spec_object({ name: 'addons', objectType: RepositoryList.$gtype }),
   }
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/download-page.ui`;
   static [GtkChildren] = [ 'local_addons', 'remote_addons', 'local_group', 'remote_group' ];
@@ -213,7 +86,7 @@ export class DownloadPage extends Adw.PreferencesPage {
     registerClass({}, this);
   };
 
-  addons: RepositoryListStore;
+  addons: RepositoryList;
   local_addons!: Gtk.ListBox;
   remote_addons!: Gtk.ListBox;
   local_group!: Adw.PreferencesGroup;
@@ -221,7 +94,7 @@ export class DownloadPage extends Adw.PreferencesPage {
 
   constructor(params = {}) {
     super(params);
-    this.addons = new RepositoryListStore();
+    this.addons = new RepositoryList();
     // NOTE(kinten): For GtkNoSelection, use the constructor with { model } param, DO NOT use the constructor with positional param (did not work).
     (<[Gtk.ListBox, Gio.ListModel, Adw.PreferencesGroup][]>
     [

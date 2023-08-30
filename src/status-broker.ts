@@ -1,9 +1,9 @@
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
-import StatusManager, { BuildStatus, ErrorStatus, Status } from "./status.js";
+import StatusManager, { BuildStatus, ErrorStatus, Status } from "./model/status-manager.js";
 import type { SignalMethods } from '@girs/gjs';
-import HeaderBox from './headerbox.js';
-import { ProfileBar } from './profile-bar.js';
+import HeaderBox from './ui/headerbox.js';
+import { ProfileBar } from './ui/profile-bar.js';
 
 export interface HeaderboxFactory extends SignalMethods {
   connect(signal: 'bind', cb: ($obj: this, item: Status) => void): number;
@@ -45,7 +45,7 @@ export class HeaderboxFactory {
   }
 }
 
-export default function StatusPresent(
+export default function StatusBroker(
 { status_manager,
   headerbox,
   profile_bar,

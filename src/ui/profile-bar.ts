@@ -2,8 +2,15 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { GtkChildren, GtkTemplate, param_spec_boolean, param_spec_object, param_spec_string, registerClass } from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
+import {
+  GtkChildren,
+  GtkTemplate,
+  param_spec_boolean,
+  param_spec_object,
+  param_spec_string,
+  registerClass,
+} from '../steam-vpk-utils/utils.js';
+import { APP_RDNN } from '../const.js';
 
 export class ProfileBar extends Adw.Bin {
   static [GObject.properties] = {
@@ -30,9 +37,8 @@ export class ProfileBar extends Adw.Bin {
     this.bind_property_full('status_request',
       this.profile_label, 'label',
       flags,
-      (_binding, from: any) => {
+      (_binding, from: string | null) => {
         if (from === null) {
-          console.log('from is nul');
           return [false, ''];
         }
         return [true, from === '' ? '(no profile)' : from];

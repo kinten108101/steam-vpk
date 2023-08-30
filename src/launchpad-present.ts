@@ -1,5 +1,5 @@
 import { BackendPortal } from './api.js';
-import { AddonEntry, Addonlist, AddonlistPageItem } from './launchpad.js';
+import { AddonEntry, Addonlist, AddonlistPageItem } from './model/addonlist.js';
 
 export default function LaunchpadPresent(
 { model,
@@ -13,9 +13,7 @@ export default function LaunchpadPresent(
   const on_addons_update = () => {
     (async () => {
       const loadorder = await addons_service.call_async('GetLoadorder', '(as)', '') as string[];
-      console.log('Loadorder:', loadorder);
       const configmap = await addons_service.call_async('GetConfigurations', '(a{sv})', '') as any;
-      console.log('Configmap:', configmap);
       const view_items: AddonlistPageItem[] = [];
       loadorder.forEach((x, pos) => {
         const config = configmap[x];

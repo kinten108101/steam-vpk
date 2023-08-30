@@ -1,8 +1,9 @@
+import GLib from 'gi://GLib';
+import Gio from 'gi://Gio';
 import { DBusMonitor, PrettyProxy } from './api.js';
-import HeaderBox, { HeaderboxConsole } from './headerbox.js';
-import InjectButtonSet from './inject-button-set.js';
-import { promise_wrap } from './steam-vpk-utils/utils.js';
-import StatusManager, { BuildStatus } from './status.js';
+import HeaderBox, { HeaderboxConsole } from './ui/headerbox.js';
+import InjectButtonSet from './ui/inject-button-set.js';
+import StatusManager, { BuildStatus } from './model/status-manager.js';
 
 export default function InjectConsolePresenter(
 { inject_console,
@@ -25,10 +26,9 @@ export default function InjectConsolePresenter(
   }>();
   const owner_map: WeakMap<HeaderboxConsole, string> = new WeakMap();
   monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
-    promise_wrap(async () => {
+    (async () => {
       if (!connected) {
         // unavailable
-        // TODO(kinten): Disable actions instead?
         inject_button_set.make_sensitive(false);
       } else {
         // available
@@ -47,7 +47,7 @@ export default function InjectConsolePresenter(
         }
         inject_button_set.make_sensitive(true);
       }
-    });
+    })().catch(error => logError(error));
   })
   proxy.service_connect('RunningPrepare', (_obj, id: string) => {
     console.log('prepare!');
@@ -96,4 +96,61 @@ export default function InjectConsolePresenter(
   };
 
   return services;
+}
+
+export function InjectorActions(
+{ action_map,
+  proxy,
+}:
+{ action_map: Gio.ActionMap;
+  proxy: PrettyProxy;
+}) {
+  const run = new Gio.SimpleAction({
+    name: 'injector.run',
+  });
+  run.connect('activate', () => {
+    (async () => {
+      await proxy.service_call_async('Run');
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(run);
+
+  const done = new Gio.SimpleAction({
+    name: 'injector.done',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  done.connect('activate', (_action, parameter) => {
+    if (parameter === null) throw new Error;
+    const [id] = parameter.get_string();
+    if (id === null) throw new Error;
+    (async () => {
+      await proxy.service_call_async('Done', id);
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(done);
+
+  const cancel = new Gio.SimpleAction({
+    name: 'injector.cancel',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  cancel.connect('activate', (_action, parameter) => {
+    if (parameter === null) throw new Error;
+    const [id] = parameter.get_string();
+    if (id === null) throw new Error;
+    (async () => {
+      await proxy.service_call_async('Cancel', id);
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(cancel);
+
+  // TODO(kinten): Radio to choose strategy instead of activating
+  const run_game = new Gio.SimpleAction({
+    name: 'injector.inject-with-game',
+  });
+  run_game.connect('activate', () => {
+    (async () => {
+      await proxy.service_call_async('RunWithGame');
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(run_game);
 }

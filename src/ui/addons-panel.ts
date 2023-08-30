@@ -4,10 +4,10 @@ import Gtk from 'gi://Gtk';
 import {
   param_spec_object,
   registerClass,
-} from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
-import { FieldRow } from './gtk.js';
-import TypedBuilder from './typed-builder.js';
+} from '../steam-vpk-utils/utils.js';
+import { APP_RDNN } from '../const.js';
+import TypedBuilder from '../typed-builder.js';
+import { FieldRow } from './field-row.js';
 
 export default class AddonsPanel extends Adw.PreferencesGroup {
   static [GObject.properties] = {

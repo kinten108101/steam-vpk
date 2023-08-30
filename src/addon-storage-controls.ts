@@ -3,8 +3,7 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 import { SimpleAction } from './action-builder.js';
-import { g_variant_unpack } from '../steam-vpk-utils/utils.js';
-import { MessageDialog } from '../dialogs/message-dialog.js';
+import { MessageDialog } from './dialogs/message-dialog.js';
 
 export function logged(func: Function) {
   return function (this: any, ...args: any[]) {
@@ -14,7 +13,7 @@ export function logged(func: Function) {
   }
 }
 
-export default function AddonStorageActions(
+export default function AddonStorageControls(
 { action_map,
   parent_window,
 }:
@@ -29,29 +28,37 @@ export default function AddonStorageActions(
   });
   enableAddon.set_state_hint(GLib.Variant.new_array(GLib.VariantType.new('b'), [GLib.Variant.new_boolean(true), GLib.Variant.new_boolean(false)]));
   enableAddon.connect('activate', (action) => {
-    const current = action.get_state() as GLib.Variant;
-    const content = g_variant_unpack<boolean>(current, 'boolean');
+    const current = action.get_state();
+    if (current === null) throw new Error;
+    const content = current.get_boolean();
     action.change_state(GLib.Variant.new_boolean(!content));
   });
-  enableAddon.connect('change-state', (_action, request: GLib.Variant) => {
-    const newcontent = g_variant_unpack<boolean>(request, 'boolean');
+  enableAddon.connect('change-state', (_action, request) => {
+    if (request === null) throw new Error;
+    const newcontent = request.get_boolean();
     newcontent;
   });
   action_map.add_action(enableAddon);
 
-  const includeInProfile = new Gio.SimpleAction({ name: 'addons.box', parameter_type: GLib.VariantType.new('s') });
+  const includeInProfile = new Gio.SimpleAction({
+    name: 'addons.box',
+    parameter_type: GLib.VariantType.new('s'),
+  });
   includeInProfile.connect('activate', (_, parameter) => {
-    console.log('<<includeInProfile>>');
-    const id = g_variant_unpack<string>(parameter, 'string');
-    console.log('id =', id);
+    if (parameter === null) throw new Error;
+    const [id] = parameter.get_string();
+    if (id === null) throw new Error;
   });
   action_map.add_action(includeInProfile);
 
-  const moveUp = new Gio.SimpleAction({ name: 'addons.move-up', parameter_type: GLib.VariantType.new('s') });
+  const moveUp = new Gio.SimpleAction({
+    name: 'addons.move-up',
+    parameter_type: GLib.VariantType.new('s'),
+  });
   moveUp.connect('activate', (_, parameter) => {
-    console.debug('<<moveUp>>');
-    const id = g_variant_unpack<string>(parameter, 'string');
-    id;
+    if (parameter === null) throw new Error;
+    const [id] = parameter.get_string();
+    if (id === null) throw new Error;
   });
   action_map.add_action(moveUp);
 
@@ -59,8 +66,9 @@ export default function AddonStorageActions(
     .name('move-down')
     .parameter_type('s')
     .activate((_, parameter) => {
-      const id = g_variant_unpack<string>(parameter, 'string');
-      id;
+      if (parameter === null) throw new Error;
+      const [id] = parameter.get_string();
+      if (id === null) throw new Error;
     })
     .insert(action_map)
     .build();
@@ -69,6 +77,9 @@ export default function AddonStorageActions(
     .name('remove')
     .parameter_type('s')
     .activate_async(async (_action, parameter) => {
+      if (parameter === null) throw new Error;
+      const [id] = parameter.get_string();
+      if (id === null) throw new Error;
       const msg = MessageDialog.builder()
         .heading('Disuse this add-on? Current configurations in this profile will be permanently lost.')
         .body('Add-on can still be reused from the repository.')
@@ -84,8 +95,6 @@ export default function AddonStorageActions(
       if (response !== 'remove.proceed') {
         console.warn(`Received unknown response in removeAddon. Got ${response}`);
       }
-      const id = g_variant_unpack<string>(parameter, 'string');
-      id;
     })
     .insert(action_map)
     .build();
@@ -108,6 +117,9 @@ export default function AddonStorageActions(
     .name('trash')
     .parameter_type('s')
     .activate_async(async (_action, parameter) => {
+      if (parameter === null) throw new Error;
+      const [id] = parameter.get_string();
+      if (id === null) throw new Error;
       const msg = MessageDialog.builder()
         .heading('Delete this add-on?')
         .body('Deleted content is recoverable from trash can.')
@@ -127,8 +139,6 @@ export default function AddonStorageActions(
       default:
         throw new Error(`Unknown message dialog response. Got ${response}`);
       }
-      const id = g_variant_unpack<string>(parameter, 'string');
-      id;
     })
     .insert(action_map)
     .build();

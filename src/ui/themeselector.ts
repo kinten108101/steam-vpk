@@ -1,8 +1,13 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { GtkChildren, GtkTemplate, param_spec_string, registerClass } from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
+import {
+  GtkChildren,
+  GtkTemplate,
+  param_spec_string,
+  registerClass,
+} from '../steam-vpk-utils/utils.js';
+import { APP_RDNN } from '../const.js';
 
 // Adapted to JavaScript from https://gitlab.gnome.org/GNOME/gnome-text-editor/-/blob/cd6e111e3142a80f509684e65c104c8b3a097761/src/editor-theme-selector.c
 // Also adapted from https://github.com/sonnyp/Commit/blob/52bedf0a2bc3a456f4d17350bd386abb0475c8e4/src/ThemeSelector.js
