@@ -161,19 +161,21 @@ export default function Window(
   });
 
   let connect_error: string;
-  monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
-    (async () => {
-      if (!connected) {
-        // unavailable
-        connect_error = status_manager.add_error({
-          short: 'Disconnected',
-          msg: 'Could not connect to daemon. Make sure that you\'ve installed Add-on Box.',
-        });
-      } else {
-        // available
-        status_manager.clear_status(connect_error);
-      }
-    })().catch(error => logError(error));
+  function update_connected_status(connected: boolean) {
+    if (!connected) {
+      // unavailable
+      connect_error = status_manager.add_error({
+        short: 'Disconnected',
+        msg: 'Could not connect to daemon. Make sure that you\'ve installed Add-on Box.',
+      });
+    } else {
+      // available
+      status_manager.clear_status(connect_error);
+    }
+  }
+  update_connected_status(monitor.connected);
+  monitor.connect('notify::connected', (_obj, connected) => {
+    update_connected_status(connected);
   });
   InjectorActions({
     action_map,

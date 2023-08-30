@@ -25,29 +25,31 @@ export default function InjectConsolePresenter(
     tracker: BuildStatus | undefined;
   }>();
   const owner_map: WeakMap<HeaderboxConsole, string> = new WeakMap();
-  monitor.connect(DBusMonitor.Signals.connected, (_obj, connected) => {
-    (async () => {
-      if (!connected) {
-        // unavailable
-        inject_button_set.make_sensitive(false);
-      } else {
-        // available
-        let last_injection: string | undefined = undefined;
-        if (inject_console) last_injection = owner_map.get(inject_console);
-        let has = true;
-        if (last_injection !== undefined) {
-          const result: [boolean] | undefined = await proxy.service_call_async('Has', last_injection);
-          if (result === undefined) throw new Error;
-          ([has] = result);
-        }
-        if (last_injection === undefined || (last_injection !== undefined && !has)) {
-          inject_console.reset();
-          inject_button_set.reset();
-          return;
-        }
-        inject_button_set.make_sensitive(true);
+  const on_connection_changed = async (connected: boolean) => {
+    if (!connected) {
+      // unavailable
+      inject_button_set.make_sensitive(false);
+    } else {
+      // available
+      let last_injection: string | undefined = undefined;
+      if (inject_console) last_injection = owner_map.get(inject_console);
+      let has = true;
+      if (last_injection !== undefined) {
+        const result: [boolean] | undefined = await proxy.service_call_async('Has', last_injection);
+        if (result === undefined) throw new Error;
+        ([has] = result);
       }
-    })().catch(error => logError(error));
+      if (last_injection === undefined || (last_injection !== undefined && !has)) {
+        inject_console.reset();
+        inject_button_set.reset();
+        return;
+      }
+      inject_button_set.make_sensitive(true);
+    }
+  };
+  (on_connection_changed)(monitor.connected).catch(error => logError(error));
+  monitor.connect('notify::connected', (_obj, connected) => {
+    (on_connection_changed)(connected).catch(error => logError(error));
   })
   proxy.service_connect('RunningPrepare', (_obj, id: string) => {
     console.log('prepare!');

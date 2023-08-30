@@ -1,3 +1,4 @@
+import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import type { SignalMethods } from '@girs/gjs';
@@ -7,63 +8,74 @@ import {
   WeakRefMap,
 } from './steam-vpk-utils/weakrefmap.js';
 import { dbus_params } from './steam-vpk-utils/dbus-utils.js';
-import { generate_timed_id } from './steam-vpk-utils/utils.js';
+import {
+  generate_timed_id,
+  param_spec_boolean,
+  registerClass,
+} from './steam-vpk-utils/utils.js';
 
 Gio._promisify(Gio.DBusProxy, 'new_for_bus', 'new_for_bus_finish');
 Gio._promisify(Gio.DBusProxy.prototype, 'call', 'call_finish');
 Gio._promisify(Gio.DBus.session, 'call', 'call_finish');
 
-export interface DBusMonitor extends SignalMethods {}
-export class DBusMonitor {
-  static Signals = {
-    connected: 'notify-connected',
-    proxy: 'proxy',
+export class DBusMonitor extends GObject.Object {
+  static [GObject.properties] = {
+    connected: param_spec_boolean({ name: 'connected' }),
   };
 
   static {
-    imports.signals.addSignalMethods(this.prototype);
+    registerClass({}, this);
   }
 
-  connected: boolean = false;
+  connected!: boolean;
 
-  constructor() {
+  constructor(params = {}) {
+    super(params);
+    this.connect('notify::connected', () => {
+      if (this.connected) {
+        console.debug('Connected!');
+      } else {
+        console.debug('Disconnected!');
+      }
+    });
     Gio.bus_watch_name(
       Gio.BusType.SESSION,
       SERVER_NAME,
       Gio.BusNameWatcherFlags.NONE,
       () => {
-        console.debug('Reconnected!');
         this.connected = true;
-        this.emit(DBusMonitor.Signals.connected, this.connected);
       },
       () => {
-        console.debug('Disconnected!');
         this.connected = false;
-        this.emit(DBusMonitor.Signals.connected, this.connected);
       });
   }
 
   async start() {
-    if (await this.bus_exists) {
+    if (await this.bus_exists()) {
       this.connected = true;
-      return;
+    } else {
+      this.connected = false;
     }
   }
 
   async bus_exists(): Promise<boolean> {
+    try {
     // @ts-ignore
-    const reply = await Gio.DBus.session.call(
-      SERVER_NAME,
-      SERVER_PATH,
-      'org.freedesktop.DBus.Peer',
-      'Ping',
-      null,
-      null,
-      Gio.DBusCallFlags.NONE,
-      -1,
-      null);
-    if (reply !== undefined) return true;
-    return false;
+      const reply = await Gio.DBus.session.call(
+        SERVER_NAME,
+        SERVER_PATH,
+        'org.freedesktop.DBus.Peer',
+        'Ping',
+        null,
+        null,
+        Gio.DBusCallFlags.NONE,
+        -1,
+        null);
+      if (reply !== undefined) return true;
+      return false;
+    } catch (error) {
+      return false;
+    }
   }
 }
 
