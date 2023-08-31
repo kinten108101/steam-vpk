@@ -6,7 +6,7 @@ import {
   g_param_default,
   registerClass,
 } from '../steam-vpk-utils/utils.js';
-import { BackendPortal } from '../api.js';
+import AddonBoxClient from '../backend/client.js';
 
 export class AddonlistPageItem extends GObject.Object {
   static {
@@ -55,12 +55,10 @@ export class AddonEntry extends AddonlistPageItem {
     super(params);
   }
 
-  async fetch_addon_data() {
-    const addons_service = BackendPortal({
-      interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
-    });
-    const addon = await addons_service
-      .call_async('Get', '(a{sv})', this.id)
+  async fetch_addon_data(client: AddonBoxClient) {
+    // FIXME(kinten): Use data from addonlist instead of from backend
+    const addon = await client.services.addons
+      .call('Get', '(a{sv})', this.id)
         .catch(error => {
           logError(error);
         });

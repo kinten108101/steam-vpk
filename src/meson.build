@@ -9,6 +9,7 @@ exec_config.set('SRC_DIR', meson.current_source_dir())
 exec_config.set('BUILD_TYPE', get_option('buildtype'))
 
 script = [
+  'backend/client.ts',
   'dialogs/file-dialog.ts',
   'dialogs/message-dialog.ts',
   'dialogs/window-promiser.ts',
@@ -34,7 +35,6 @@ script = [
   'addon-details-update.ts',
   'addon-storage-controls.ts',
   'addons-panel-actions.ts',
-  'api.ts',
   'application.ts',
   'archive-controls.ts',
   'const.ts',

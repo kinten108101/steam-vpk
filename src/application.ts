@@ -7,15 +7,13 @@ import {
   APP_FULLNAME,
   APP_ID,
   BUILD_TYPE,
-  SERVER_NAME,
-  SERVER_PATH,
   VERSION,
 } from './const.js';
 import Shortcuts from './shortcuts.js';
 import Window from './window.js';
-import { DBusMonitor, ProxyManager } from './api.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './debug-window.js';
+import AddonBoxClient from './backend/client.js';
 
 export default function Application() {
   const application = new Adw.Application({
@@ -23,8 +21,7 @@ export default function Application() {
   });
   GLib.set_application_name(APP_FULLNAME);
 
-  const monitor = new DBusMonitor();
-  const proxies = new ProxyManager();
+  const client = new AddonBoxClient();
   const settings = new Gio.Settings({
     schema_id: APP_ID,
   });
@@ -91,18 +88,13 @@ export default function Application() {
       application,
     });
 
-    monitor.start().catch(error => logError(error));
-    proxies.register_proxy(
-      `${SERVER_PATH}/injector`,
-      `${SERVER_NAME}.Injector`,
-    ).catch(error => logError(error));
+    client.start().catch(error => logError(error));
   });
 
   const create_new_window = () => {
     const mainWindow = Window({
       application,
-      monitor,
-      proxies,
+      client,
       settings,
     });
     mainWindow.present();

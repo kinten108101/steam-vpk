@@ -5,26 +5,22 @@ import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
 import { APP_RDNN } from './const.js';
-import { BackendPortal } from './api.js';
 import FileDialog from './dialogs/file-dialog.js';
+import AddonBoxClient from './backend/client.js';
 
 Gio._promisify(Gtk.FileDialog.prototype, 'select_folder', 'select_folder_finish');
 
 export function SettingsActions(
-{
-  parent_window,
+{ parent_window,
   main_window,
   settings,
+  client,
 }:
-{
-  parent_window: Gtk.Window;
+{ parent_window: Gtk.Window;
   main_window: Gtk.ApplicationWindow;
   settings?: Gio.Settings;
+  client: AddonBoxClient;
 }) {
-  const backend_settings = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Settings',
-  });
-
   const actions: Gio.Action[] = [];
   const set_game_dir = new Gio.SimpleAction({
     name: 'settings.set-game-dir',
@@ -57,7 +53,7 @@ export function SettingsActions(
         }
         path = file?.get_path() || '';
       }
-      await backend_settings.property_set('GameDirectory', GLib.Variant.new_string(path));
+      await client.services.settings.property_set('GameDirectory', GLib.Variant.new_string(path));
     })().catch(error => logError(error));
   });
   actions.push(set_game_dir);
@@ -92,7 +88,7 @@ export function SettingsActions(
   });
   clear_game_dir.connect('activate', () => {
     (async () => {
-      await backend_settings.property_set('GameDirectory', GLib.Variant.new_string(''));
+      await client.services.settings.property_set('GameDirectory', GLib.Variant.new_string(''));
     })().catch(error => logError(error));
   });
   actions.push(clear_game_dir);
@@ -121,15 +117,13 @@ export default function PreferencesWindow() {
   function bind(
   { parent_window,
     gsettings,
+    client,
   }:
   { parent_window: Gtk.Window,
     gsettings: Gio.Settings;
+    client: AddonBoxClient;
   }) {
     window.set_transient_for(parent_window);
-
-    const backend_settings = BackendPortal({
-      interface_name: 'com.github.kinten108101.SteamVPK.Server.Settings'
-    });
     const update_game_dir_path = (val: string) => {
       let dir: Gio.File = Gio.File.new_for_path(val);
       const name = dir.get_basename() || null;
@@ -144,10 +138,10 @@ export default function PreferencesWindow() {
     const clear_game_dir = builder.get_typed_object<Gtk.Button>(
       'clear_game_dir'
     );
-    backend_settings.subscribe('notify::GameDirectory', (dir: string) => {
+    client.services.settings.subscribe('notify::GameDirectory', (dir: string) => {
       update_game_dir_path(dir);
     });
-    backend_settings.property_get<string>('GameDirectory')
+    client.services.settings.property_get<string>('GameDirectory')
       .then((dir) => {
         update_game_dir_path(dir);
       })

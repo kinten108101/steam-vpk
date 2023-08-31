@@ -1,4 +1,4 @@
-import { BackendPortal } from './api.js';
+import AddonBoxClient from './backend/client.js';
 import RepositoryList, { RepositoryItem } from './model/repositorylist.js';
 
 abstract class ViewmodelError extends Error{}
@@ -11,14 +11,11 @@ class MissingFieldError extends ViewmodelError {
 
 export default function DownloadPagePresent(
 { model,
-
+  client,
 }:
 { model: RepositoryList;
-
+  client: AddonBoxClient;
 }) {
-  const addons_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
-  });
   const on_addons_update = (new_list: any[]) => {
     const view_items = new_list.map(x => {
       const steamid = x['publishedfileid'];
@@ -40,5 +37,5 @@ export default function DownloadPagePresent(
     });
     model.refill(view_items);
   };
-  addons_service.subscribe('AddonsChanged', on_addons_update);
+  client.services.addons.subscribe('AddonsChanged', on_addons_update);
 }

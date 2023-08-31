@@ -1,19 +1,18 @@
-import { BackendPortal } from './api.js';
+import AddonBoxClient from './backend/client.js';
 import { AddonEntry, Addonlist, AddonlistPageItem } from './model/addonlist.js';
 
 export default function LaunchpadPresent(
 { model,
+  client,
 }:
 { model: Addonlist;
+  client: AddonBoxClient;
 }) {
-  const addons_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
-  });
   const exists: Map<string, AddonlistPageItem> = new Map;
   const on_addons_update = () => {
     (async () => {
-      const loadorder = await addons_service.call_async('GetLoadorder', '(as)', '') as string[];
-      const configmap = await addons_service.call_async('GetConfigurations', '(a{sv})', '') as any;
+      const loadorder = await client.services.addons.call('GetLoadorder', '(as)', '') as string[];
+      const configmap = await client.services.addons.call('GetConfigurations', '(a{sv})', '') as any;
       const view_items: AddonlistPageItem[] = [];
       loadorder.forEach((x, pos) => {
         const config = configmap[x];
@@ -43,7 +42,7 @@ export default function LaunchpadPresent(
           model.append(x);
           exists.set(x.id, x);
         }
-        if (x instanceof AddonEntry) x.fetch_addon_data();
+        if (x instanceof AddonEntry) x.fetch_addon_data(client);
       });
       deletables.forEach(x => {
         let i = 0;
@@ -61,5 +60,5 @@ export default function LaunchpadPresent(
       console.timeEnd('list-item-factory');
     })().catch(error => logError(error));
   };
-  addons_service.subscribe('AddonsChanged', on_addons_update);
+  client.services.addons.subscribe('AddonsChanged', on_addons_update);
 }

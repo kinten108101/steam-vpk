@@ -6,7 +6,6 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 import TypedBuilder from './typed-builder.js';
-import { BackendPortal } from './api.js';
 import { APP_RDNN } from './const.js';
 import { Toast } from './toast-builder.js';
 import { BuilderData } from './addon-details-leaflet-page.js';
@@ -14,6 +13,7 @@ import { ArchiveListRow } from './addon-details-archive-list.js';
 import { FieldRow } from './ui/field-row.js';
 import { TOAST_TIMEOUT_SHORT } from './gtk.js';
 import { ArchiveListObj } from './model/archivelist.js';
+import AddonBoxClient from './backend/client.js';
 
 export function get_from_response<T>(response: any, key: string, type: string) {
   const val = response[key];
@@ -27,25 +27,15 @@ export function AddonDetailsUpdate(
   action_map,
   leaflet,
   leaflet_page,
+  client,
 }:
 { toaster?: Adw.ToastOverlay;
   builder_cont?: TypedBuilder;
   action_map: Gio.ActionMap;
   leaflet: Adw.Leaflet;
   leaflet_page: string;
+  client: AddonBoxClient;
 }) {
-  const addon_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
-  });
-
-  const workshop_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Workshop',
-  });
-
-  const disk_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Disk',
-  });
-
   const builder = (() => {
     if (builder_cont) return builder_cont;
     const builder = new TypedBuilder();
@@ -62,8 +52,8 @@ export function AddonDetailsUpdate(
 
   async function present(id: string) {
     reset();
-    const addon: any = await addon_service
-      .call_async('Get', '(a{sv})', id)
+    const addon: any = await client.services.addons
+      .call('Get', '(a{sv})', id)
         .catch(error => {
           logError(error);
         });
@@ -123,7 +113,7 @@ export function AddonDetailsUpdate(
       }
     }
 
-    disk_service.call_async(
+    client.services.disk.call(
       'GetAddonFolderSize',
       '(ts)',
       currentAddon
@@ -141,8 +131,8 @@ export function AddonDetailsUpdate(
 
     const tags = builder.get_typed_object<Gtk.Box>('tags');
     const tag_empty = builder.get_typed_object<Gtk.Button>('tag-empty');
-    addon_service
-      .call_async('HasArchive', '(b)', currentAddon)
+    client.services.addons
+      .call('HasArchive', '(b)', currentAddon)
         .then(has => {
           if (!has) {
             tag_empty.set_visible(true);
@@ -182,7 +172,7 @@ export function AddonDetailsUpdate(
       website_row.set_visible(false);
     }
 
-    workshop_service.call_async(
+    client.services.workshop.call(
       'GetWorkshopUrl',
       '(s)',
       steamid)
@@ -221,12 +211,12 @@ export function AddonDetailsUpdate(
     leaflet.set_visible_child_name(leaflet_page);
   }
 
-  addon_service.subscribe('AddonsChangedAfter', (_list: any[]) => {
+  client.services.addons.subscribe('AddonsChangedAfter', (_list: any[]) => {
     (async () => {
       if (currentAddon === undefined) {
         return;
       }
-      if (await addon_service.call_async('Has', '(b)', currentAddon)) {
+      if (await client.services.addons.call('Has', '(b)', currentAddon)) {
         return;
       }
       const back = action_map.lookup_action('back');

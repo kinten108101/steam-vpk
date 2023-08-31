@@ -9,13 +9,11 @@ import InjectButtonSet from './ui/inject-button-set.js';
 
 import {
   APP_RDNN,
-  SERVER_NAME,
 } from './const.js';
 import { AddonsPanelDiskPage } from './ui/addons-panel.js';
 import StackController from './stack-controller.js';
 import TypedBuilder from './typed-builder.js';
 import InjectConsolePresenter, { InjectorActions } from './inject-console-presenter.js';
-import { BackendPortal, DBusMonitor, ProxyManager } from './api.js';
 import { ProfileBar } from './ui/profile-bar.js';
 import AboutWindow from './about.js';
 import DownloadPagePresent from './download-page-present.js';
@@ -32,6 +30,7 @@ import AddonStorageControls from './addon-storage-controls.js';
 import { FieldRow } from './ui/field-row.js';
 import ArchiveActions from './archive-controls.js';
 import { AddonsPanelDiskActions } from './addons-panel-actions.js';
+import AddonBoxClient from './backend/client.js';
 
 GObject.type_ensure(LaunchpadPage.$gtype);
 GObject.type_ensure(DownloadPage.$gtype);
@@ -44,16 +43,13 @@ GObject.type_ensure(HeaderboxBuild.$gtype);
 
 export default function Window(
 { application,
-  monitor,
-  proxies,
+  client,
   settings,
 }:
 { application: Gtk.Application;
-  monitor: DBusMonitor;
-  proxies: ProxyManager;
+  client: AddonBoxClient;
   settings: Gio.Settings,
 }) {
-  monitor;
   const builder = new TypedBuilder();
   builder.add_from_resource(`${APP_RDNN}/ui/window.ui`);
   const window = builder.get_typed_object<Adw.ApplicationWindow>('window');
@@ -64,6 +60,7 @@ export default function Window(
       settings.get_int('default-height'),
     );
   }
+  client.services.injector.call
   const window_group = new Gtk.WindowGroup();
   window_group.add_window(window);
 
@@ -99,10 +96,12 @@ export default function Window(
 
   DownloadPagePresent({
     model: download_page.addons,
+    client,
   });
 
   LaunchpadPresent({
     model: launchpad_page.loadorder,
+    client,
   });
 
   AddonsPanelDiskPage({
@@ -115,6 +114,7 @@ export default function Window(
     parent_window,
     main_window: window,
     settings,
+    client,
   });
 
   const addon_details_builder = AddonDetailsLeafletPage({
@@ -126,6 +126,7 @@ export default function Window(
     action_map,
     leaflet,
     leaflet_page: 'addon-details-page',
+    client,
   });
   AddonDetailsActions({
     toaster,
@@ -173,20 +174,19 @@ export default function Window(
       status_manager.clear_status(connect_error);
     }
   }
-  update_connected_status(monitor.connected);
-  monitor.connect('notify::connected', (_obj, connected) => {
-    update_connected_status(connected);
+  update_connected_status(client.connected);
+  client.connect('notify::connected', (_obj) => {
+    update_connected_status(client.connected);
   });
   InjectorActions({
     action_map,
-    proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
+    client,
   });
   InjectConsolePresenter({
     inject_console: headerbox.console_box,
     headerbox,
     inject_button_set,
-    proxy: proxies.get_proxy(`${SERVER_NAME}.Injector`),
-    monitor,
+    client,
     status_manager,
   }).init();
   HeaderBoxActions({
@@ -213,18 +213,21 @@ function WindowActions(
   parent_window,
   main_window,
   settings,
+  client,
 }:
 { action_map: Gio.ActionMap;
   leaflet: Adw.Leaflet;
   parent_window: Gtk.Window;
   main_window: Gtk.ApplicationWindow;
   settings: Gio.Settings;
+  client: AddonBoxClient;
 }) {
   const group = new Gio.SimpleActionGroup();
   SettingsActions({
     parent_window,
     main_window,
     settings,
+    client,
   }).export2actionMap(group);
 
   const showPreferences = new Gio.SimpleAction({
@@ -235,6 +238,7 @@ function WindowActions(
       .bind({
         parent_window,
         gsettings: settings,
+        client,
       })
       .insert_action_group(group)
       .build();
@@ -242,16 +246,12 @@ function WindowActions(
   });
   action_map.add_action(showPreferences);
 
-  const addons_service = BackendPortal({
-    interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
-  });
-
   const reloadAddons = new Gio.SimpleAction({
     name: 'reload-addons',
   });
   reloadAddons.connect('activate', () => {
     (async () => {
-      await addons_service.call_async('ForceUpdate');
+      await client.services.addons.call('ForceUpdate');
     })().catch(error => logError(error));
   });
   action_map.add_action(reloadAddons);
