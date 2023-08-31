@@ -41,7 +41,7 @@ export class ProfileBar extends Adw.Bin {
         if (from === null) {
           return [false, ''];
         }
-        return [true, from === '' ? '(no profile)' : from];
+        return [true, from === '' ? 'no profile' : from];
       },
       null as unknown as GObject.TClosure<any, any>);
   }
