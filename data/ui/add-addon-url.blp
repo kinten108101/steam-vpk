@@ -18,4 +18,13 @@ template $StvpkAddAddonUrl : Adw.Window {
           $StvpkPreviewDownload preview_download {};
       }
     };
+
+  Gtk.ShortcutController {
+    scope: local;
+
+    Gtk.Shortcut {
+      trigger: 'Escape';
+      action: 'action(window.close)';
+    }
+  }
 }
