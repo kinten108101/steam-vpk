@@ -13,10 +13,10 @@ export default function Shortcuts(
     ['app.new-window', ['<Control>n']],
     ['win.back', ['<Alt>Left']],
     ['win.forward', ['<Alt>Right']],
-    ['win.close', ['<Control>w']],
     ['win.show-preferences', ['<Control>comma']],
     ['win.stack.page-backward', ['<Shift>Left']],
     ['win.stack.page-forward', ['<Shift>Right']],
+    ['window.close', ['<Control>w']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });
