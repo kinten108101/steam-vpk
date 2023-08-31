@@ -4,58 +4,12 @@ using Adw 1;
 template $StvpkAddAddonUrl : Adw.Window {
   default-width: 600;
   modal: true;
-
   content:
     Gtk.Stack view_stack {
       Gtk.StackPage {
         name: 'input-url';
         child:
-          Gtk.Box {
-            orientation: vertical;
-
-            Adw.HeaderBar {
-              decoration-layout: 'icon:close';
-              title-widget:
-                Adw.WindowTitle {
-                  title: _('Import from Workshop');
-                };
-
-              [start]
-              Gtk.Button {
-                label: _('Cancel');
-                action-name: 'window.close';
-              }
-              [end]
-              $StvpkSpinningButton validate_button {}
-            }
-
-            Adw.PreferencesPage {
-              Adw.PreferencesGroup {
-                title: _('Published File ID');
-                header-suffix:
-                  Gtk.ToggleButton {
-                    styles ['flat']
-                    icon-name: 'settings-symbolic';
-                  };
-
-                Gtk.Entry url_bar {
-                  placeholder-text: 'https://steamcommunity.com/sharedfiles/filedetails/?id=<file-id-here>';
-                  hexpand: true;
-                }
-              }
-
-              Adw.PreferencesGroup {
-                Gtk.Box {
-                  orientation: vertical;
-                  styles ['pikacaption']
-
-                  Gtk.Label {
-
-                  }
-                }
-              }
-            }
-          };
+          $StvpkInputUrl input_url {};
       }
 
       Gtk.StackPage {

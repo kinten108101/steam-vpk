@@ -1,3 +1,4 @@
+import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
@@ -14,7 +15,7 @@ import SpinningButton from '../spinning-button.js';
 import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
 import { MakeTitleCompat } from '../markup.js';
 
-type Signals = 'validate' | 'preview-page::setup';
+type Signals = 'input-page::setup' | 'validate' | 'preview-page::setup';
 
 export class PreviewDownload extends Gtk.Box {
   static [GObject.properties] = {
@@ -77,20 +78,87 @@ export class PreviewDownload extends Gtk.Box {
   }
 }
 
+export class InputUrl extends Gtk.Box {
+  static [GObject.properties] = {
+    error: param_spec_string({ name: 'error', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT }),
+  };
+  static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url-input-url.ui`;
+  static [GtkChildren] = [
+    'url_bar',
+    'validate_button',
+  ];
+
+  static {
+    registerClass({}, this);
+  }
+
+  url_bar!: Adw.EntryRow;
+  validate_button!: SpinningButton;
+  error!: string;
+  _last_error: string = '';
+
+  constructor(params = {}) {
+    super(params);
+    this.url_bar.bind_property_full(
+      'text', this.validate_button, 'action-target',
+      GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: string | null) => {
+        if (from === null) return [true, GLib.Variant.new_string('')];
+        return [true, GLib.Variant.new_string(from)];
+      },
+      null as unknown as GObject.TClosure<any, any>);
+    this._setup_error_state();
+  }
+
+  _setup_error_state() {
+    this._update_error_state();
+    this.connect('notify::error', this._update_error_state.bind(this));
+    this.url_bar.connect('notify::text', () => {
+      this.error = '';
+    });
+  }
+
+  _update_error_state() {
+    if (this.error === this._last_error) return;
+    this._last_error = this.error;
+    if (this.error === '') {
+      this.url_bar.remove_css_class('error');
+      this.validate_button.sensitize();
+    } else {
+      this.url_bar.add_css_class('error');
+      this.validate_button.insensitize();
+    }
+  }
+
+  set_url(val: string) {
+    this.url_bar.set_text(val);
+    this.url_bar.grab_focus();
+  }
+
+  set_error(msg: string) {
+    this.error = msg;
+  }
+
+  resolve_error() {
+    this.error = '';
+  }
+}
+
 export default interface AddAddonUrl {
+  connect_signal(signal: 'input-page::setup', cb: (obj: this, input_page: InputUrl) => Promise<boolean>): (obj: this, input_page: InputUrl) => Promise<boolean>;
   connect_signal(signal: 'validate', cb: (obj: this, request_error: (msg: string) => void, url: string) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
   connect_signal(signal: 'preview-page::setup', cb: (obj: this, url: string, preview_page: PreviewDownload) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
+  _emit_signal(signal: 'input-page::setup', input_page: InputUrl): Promise<boolean>;
   _emit_signal(signal: 'validate', request_error: (msg: string) => void, url: string): Promise<boolean>;
   _emit_signal(signal: 'preview-page::setup', url: string, preview_page: PreviewDownload): Promise<boolean>;
 }
 export default class AddAddonUrl extends Adw.Window {
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url.ui`;
   static [GtkInternalChildren] = [
-    'url_bar',
-    'validate_button',
     'view_stack',
   ];
   static [GtkChildren] = [
+    'input_url',
     'preview_download',
   ];
 
@@ -98,34 +166,76 @@ export default class AddAddonUrl extends Adw.Window {
     registerClass({}, this);
   }
 
-  _url_bar!: Gtk.Entry;
   _view_stack!: Gtk.Stack;
-  _validate_button!: SpinningButton;
+
   preview_download!: PreviewDownload;
+  input_url!: InputUrl;
+
   _slots: Map<string, ((_obj: this, ...args: any[]) => Promise<boolean>)[]> = new Map;
 
   constructor(params: Adw.Window.ConstructorProperties = {}) {
     super(params);
+    this._setup_async_signals();
+    this._setup_actions();
+  }
+
+  vfunc_realize(): void {
+    super.vfunc_realize();
+    this._emit_signal('input-page::setup', this.input_url).catch(error => logError(error));
+  }
+
+  _setup_async_signals() {
+    this._slots.set('input-page::setup', []);
     this._slots.set('validate', []);
     this._slots.set('preview-page::setup', []);
     this._slots.set('download', []);
-    this._validate_button.button.connect('clicked', this.on_validate.bind(this));
-    this.preview_download.retry_button.connect('clicked', this.on_retry.bind(this));
+  }
+
+  _setup_actions() {
+    const actions = new Gio.SimpleActionGroup();
+
+    const validate = new Gio.SimpleAction({
+      name: 'validate',
+      parameter_type: GLib.VariantType.new('s'),
+    });
+    validate.connect('activate', (_action, parameter) => {
+      if (parameter === null) throw new Error;
+      const [url] = parameter.get_string();
+      if (url === null) throw new Error('Entry text is null');
+      this.on_validate(url);
+    });
+    actions.add_action(validate);
+
+    const retry = new Gio.SimpleAction({
+      name: 'retry',
+    });
+    retry.connect('activate', () => {
+      this.on_retry();
+    });
+    actions.add_action(retry);
+
+    this.insert_action_group('add-addon-url', actions);
+  }
+
+  vfunc_constructed(): void {
+    super.vfunc_constructed();
+
   }
 
   on_retry() {
     this._view_stack.set_visible_child_name('input-url');
   }
 
-  on_validate() {
+  on_validate(url: string) {
     const on_exit = () => {
-      this._validate_button.spinning = false;
+      this.input_url.validate_button.is_spinning = false;
     };
     (async () => {
-      this._validate_button.spinning = true;
-      const url = this._url_bar.get_text() || '';
-      if (url === null) throw new Error('Entry text is null');
-      const result = await this._emit_signal('validate', (msg: string) => console.log(msg), url);
+      this.input_url.validate_button.is_spinning = true;
+      const request_error = (hint: string) => {
+        this.input_url.set_error(hint);
+      };
+      const result = await this._emit_signal('validate', request_error, url);
       if (result === false) {
         // error
         on_exit();

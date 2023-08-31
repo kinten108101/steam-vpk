@@ -1,0 +1,54 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkInputUrl : Gtk.Box {
+  orientation: vertical;
+
+  Adw.HeaderBar {
+    styles ['flat']
+    decoration-layout: 'icon:close';
+    title-widget:
+      Adw.WindowTitle {
+        title: _('Import from Workshop');
+      };
+  }
+
+  Adw.PreferencesPage {
+    Adw.PreferencesGroup {
+      Adw.EntryRow url_bar {
+        title: _('Published File ID');
+        hexpand: true;
+      }
+
+      Gtk.Label {
+        label: _('URL of the Steam Workshop item that you\'d like to download.');
+        xalign: 0; // left align
+        margin-top: 12;
+        wrap: true;
+        styles ["dim-label", "caption"]
+      }
+    }
+
+    Adw.PreferencesGroup {
+      Gtk.Box {
+        halign: fill;
+        valign: start;
+        hexpand: true;
+
+        Gtk.Box {
+          halign: fill;
+          hexpand: true;
+        }
+
+        $StvpkSpinningButton validate_button {
+          halign: end;
+          valign: center;
+          styles ['suggested-action']
+          label: _('Validate');
+          action-name: 'add-addon-url.validate';
+          // action-target is set in program
+        }
+      }
+    }
+  }
+}

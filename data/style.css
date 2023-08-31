@@ -444,3 +444,7 @@ checkbutton.theme-selector radio:checked {
 .empty-status {
   opacity: 0.1;
 }
+
+.invisible-text label {
+  opacity: 0;
+}

@@ -1,7 +1,10 @@
+import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import AddAddonUrl from '../dialogs/add-addon-url.js';
 import { BackendPortal } from '../api.js';
+
+Gio._promisify(Gdk.Clipboard.prototype, 'read_text_async', 'read_text_finish');
 
 export default function AddAddonAction(
 { parent_window,
@@ -21,6 +24,21 @@ export default function AddAddonAction(
       transient_for: parent_window,
     });
     const cache: Map<string, any> = new Map;
+    window.connect_signal('input-page::setup', async (_window, page) => {
+      console.log('input-page::setup');
+      const display = Gdk.Display.get_default();
+      if (display === null) {
+        console.log('no display');
+        return false;
+      }
+      const url = await display.get_clipboard().read_text_async(null);
+      if (url === null) {
+        console.log('no value inside gvalue')
+        return false;
+      }
+      page.set_url(url);
+      return true;
+    });
     window.connect_signal('validate', async (_window, request_error, url) => {
       let response: [number, any];
       try {

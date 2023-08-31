@@ -1,51 +1,66 @@
-import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
-import Adw from 'gi://Adw';
-import {
-  GtkChildren,
-  GtkInternalChildren,
-  GtkTemplate,
-  param_spec_boolean,
-  param_spec_object,
-  registerClass,
-} from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
+import GObject from 'gi://GObject';
+import * as Utils from './steam-vpk-utils/utils.js';
 
-export default class SpinningButton extends Gtk.Box {
-  static [GObject.properties] = {
-    spinning: param_spec_boolean({ name: 'spinning' }),
-    button: param_spec_object({ name: 'button', objectType: Gtk.Button.$gtype }),
-  };
-
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/spinning-button.ui`;
-
-  static [GtkInternalChildren] = [
-    'stack',
-  ];
-
-  static [GtkChildren] = [
-    'button',
-  ];
-
+export default class SpinningButton extends Gtk.Button {
   static {
-    registerClass({}, this);
+    Utils.registerClass({
+      Properties: {
+        'is-spinning': GObject.ParamSpec.boolean(
+          'is-spinning', 'is-spinning', 'is-spinning',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
+        'sensitive-requests': GObject.ParamSpec.uint64(
+          'sensitive-requests', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          0, Number.MAX_SAFE_INTEGER, 0),
+      },
+    }, this)
   }
+  private spinner: Gtk.Spinner;
 
-  spinning!: boolean;
-  button!: Gtk.Button;
-  _stack!: Adw.ViewStack;
+  is_spinning!: boolean;
+  _prev_is_spinning: boolean;
+  sensitive_requests!: number;
 
   constructor(params = {}) {
-    super(params);
-    this.connect('notify::spinning', this._update_spinning.bind(this));
+    super({
+      ...params,
+    });
+    this.spinner = new Gtk.Spinner({ spinning: true });
+    this._prev_is_spinning = this.is_spinning;
     this._update_spinning();
+    this.connect('notify::is-spinning', this._update_spinning.bind(this));
+    this._update_insensitize();
+    this.connect('notify::sensitive-requests', this._update_insensitize.bind(this));
+  }
+
+  _update_insensitize() {
+    if (this.sensitive_requests > 0) {
+      this.set_sensitive(false);
+    } else {
+      this.set_sensitive(true);
+    }
+  }
+
+  insensitize() {
+    this.sensitive_requests++;
+  }
+
+  sensitize() {
+    this.sensitive_requests = Math.max(0, this.sensitive_requests - 1);
   }
 
   _update_spinning() {
-    if (this.spinning) {
-      this._stack.set_visible_child_name('spinning');
-    } else {
-      this._stack.set_visible_child_name('default');
+    if (this._prev_is_spinning === this.is_spinning) return;
+    this._prev_is_spinning = this.is_spinning;
+    if (this.is_spinning) {
+      this.add_css_class('invisible-text');
+      this.spinner.set_parent(this);
+      this.insensitize();
+      return;
     }
+    this.remove_css_class('invisible-text');
+    this.spinner.unparent();
+    this.sensitize();
   }
 }

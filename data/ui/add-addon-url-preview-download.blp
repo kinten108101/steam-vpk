@@ -5,23 +5,12 @@ template $StvpkPreviewDownload : Gtk.Box {
   orientation: vertical;
 
   Adw.HeaderBar {
+    styles ['flat']
     decoration-layout: 'icon:close';
     title-widget:
       Adw.WindowTitle {
         title: _('Preview');
       };
-
-    [start]
-    Gtk.Button retry_button {
-      label: _('Retry');
-    }
-
-    [end]
-    Gtk.Button {
-      styles ['suggested-action']
-      label: _('Download');
-      action-name: 'window.close';
-    }
   }
 
   Adw.PreferencesPage {
@@ -82,6 +71,8 @@ template $StvpkPreviewDownload : Gtk.Box {
     }
 
     Adw.PreferencesGroup {
+      title: _('File Details');
+
       Adw.ActionRow {
         title: _('Estimated Size');
 
@@ -89,6 +80,40 @@ template $StvpkPreviewDownload : Gtk.Box {
         Gtk.Label size {
           use-markup: true;
           label: '52 MB'; // placeholder
+        }
+      }
+    }
+
+    Adw.PreferencesGroup {
+      Gtk.Box {
+        halign: fill;
+        hexpand: true;
+        height-request: 16;
+      }
+
+      Gtk.Box {
+        halign: fill;
+        valign: start;
+        hexpand: true;
+
+        Gtk.Button retry_button {
+          halign: start;
+          valign: center;
+          label: _('Retry');
+          action-name: 'add-addon-url.retry';
+        }
+
+        Gtk.Box {
+          halign: fill;
+          hexpand: true;
+        }
+
+        $StvpkSpinningButton validate_button {
+          halign: end;
+          valign: center;
+          styles ['suggested-action']
+          label: _('Download');
+          action-name: 'window.close';
         }
       }
     }
