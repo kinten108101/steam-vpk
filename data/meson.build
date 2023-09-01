@@ -89,7 +89,7 @@ data_resource = gnome.compile_resources(
 
 icondir = 'icons' / 'hicolor' / 'scalable' / 'apps'
 install_data(
-  meson.project_source_root() / 'data' / 'resources' / 'logo' / 'addon-box.svg',
+  meson.project_source_root() / 'data' / 'resources' / 'logo' / 'com.github.kinten108101.SteamVPK.svg',
   install_dir: datadir / icondir
 )
 
