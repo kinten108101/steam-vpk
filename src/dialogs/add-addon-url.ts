@@ -14,6 +14,7 @@ import { APP_RDNN } from '../const.js';
 import SpinningButton from '../spinning-button.js';
 import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
 import { MakeTitleCompat } from '../markup.js';
+import { AsyncSignalMethods, addAsyncSignalMethods } from './async-signals.js';
 
 type Signals = 'input-page::setup' | 'validate' | 'preview-page::setup';
 
@@ -164,6 +165,7 @@ export default class AddAddonUrl extends Adw.Window {
 
   static {
     registerClass({}, this);
+    addAsyncSignalMethods<Signals>(this.prototype);
   }
 
   _view_stack!: Gtk.Stack;
@@ -171,24 +173,14 @@ export default class AddAddonUrl extends Adw.Window {
   preview_download!: PreviewDownload;
   input_url!: InputUrl;
 
-  _slots: Map<string, ((_obj: this, ...args: any[]) => Promise<boolean>)[]> = new Map;
-
   constructor(params: Adw.Window.ConstructorProperties = {}) {
     super(params);
-    this._setup_async_signals();
     this._setup_actions();
   }
 
   vfunc_realize(): void {
     super.vfunc_realize();
     this._emit_signal('input-page::setup', this.input_url).catch(error => logError(error));
-  }
-
-  _setup_async_signals() {
-    this._slots.set('input-page::setup', []);
-    this._slots.set('validate', []);
-    this._slots.set('preview-page::setup', []);
-    this._slots.set('download', []);
   }
 
   _setup_actions() {
@@ -247,30 +239,6 @@ export default class AddAddonUrl extends Adw.Window {
       on_exit();
     });
   }
-
-  connect_signal(signal: Signals, cb: (_obj: this, ...args: any[]) => Promise<boolean>) {
-    const handlers = this._slots.get(signal);
-    if (handlers === undefined) throw new Error;
-    handlers.push(cb);
-    return cb;
-  }
-
-  disconnect_signal(signal: Signals, cb: (_obj: this, ...args: any[]) => Promise<boolean>): boolean {
-    const handlers = this._slots.get(signal);
-    if (handlers === undefined) throw new Error;
-    const idx = handlers.indexOf(cb as (_obj: this, ...args: any[]) => Promise<boolean>);
-    if (idx === -1) return false;
-    handlers.splice(idx, 1);
-    return true;
-  }
-
-  async _emit_signal(signal: Signals, ...args: any[]) {
-    const handlers = this._slots.get(signal);
-    if (handlers === undefined) throw new Error;
-    for (const x of handlers) {
-      const result = await x(this, ...args);
-      if (!result) return false;
-    }
-    return true;
-  }
 }
+
+

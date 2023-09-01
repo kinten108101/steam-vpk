@@ -19,6 +19,7 @@ script = [
   'actions/settings-actions.ts',
   'dialogs/add-addon-url.ts',
   'dialogs/allocate.ts',
+  'dialogs/async-signals.ts',
   'dialogs/file-dialog.ts',
   'dialogs/message-dialog.ts',
   'dialogs/window-promiser.ts',
