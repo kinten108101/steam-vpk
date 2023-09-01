@@ -12,7 +12,6 @@ gjs = dependency('gjs-1.0', version: '>=1.76.0', required: true)
 gjs_console = gjs.get_variable(pkgconfig: 'gjs_console')
 gtk4 = dependency('gtk4', version: '>=4.10.3', required: true)
 adw1 = dependency('libadwaita-1', version: '>=1.3.2', required: true)
-soup3 = dependency('libsoup-3.0', version: '>=3.4.2', required: true)
 blueprint_compiler = find_program('blueprint-compiler', version: '>=0.8.1', required: true)
 
 yarn_args = []
