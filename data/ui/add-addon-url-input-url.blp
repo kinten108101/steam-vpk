@@ -27,6 +27,14 @@ template $StvpkInputUrl : Gtk.Box {
         wrap: true;
         styles ["dim-label", "caption"]
       }
+
+      Gtk.Label msg {
+        xalign: 0; // left align
+        margin-top: 12;
+        wrap: true;
+        wrap-mode: word_char;
+        styles ["caption", "error"]
+      }
     }
 
     Adw.PreferencesGroup {

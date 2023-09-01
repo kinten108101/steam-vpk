@@ -9,6 +9,7 @@ import {
   GtkTemplate,
   registerClass,
   param_spec_string,
+  param_spec_boolean,
 } from '../steam-vpk-utils/utils.js';
 import { APP_RDNN } from '../const.js';
 import SpinningButton from '../spinning-button.js';
@@ -81,12 +82,16 @@ export class PreviewDownload extends Gtk.Box {
 
 export class InputUrl extends Gtk.Box {
   static [GObject.properties] = {
-    error: param_spec_string({ name: 'error', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT }),
+    error: param_spec_string({ name: 'error', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, default_value: '' }),
+    error_responded: param_spec_boolean({ name: 'error-responded', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, default_value: true }),
   };
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url-input-url.ui`;
   static [GtkChildren] = [
     'url_bar',
     'validate_button',
+  ];
+  static [GtkInternalChildren] = [
+    'msg',
   ];
 
   static {
@@ -95,8 +100,9 @@ export class InputUrl extends Gtk.Box {
 
   url_bar!: Adw.EntryRow;
   validate_button!: SpinningButton;
-  error!: string;
-  _last_error: string = '';
+  _msg!: Gtk.Label;
+  _error!: string;
+  _error_responded!: boolean;
 
   constructor(params = {}) {
     super(params);
@@ -112,21 +118,51 @@ export class InputUrl extends Gtk.Box {
   }
 
   _setup_error_state() {
-    this._update_error_state();
-    this.connect('notify::error', this._update_error_state.bind(this));
-    this.url_bar.connect('notify::text', () => {
-      this.error = '';
+    this.connect('notify::error-responded', this._update_error_responded.bind(this));
+    this.connect('notify::error', () => {
+      if (this.error === '') return;
+      this.error_responded = false;
     });
+    this.url_bar.connect('notify::text', () => {
+      this.error_responded = true;
+    });
+    this.connect('notify::error', this._update_error_state.bind(this));
+  }
+
+  set error(val: string) {
+    if (this._error === val) return;
+    this._error = val;
+    this.notify('error');
+  }
+
+  get error() {
+    return this._error;
+  }
+
+  set error_responded(val: boolean) {
+    if (this._error_responded === val) return;
+    this._error_responded = val;
+    this.notify('error-responded');
+  }
+
+  get error_responded() {
+    return this._error_responded;
   }
 
   _update_error_state() {
-    if (this.error === this._last_error) return;
-    this._last_error = this.error;
     if (this.error === '') {
       this.url_bar.remove_css_class('error');
-      this.validate_button.sensitize();
+      this._msg.set_label('');
     } else {
       this.url_bar.add_css_class('error');
+      this._msg.set_label(this.error);
+    }
+  }
+
+  _update_error_responded() {
+    if (this.error_responded) {
+      this.validate_button.sensitize();
+    } else {
       this.validate_button.insensitize();
     }
   }
@@ -145,12 +181,12 @@ export class InputUrl extends Gtk.Box {
   }
 }
 
-export default interface AddAddonUrl {
+export default interface AddAddonUrl extends AsyncSignalMethods<Signals> {
   connect_signal(signal: 'input-page::setup', cb: (obj: this, input_page: InputUrl) => Promise<boolean>): (obj: this, input_page: InputUrl) => Promise<boolean>;
-  connect_signal(signal: 'validate', cb: (obj: this, request_error: (msg: string) => void, url: string) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
+  connect_signal(signal: 'validate', cb: (obj: this, request_error: (msg: string | undefined) => void, url: string) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
   connect_signal(signal: 'preview-page::setup', cb: (obj: this, url: string, preview_page: PreviewDownload) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
   _emit_signal(signal: 'input-page::setup', input_page: InputUrl): Promise<boolean>;
-  _emit_signal(signal: 'validate', request_error: (msg: string) => void, url: string): Promise<boolean>;
+  _emit_signal(signal: 'validate', request_error: (msg: string | undefined) => void, url: string): Promise<boolean>;
   _emit_signal(signal: 'preview-page::setup', url: string, preview_page: PreviewDownload): Promise<boolean>;
 }
 export default class AddAddonUrl extends Adw.Window {
@@ -224,12 +260,12 @@ export default class AddAddonUrl extends Adw.Window {
     };
     (async () => {
       this.input_url.validate_button.is_spinning = true;
-      const request_error = (hint: string) => {
-        this.input_url.set_error(hint);
+      this.input_url.resolve_error();
+      const request_error = (hint?: string) => {
+        this.input_url.set_error(hint || 'An error has occured.');
       };
       const result = await this._emit_signal('validate', request_error, url);
       if (result === false) {
-        // error
         on_exit();
         return;
       }
