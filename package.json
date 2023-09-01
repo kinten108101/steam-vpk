@@ -3,7 +3,7 @@
   "scripts": {
     "meson:install": "rm -rf build-meson && meson setup --reconfigure build-meson && sudo meson install -C build-meson",
     "meson:run": "com.github.kinten108101.SteamVPK",
-    "flatpak:install": "flatpak run org.flatpak.Builder --force-clean --user --install build-flatpak build-aux/com.github.kinten108101.SteamVPK.yml",
+    "flatpak:install": "flatpak run org.flatpak.Builder --force-clean --keep-build-dirs --disable-updates --user --install build-flatpak build-aux/com.github.kinten108101.SteamVPK.yml",
     "flatpak:run": "flatpak run com.github.kinten108101.SteamVPK"
   },
   "dependencies": {
