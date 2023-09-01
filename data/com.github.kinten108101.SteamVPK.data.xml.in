@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
-  <gresource prefix="@APP_RDNN@">
+  <gresource prefix="/com/github/kinten108101/SteamVPK">
     @UI@
     <file>style.css</file>
     <file>style-dark.css</file>
   </gresource>
-  <gresource prefix="@APP_RDNN@/icons/scalable/actions">
+  <gresource prefix="/com/github/kinten108101/SteamVPK/icons/scalable/actions">
     @ICONS@
   </gresource>
 </gresources>

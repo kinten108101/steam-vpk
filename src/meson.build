@@ -1,13 +1,3 @@
-exec_config = configuration_data()
-exec_config.set('GJS', gjs_console)
-exec_config.set('APP_ID', app_id)
-exec_config.set('VERSION', meson.project_version())
-exec_config.set('PREFIX', get_option('prefix'))
-exec_config.set('DATADIR', get_option('datadir'))
-exec_config.set('LIBDIR', get_option('libdir'))
-exec_config.set('SRC_DIR', meson.current_source_dir())
-exec_config.set('BUILD_TYPE', get_option('buildtype'))
-
 script = [
   'backend/client.ts',
   'dialogs/file-dialog.ts',
@@ -81,11 +71,10 @@ foreach x : script
 endforeach
 
 src_manifest = configure_file(
-  input:  'resource.src.gresource.xml.in',
-  output: 'resource.src.gresource.xml',
+  input:  'com.github.kinten108101.SteamVPK.src.xml.in',
+  output: 'com.github.kinten108101.SteamVPK.src.xml',
   configuration: {
     'SRC': SRC,
-    'APP_RDNN': app_rdnn,
   },
 )
 
@@ -93,16 +82,22 @@ src_resource = gnome.compile_resources(
   'com.github.kinten108101.SteamVPK.src',
   src_manifest,
   dependencies: typescript_steam_vpk,
-  source_dir: tsc_out, # tsc_out / 'src'
+  source_dir: tsc_out,
   gresource_bundle: true,
   install: true,
-  install_dir: pkgdatadir,
+  install_dir: get_option('datadir') / 'com.github.kinten108101.SteamVPK',
 )
 
 steam_vpk_launcher = configure_file(
-  input: 'steam-vpk.js',
+  input: 'com.github.kinten108101.SteamVPK.js.in',
   output: 'com.github.kinten108101.SteamVPK.js',
-  configuration: exec_config,
+  configuration: {
+    'GJS': gjs_console,
+    'APP_ID': 'com.github.kinten108101.SteamVPK',
+    'VERSION': meson.project_version(),
+    'PREFIX': get_option('prefix'),
+    'LIBDIR': get_option('prefix') / get_option('libdir'),
+  },
 )
 
 install_data(

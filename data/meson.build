@@ -1,6 +1,3 @@
-interface = []
-interface_files = []
-
 interface = [
   'gtk/menus.blp',
   'gtk/help-overlay.blp',
@@ -44,9 +41,8 @@ blueprints = custom_target('blueprints',
   build_by_default: true,
   build_always_stale: true,
   command: [blueprint_compiler,
-    'batch-compile', # action
-    '--typelib-path', typelibdir_abs, # config
-    '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'], # targets
+    'batch-compile',
+    '@OUTPUT@', '@CURRENT_SOURCE_DIR@', '@INPUT@'],
 )
 
 UI = ''
@@ -69,44 +65,36 @@ foreach x : icons
 endforeach
 
 data_manifest = configure_file(
-  input:  'resource.data.gresource.xml.in',
-  output: 'resource.data.gresource.xml',
+  input:  'com.github.kinten108101.SteamVPK.data.xml.in',
+  output: 'com.github.kinten108101.SteamVPK.data.xml',
   configuration: {
-    'APP_RDNN': app_rdnn,
     'UI': UI,
     'ICONS': ICONS,
   },
 )
 
 data_resource = gnome.compile_resources(
-  app_id + '.data',
+  'com.github.kinten108101.SteamVPK.data',
   data_manifest,
   dependencies: blueprints,
   gresource_bundle: true,
   install: true,
-  install_dir: pkgdatadir
+  install_dir: get_option('datadir') / 'com.github.kinten108101.SteamVPK',
 )
 
-icondir = 'icons' / 'hicolor' / 'scalable' / 'apps'
 install_data(
   meson.project_source_root() / 'data' / 'resources' / 'logo' / 'com.github.kinten108101.SteamVPK.svg',
-  install_dir: datadir / icondir
+  install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
 )
 
-desktop_conf = configuration_data()
-desktop_conf.set('APP_ID', app_id)
-desktop_conf.set('APP_FULLNAME', app_fullname)
-desktop_file = configure_file(
-  input: 'addonbox.desktop.in',
-  output: '@0@.desktop'.format(app_id),
-  configuration: desktop_conf,
-  install: true,
-  install_dir: datadir / 'applications',
+install_data(
+  meson.project_source_root() / 'data' / 'com.github.kinten108101.SteamVPK.desktop',
+  install_dir: get_option('datadir') / 'applications'
 )
 
 configure_file(
   input: 'resource.gschema.xml',
   output: 'com.github.kinten108101.SteamVPK.gschema.xml',
   copy: true,
-  install_dir: datadir / 'glib-2.0' / 'schemas',
+  install_dir: get_option('datadir') / 'glib-2.0' / 'schemas',
 )

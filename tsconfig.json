@@ -2,8 +2,7 @@
   "compilerOptions": {
     "paths": {
         "gi://Gtk": ["node_modules/@girs/gtk-4.0/gtk-4.0.d.ts"],
-        "gi://Gdk": ["node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"],
-        "resource:///com/github/kinten108101/SteamVPK/js/*": ["src/*"]
+        "gi://Gdk": ["node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"]
     },
     "lib": [
       "ES2022" /* Template does not have this but this is available in GJS now. */
@@ -12,7 +11,6 @@
     "module": "ES2020",
     "moduleResolution": "node",
     "baseUrl": ".",
-    "outDir": "_tsc_out",
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -30,7 +28,6 @@
     "node_modules/@girs/adw-1/adw-1.d.ts",
     "node_modules/@girs/gjs/gjs.d.ts",
     "node_modules/@girs/gjs/dom.d.ts",
-    "src/steam-vpk.js",
     "src/**/*.ts"
   ]
 }
