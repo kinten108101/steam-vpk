@@ -9,50 +9,58 @@ export default class SpinningButton extends Gtk.Button {
         'is-spinning': GObject.ParamSpec.boolean(
           'is-spinning', 'is-spinning', 'is-spinning',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
+        'sensitive-requests': GObject.ParamSpec.uint64(
+          'sensitive-requests', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          0, Number.MAX_SAFE_INTEGER, 0),
       },
     }, this)
   }
   private spinner: Gtk.Spinner;
-  label_saved: string;
+
   is_spinning!: boolean;
-  post_spinning_sensitivity_getter_override: (() => boolean) | undefined;
+  _prev_is_spinning: boolean;
+  sensitive_requests!: number;
 
-  constructor(param = {}) {
-    super(param);
-    this.spinner = new Gtk.Spinner({ spinning: true });
-    this.label_saved = 'aaaaaa'; // FIXME(kinten): Why is this.label empty!?
-    this.connect('notify::label', () => { // workaround
-      this.label_saved = this.get_label() || 'bbbbbb';
+  constructor(params = {}) {
+    super({
+      ...params,
     });
+    this.spinner = new Gtk.Spinner({ spinning: true });
+    this._prev_is_spinning = this.is_spinning;
+    this._update_spinning();
+    this.connect('notify::is-spinning', this._update_spinning.bind(this));
+    this._update_insensitize();
+    this.connect('notify::sensitive-requests', this._update_insensitize.bind(this));
   }
-  /*
 
-  set_spinning(val: boolean) {
-    // here we're mutating gtkbutton to get the desired appearance. Instead we can create another button for different state, then its just turning on and off.
-    if (val) {
-      this.spinner.set_parent(this);
-      this.set_label('');
+  _update_insensitize() {
+    if (this.sensitive_requests > 0) {
       this.set_sensitive(false);
-      return;
+    } else {
+      this.set_sensitive(true);
     }
-    this.spinner.unparent();
-    if (this.label_saved !== 'aaaaaa') this.set_label(this.label_saved);
-    this.set_sensitive((() => {
-          if (this.post_spinning_sensitivity_getter_override) {
-            return this.post_spinning_sensitivity_getter_override();
-          }
-          return true;
-        })());
   }
 
-  */
+  insensitize() {
+    this.sensitive_requests++;
+  }
 
-  set_spinning(val: boolean) {
-    if (val) {
-      this.child = this.spinner;
+  sensitize() {
+    this.sensitive_requests = Math.max(0, this.sensitive_requests - 1);
+  }
+
+  _update_spinning() {
+    if (this._prev_is_spinning === this.is_spinning) return;
+    this._prev_is_spinning = this.is_spinning;
+    if (this.is_spinning) {
+      this.add_css_class('invisible-text');
+      this.spinner.set_parent(this);
+      this.insensitize();
       return;
     }
-    // @ts-ignore
-    this.child = null;
+    this.remove_css_class('invisible-text');
+    this.spinner.unparent();
+    this.sensitize();
   }
 }

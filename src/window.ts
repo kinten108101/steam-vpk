@@ -31,6 +31,10 @@ import { FieldRow } from './ui/field-row.js';
 import ArchiveActions from './archive-controls.js';
 import { AddonsPanelDiskActions } from './addons-panel-actions.js';
 import AddonBoxClient from './backend/client.js';
+import AddAddonUrl, { InputUrl, PreviewDownload } from './dialogs/add-addon-url.js';
+import AddAddonName from './dialogs/add-addon-name.js';
+import AddAddonAction from './add-addon.js';
+import SpinningButton from './ui/spinning-button.js';
 
 GObject.type_ensure(LaunchpadPage.$gtype);
 GObject.type_ensure(DownloadPage.$gtype);
@@ -40,6 +44,11 @@ GObject.type_ensure(FieldRow.$gtype);
 GObject.type_ensure(HeaderBox.$gtype);
 GObject.type_ensure(HeaderboxConsole.$gtype);
 GObject.type_ensure(HeaderboxBuild.$gtype);
+GObject.type_ensure(SpinningButton.$gtype);
+GObject.type_ensure(InputUrl.$gtype);
+GObject.type_ensure(PreviewDownload.$gtype);
+GObject.type_ensure(AddAddonUrl.$gtype);
+GObject.type_ensure(AddAddonName.$gtype);
 
 export default function Window(
 { application,
@@ -202,6 +211,12 @@ export default function Window(
   StatusActions({
     action_map,
     status_manager,
+  });
+
+  AddAddonAction({
+    parent_window,
+    action_map,
+    client,
   });
 
   return window;

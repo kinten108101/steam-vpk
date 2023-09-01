@@ -1,22 +1,7 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkAddAddonName : Adw.Window {
-  default-width: 600;
-  modal: true;
-  content: box;
-
-  Gtk.ShortcutController {
-    scope: local;
-
-    Gtk.Shortcut {
-      trigger: 'Escape';
-      action: 'action(window.close)';
-    }
-  }
-}
-
-Gtk.Box box {
+template $StvpkInputUrl : Gtk.Box {
   orientation: vertical;
 
   Adw.HeaderBar {
@@ -24,30 +9,23 @@ Gtk.Box box {
     decoration-layout: 'icon:close';
     title-widget:
       Adw.WindowTitle {
-        title: _('Scan for existing add-on');
+        title: _('Import from Workshop');
       };
   }
 
   Adw.PreferencesPage {
     Adw.PreferencesGroup {
-      Adw.EntryRow name_bar {
-        title: _('Folder name');
+      Adw.EntryRow url_bar {
+        title: _('Published File ID');
+        hexpand: true;
+      }
 
-        [prefix]
-        Gtk.Box {
-          styles ['linked']
-
-          Gtk.Button {
-            valign: center;
-            label: 'addons';
-          }
-
-          Gtk.Button {
-            valign: center;
-            label: '/';
-            sensitive: false;
-          }
-        }
+      Gtk.Label {
+        label: _('URL of the Steam Workshop item that you\'d like to download.');
+        xalign: 0; // left align
+        margin-top: 12;
+        wrap: true;
+        styles ["dim-label", "caption"]
       }
 
       Gtk.Label msg {
@@ -70,12 +48,12 @@ Gtk.Box box {
           hexpand: true;
         }
 
-        $StvpkSpinningButton scan_button {
+        $StvpkSpinningButton validate_button {
           halign: end;
           valign: center;
           styles ['suggested-action']
-          label: _('Scan');
-          action-name: 'add-addon-name.detect';
+          label: _('Validate');
+          action-name: 'add-addon-url.validate';
           // action-target is set in program
         }
       }

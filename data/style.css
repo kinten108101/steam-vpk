@@ -448,3 +448,11 @@ checkbutton.theme-selector radio:checked {
 .empty-status {
   opacity: 0.1;
 }
+
+/**
+ * spinning-button
+ */
+
+.invisible-text label {
+  opacity: 0;
+}

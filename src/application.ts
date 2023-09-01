@@ -15,6 +15,15 @@ import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './debug-window.js';
 import AddonBoxClient from './backend/client.js';
 
+let application!: Gtk.Application;
+
+export function getApplication() {
+  if (application === undefined) {
+    application = Application();
+  }
+  return application;
+}
+
 export default function Application() {
   const application = new Adw.Application({
     application_id: APP_ID,

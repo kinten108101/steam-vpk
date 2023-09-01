@@ -1,50 +1,30 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkAddAddonUrl : Gtk.Box {
-  orientation: vertical;
-  visible: false;
-
-  Gtk.HeaderBar {
-    show-title-buttons: false;
-
-    [start]
-    Gtk.Button {
-      label: _("Cancel");
-      action-name: 'window.close';
-    }
-
-    [end]
-    Gtk.Button validateButton {
-      label: _("Validate");
-      styles ["suggested-action"]
-      clicked => $onValidate();
-    }
-  }
-
-  Gtk.Box {
-    orientation: vertical;
-    margin-start: 12;
-    margin-end: 12;
-    margin-bottom: 16;
-    margin-top: 12;
-    spacing: 12;
-    vexpand: true;
-
-    Adw.PreferencesGroup {
-      vexpand: true;
-      Adw.EntryRow url {
-        sensitive: true;
-        title: _("Published Item URL");
+template $StvpkAddAddonUrl : Adw.Window {
+  default-width: 600;
+  modal: true;
+  content:
+    Gtk.Stack view_stack {
+      Gtk.StackPage {
+        name: 'input-url';
+        child:
+          $StvpkInputUrl input_url {};
       }
 
-      Gtk.Label {
-        label: _('URL of the Steam Workshop item that you\'d like to download.');
-        xalign: 0; // left align
-        margin-top: 12;
-        wrap: true;
-        styles ["dim-label", "caption"]
+      Gtk.StackPage {
+        name: 'preview-download';
+        child:
+          $StvpkPreviewDownload preview_download {};
       }
+    };
+
+  Gtk.ShortcutController {
+    scope: local;
+
+    Gtk.Shortcut {
+      trigger: 'Escape';
+      action: 'action(window.close)';
     }
   }
 }
