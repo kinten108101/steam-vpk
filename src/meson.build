@@ -17,6 +17,7 @@ script = [
   'actions/archive-controls.ts',
   'actions/injector-actions.ts',
   'actions/settings-actions.ts',
+  'dialogs/add-addon-name.ts',
   'dialogs/add-addon-url.ts',
   'dialogs/allocate.ts',
   'dialogs/async-signals.ts',

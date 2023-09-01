@@ -3,6 +3,7 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import AddAddonUrl from '../dialogs/add-addon-url.js';
 import { BackendPortal } from '../api.js';
+import AddAddonName from '../dialogs/add-addon-name.js';
 
 Gio._promisify(Gdk.Clipboard.prototype, 'read_text_async', 'read_text_finish');
 
@@ -50,7 +51,21 @@ export default function AddAddonAction(
       }
       const [status, data] = response;
       if (status !== 0) {
-        request_error(`Server error`);
+        const msg = (() => {
+          if (typeof data['code'] !== 'number') {
+            console.log('no code section')
+            return undefined;
+          }
+          switch (data['code']) {
+          case 1:
+          case 2:
+            return 'Incorrect Workshop item URL format.';
+          default:
+            console.log('Unknown code. Received', data['code']);
+            return undefined;
+          }
+        })();
+        request_error(msg);
         return false;
       }
       console.log('success');
@@ -69,6 +84,17 @@ export default function AddAddonAction(
     window.show();
   });
   actions.push(add_from_url);
+
+  const add_from_name = new Gio.SimpleAction({
+    name: 'add-addon.add-name',
+  });
+  add_from_name.connect('activate', () => {
+    const window = new AddAddonName({
+      transient_for: parent_window,
+    });
+    window.present();
+  });
+  actions.push(add_from_name);
 
   function export2actionmap(action_map: Gio.ActionMap) {
     actions.forEach(x => {

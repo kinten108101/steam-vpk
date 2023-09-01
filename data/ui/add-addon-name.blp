@@ -1,49 +1,83 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkAddAddonName : Gtk.Box {
-  orientation: vertical;
-  visible: false;
+template $StvpkAddAddonName : Adw.Window {
+  default-width: 600;
+  modal: true;
+  content: box;
 
-  Gtk.HeaderBar {
-    show-title-buttons: false;
+  Gtk.ShortcutController {
+    scope: local;
 
-    [start]
-    Gtk.Button {
-      label: _("Cancel");
-      action-name: 'window.close';
-    }
-
-    [end]
-    $Gtk1SpinningButton scanButton {
-      label: "Scan";
-      styles ["suggested-action"]
-      clicked => $onScan();
+    Gtk.Shortcut {
+      trigger: 'Escape';
+      action: 'action(window.close)';
     }
   }
+}
 
-  Gtk.Box {
-    orientation: vertical;
-    margin-start: 12;
-    margin-end: 12;
-    margin-bottom: 12;
-    margin-top: 12;
-    spacing: 12;
-    vexpand: true;
+Gtk.Box box {
+  orientation: vertical;
 
+  Adw.HeaderBar {
+    styles ['flat']
+    decoration-layout: 'icon:close';
+    title-widget:
+      Adw.WindowTitle {
+        title: _('Scan for existing add-on');
+      };
+  }
+
+  Adw.PreferencesPage {
     Adw.PreferencesGroup {
-      vexpand: true;
-      Adw.EntryRow stvpkid {
-        sensitive: true;
-        title: _("Add-on ID");
+      Adw.EntryRow name_bar {
+        title: _('Folder name');
+
+        [prefix]
+        Gtk.Box {
+          styles ['linked']
+
+          Gtk.Button {
+            valign: center;
+            label: 'addons';
+          }
+
+          Gtk.Button {
+            valign: center;
+            label: '/';
+            sensitive: false;
+          }
+        }
       }
 
-      Gtk.Label {
-        label: _('Must already exists in add-ons directory.');
+      Gtk.Label msg {
         xalign: 0; // left align
         margin-top: 12;
         wrap: true;
-        styles ["dim-label", "caption"]
+        wrap-mode: word_char;
+        styles ["caption", "error"]
+      }
+    }
+
+    Adw.PreferencesGroup {
+      Gtk.Box {
+        halign: fill;
+        valign: start;
+        hexpand: true;
+
+        Gtk.Box {
+          halign: fill;
+          hexpand: true;
+        }
+
+        $StvpkSpinningButton scan_button {
+          halign: end;
+          valign: center;
+          styles ['suggested-action']
+          label: _('Scan');
+          action-name: 'add-addon-name.detect';
+          // action-target is set in program
+        }
       }
     }
   }
