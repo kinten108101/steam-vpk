@@ -1,3 +1,4 @@
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
@@ -33,16 +34,32 @@ export class ProfileBar extends Adw.Bin {
 
   constructor(params = {}) {
     super(params);
-    const flags = GObject.BindingFlags.SYNC_CREATE;
-    this.bind_property_full('status_request',
-      this.profile_label, 'label',
-      flags,
+    this._setup_status();
+    this._setup_actionable();
+  }
+
+  _setup_status() {
+    this.bind_property_full('status_request', this.profile_label, 'label',
+      GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: string | null) => {
         if (from === null) {
           return [false, ''];
         }
         return [true, from === '' ? 'no profile' : from];
       },
-      null as unknown as GObject.TClosure<any, any>);
+      null as unknown as GObject.TClosure);
+  }
+
+  _setup_actionable() {
+    this.primary_button.bind_property_full('active', this.primary_button, 'action-target',
+      GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: boolean) => {
+        return [true, GLib.Variant.new_boolean(from)];
+      }, null as unknown as GObject.TClosure);
+    // For some reasons, GtkToggleButton with an action specified will act like a GtkButton aka not toggleable.
+    // This is a workaround
+    this.primary_button.connect('clicked', () => {
+      this.primary_button.set_active(!this.primary_button.get_active());
+    });
   }
 }

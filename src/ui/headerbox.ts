@@ -158,7 +158,8 @@ export default interface HeaderBox {
 export default class HeaderBox extends Gtk.Box {
   static [GObject.properties] = {
     revealed: param_spec_boolean({
-      name: 'revealed',
+      name: 'child-revealed',
+      default_value: false,
     }),
     reveal_toggle: param_spec_object({
       name: 'reveal-toggle',
@@ -167,6 +168,10 @@ export default class HeaderBox extends Gtk.Box {
     current_page: param_spec_string<BoxPages>({
       name: 'current-page',
       default_value: 'status_box',
+    }),
+    reveal_child: param_spec_boolean({
+      name: 'reveal-child',
+      default_value: false,
     }),
   }
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox.ui`;
@@ -212,7 +217,17 @@ export default class HeaderBox extends Gtk.Box {
 
   current_page!: BoxPages;
   reveal_toggle?: Gtk.ToggleButton;
-  revealed: boolean = false;
+  reveal_child!: boolean;
+  _child_reveal!: boolean;
+
+  get child_revealed() {
+    return this._child_reveal;
+  }
+
+  _set_child_revealed(val: boolean) {
+    this._child_reveal = val;
+    this.notify('child-revealed');
+  }
 
   pages: Map<string, BoxPage> = new Map;
 
@@ -279,41 +294,37 @@ export default class HeaderBox extends Gtk.Box {
   }
 
   _setup_reveal_method() {
+    this.connect('notify::reveal-child', () => {
+      if (this.reveal_child === true) {
+        this._headerbox_revealer.set_reveal_child(true);
+      } else {
+        this._content_revealer.set_reveal_child(false);
+      }
+    });
+    this.connect('notify::child-revealed', () => {
+      if (this.child_revealed !== this.reveal_child) {
+        this.notify('reveal-child');
+      }
+    });
     this._headerbox_revealer.connect("notify::child-revealed", () => {
       if (!this._headerbox_revealer.get_child_revealed()) {
-        this.revealed = false;
-        this.reveal_toggle?.set_active(false);
-        this.reveal_toggle?.set_sensitive(true);
+        this._set_child_revealed(false);
         return;
       }
       this._content_revealer.set_reveal_child(true);
     });
-
     this._content_revealer.connect("notify::child-revealed", () => {
       if (this._content_revealer.get_child_revealed()) {
-        this.revealed = true;
-        this.reveal_toggle?.set_active(true);
-        this.reveal_toggle?.set_sensitive(true);
+        this._set_child_revealed(true);
         return;
       }
       this._headerbox_revealer.set_reveal_child(false);
     });
   }
 
-  reveal_headerbox(val: boolean) {
-    if (this.revealed === val) return;
-    if (val === true) {
-      this.reveal_toggle?.set_sensitive(false);
-      this._headerbox_revealer.set_reveal_child(true);
-    } else if (val === false) {
-      this.reveal_toggle?.set_sensitive(false);
-      this._content_revealer.set_reveal_child(false);
-    }
-  }
-
   open_with_box(box_page: BoxPages) {
     this.current_page = box_page;
-    this.reveal_headerbox(true);
+    this.reveal_child = true;
   }
 
   set_empty_status(page_name: BoxPages, val: boolean) {
@@ -410,9 +421,12 @@ export function HeaderBoxActions(
   const modal_actions = new Gio.SimpleActionGroup();
   const reveal = new Gio.SimpleAction({
     name: "headerbox.reveal",
+    parameter_type: GLib.VariantType.new('b'),
   });
-  reveal.connect("activate", () => {
-    headerbox.reveal_headerbox(!headerbox.revealed);
+  reveal.connect("activate", (_action, parameter) => {
+    if (parameter === null) throw new Error;
+    const next = parameter.get_boolean();
+    headerbox.reveal_child = next;
   });
   action_map.add_action(reveal);
 
