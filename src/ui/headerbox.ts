@@ -300,21 +300,32 @@ export default class HeaderBox extends Gtk.Box {
         this._content_revealer.set_reveal_child(false);
       }
     });
-    this.connect('notify::child-revealed', () => {
-      if (this.child_revealed !== this.reveal_child) {
-        this.notify('reveal-child');
-      }
-    });
     this._headerbox_revealer.connect("notify::child-revealed", () => {
       if (!this._headerbox_revealer.get_child_revealed()) {
+        if (this.reveal_child) {
+          this._headerbox_revealer.set_reveal_child(true);
+          return;
+        }
         this._set_child_revealed(false);
+        return;
+      }
+      if (!this.reveal_child) {
+        this._headerbox_revealer.set_reveal_child(false);
         return;
       }
       this._content_revealer.set_reveal_child(true);
     });
     this._content_revealer.connect("notify::child-revealed", () => {
       if (this._content_revealer.get_child_revealed()) {
+        if (!this.reveal_child) {
+          this._content_revealer.set_reveal_child(false);
+          return;
+        }
         this._set_child_revealed(true);
+        return;
+      }
+      if (this.reveal_child) {
+        this._content_revealer.set_reveal_child(true);
         return;
       }
       this._headerbox_revealer.set_reveal_child(false);
