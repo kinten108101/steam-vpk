@@ -19,7 +19,7 @@ import AboutWindow from './about.js';
 import DownloadPagePresent from '../presenters/download-page-present.js';
 import { DownloadPage } from '../ui/download-page.js';
 import AddonDetailsLeafletPage from '../ui/addon-details-leaflet-page.js';
-import HeaderBox, { HeaderBoxActions, HeaderboxBuild, HeaderboxConsole } from '../ui/headerbox.js';
+import HeaderBox, { HeaderboxBuild, HeaderboxConsole } from '../ui/headerbox.js';
 import ThemeSelector from '../ui/themeselector.js';
 import StatusManager, { StatusActions } from '../model/status-manager.js';
 import LaunchpadPresent from '../presenters/launchpad-present.js';
@@ -37,6 +37,8 @@ import AddAddonAction from '../actions/add-addon.js';
 import SpinningButton from '../ui/spinning-button.js';
 import AddonDetailsActions from '../actions/addon-details.js';
 import InjectorActions from '../actions/injection.js';
+import HeaderBoxActions, { HeaderboxAttachControls } from '../actions/headerbox.js';
+import HeaderboxDetachable from './headerbox-detachable.js';
 
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
@@ -44,6 +46,7 @@ GObject.type_ensure(DownloadPage.$gtype);
 GObject.type_ensure(ProfileBar.$gtype);
 GObject.type_ensure(InjectButtonSet.$gtype);
 GObject.type_ensure(FieldRow.$gtype);
+GObject.type_ensure(HeaderboxDetachable.$gtype);
 GObject.type_ensure(HeaderBox.$gtype);
 GObject.type_ensure(HeaderboxConsole.$gtype);
 GObject.type_ensure(HeaderboxBuild.$gtype);
@@ -204,8 +207,11 @@ export default function MainWindow(
   HeaderBoxActions({
     action_map,
     headerbox,
-    parent_window,
   }).init_headerbox();
+  HeaderboxAttachControls({
+    action_map,
+    detachable: headerbox.detachable,
+  })
   StatusBroker({
     status_manager,
     headerbox,

@@ -1,0 +1,59 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkHeaderboxDetachable : Adw.Window {
+  default-width: 500;
+  hide-on-close: true;
+  content:
+    Gtk.Box{
+      orientation: vertical;
+      Adw.HeaderBar {
+        show-start-title-buttons: false;
+        show-end-title-buttons: false;
+        styles ['flat']
+        title-widget:
+
+          Adw.ViewSwitcher {
+            stack: modal_stack;
+            policy: wide;
+          };
+
+        [end]
+        Gtk.Button {
+          styles ['flat']
+          icon-name: 'pip-out-symbolic';
+          action-name: 'modal.headerbox.attach';
+        }
+      }
+
+      Adw.ViewStack modal_stack {
+        Adw.ViewStackPage {
+          name: 'status_page';
+          title: _('Status');
+          icon-name: 'info-symbolic';
+          child:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                Adw.ActionRow {
+                  title: 'hey';
+                }
+              }
+            };
+        }
+
+        Adw.ViewStackPage {
+          name: 'console_page';
+          title: _('Output');
+          icon-name: 'terminal-symbolic';
+          child:
+            Adw.PreferencesPage {
+              Adw.PreferencesGroup {
+                Adw.ActionRow {
+                  title: 'hey';
+                }
+              }
+            };
+        }
+      }
+    };
+}

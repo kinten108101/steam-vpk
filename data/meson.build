@@ -22,6 +22,7 @@ interface = [
   'ui/field-row.blp',
   'ui/headerbox-build.blp',
   'ui/headerbox-console.blp',
+  'ui/headerbox-detachable.blp',
   'ui/headerbox.blp',
   'ui/inject-button-set.blp',
   'ui/launchpad-page.blp',

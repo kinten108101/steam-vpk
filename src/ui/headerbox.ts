@@ -1,6 +1,4 @@
 import GObject from 'gi://GObject';
-import Gio from "gi://Gio";
-import GLib from "gi://GLib";
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { APP_RDNN } from '../utils/const.js';
@@ -14,6 +12,7 @@ import {
   param_spec_string,
   registerClass,
 } from "../steam-vpk-utils/utils.js";
+import HeaderboxDetachable from '../windows/headerbox-detachable.js';
 
 export class HeaderboxBuild extends Gtk.Box {
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;
@@ -199,7 +198,7 @@ export default class HeaderBox extends Gtk.Box {
   }
 
   /* children */
-  detachable!: Adw.Window;
+  detachable!: HeaderboxDetachable;
   console_box!: HeaderboxConsole;
 
   /* internal children */
@@ -407,67 +406,4 @@ export default class HeaderBox extends Gtk.Box {
       pick(this._status_box.css_classes, style)
     );
   }
-}
-
-export function HeaderBoxActions(
-{ action_map,
-  headerbox,
-  parent_window,
-}:
-{ action_map: Gio.ActionMap;
-  headerbox: HeaderBox;
-  parent_window?: Gtk.Window;
-}) {
-  const modal_actions = new Gio.SimpleActionGroup();
-  const reveal = new Gio.SimpleAction({
-    name: "headerbox.reveal",
-    parameter_type: GLib.VariantType.new('b'),
-  });
-  reveal.connect("activate", (_action, parameter) => {
-    if (parameter === null) throw new Error;
-    const next = parameter.get_boolean();
-    headerbox.reveal_child = next;
-  });
-  action_map.add_action(reveal);
-
-  const box_switch = new Gio.SimpleAction({
-    name: "headerbox.box-switch",
-    parameter_type: GLib.VariantType.new("s"),
-  });
-  box_switch.connect("activate", (_action, parameter: GLib.Variant) => {
-    const box_name = parameter.deepUnpack() as BoxPages;
-    headerbox.current_page = box_name;
-  });
-  action_map.add_action(box_switch);
-
-  const detach = new Gio.SimpleAction({
-    name: "headerbox.detach",
-  });
-  detach.connect("activate", () => {
-    headerbox.detachable.set_transient_for(parent_window || null);
-    headerbox.detachable.set_visible(true);
-  });
-  action_map.add_action(detach);
-
-  const attach = new Gio.SimpleAction({
-    name: "headerbox.attach",
-  });
-  attach.connect("activate", () => {
-    headerbox.detachable.set_visible(false);
-  });
-  action_map.add_action(attach);
-  modal_actions.add_action(attach);
-
-  headerbox.detachable.insert_action_group('modal', modal_actions);
-
-  function init_headerbox() {
-    box_switch.activate(GLib.Variant.new_string('status_box'));
-    return methods;
-  }
-
-  const methods = {
-    init_headerbox,
-  };
-
-  return methods;
 }
