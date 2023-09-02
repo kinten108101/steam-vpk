@@ -11,11 +11,11 @@ import {
   param_spec_string,
   param_spec_boolean,
 } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 import SpinningButton from '../ui/spinning-button.js';
 import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
-import { MakeTitleCompat } from '../markup.js';
-import { AsyncSignalMethods, addAsyncSignalMethods } from './async-signals.js';
+import { MakeTitleCompat } from '../utils/markup.js';
+import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
 
 type Signals = 'input-page::setup' | 'validate' | 'preview-page::setup';
 

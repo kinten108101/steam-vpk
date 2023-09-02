@@ -3,10 +3,10 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import TypedBuilder from './typed-builder.js';
-import { APP_RDNN } from './const.js';
-import FileDialog from './dialogs/file-dialog.js';
-import AddonBoxClient from './backend/client.js';
+import TypedBuilder from '../utils/typed-builder.js';
+import { APP_RDNN } from '../utils/const.js';
+import FileDialog from '../dialogs/file-dialog.js';
+import AddonBoxClient from '../backend/client.js';
 
 Gio._promisify(Gtk.FileDialog.prototype, 'select_folder', 'select_folder_finish');
 

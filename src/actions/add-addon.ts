@@ -1,9 +1,9 @@
 import Gdk from 'gi://Gdk';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
-import AddAddonUrl from './dialogs/add-addon-url.js';
-import AddAddonName from './dialogs/add-addon-name.js';
-import AddonBoxClient from './backend/client.js';
+import AddAddonUrl from '../dialogs/add-addon-url.js';
+import AddAddonName from '../dialogs/add-addon-name.js';
+import AddonBoxClient from '../backend/client.js';
 
 Gio._promisify(Gdk.Clipboard.prototype, 'read_text_async', 'read_text_finish');
 

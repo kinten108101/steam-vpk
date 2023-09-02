@@ -8,11 +8,11 @@ import {
   APP_ID,
   BUILD_TYPE,
   VERSION,
-} from './const.js';
-import Shortcuts from './shortcuts.js';
-import Window from './window.js';
+} from './utils/const.js';
+import Shortcuts from './actions/shortcuts.js';
+import MainWindow from './windows/main-window.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
-import DebugWindow from './debug-window.js';
+import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
 
 let application!: Gtk.Application;
@@ -101,7 +101,7 @@ export default function Application() {
   });
 
   const create_new_window = () => {
-    const mainWindow = Window({
+    const mainWindow = MainWindow({
       application,
       client,
       settings,

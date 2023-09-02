@@ -11,7 +11,7 @@ import {
   param_spec_string,
   registerClass,
 } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 
 export class ProfileBar extends Adw.Bin {
   static [GObject.properties] = {

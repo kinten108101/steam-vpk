@@ -4,8 +4,6 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import './ui/addons-panel.js';
-
 import {
   GtkChildren,
   GtkTemplate,
@@ -13,9 +11,9 @@ import {
   param_spec_string,
   param_spec_variant,
   registerClass,
-} from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
-import RepositoryList, { UseStates } from './model/repositorylist.js';
+} from '../steam-vpk-utils/utils.js';
+import { APP_RDNN } from '../utils/const.js';
+import RepositoryList, { UseStates } from '../model/repositorylist.js';
 
 export class UseButton extends Gtk.Button {
   static [GObject.properties] = {

@@ -1,5 +1,5 @@
-import AddonBoxClient from './backend/client.js';
-import RepositoryList, { RepositoryItem } from './model/repositorylist.js';
+import AddonBoxClient from '../backend/client.js';
+import RepositoryList, { RepositoryItem } from '../model/repositorylist.js';
 
 abstract class ViewmodelError extends Error{}
 

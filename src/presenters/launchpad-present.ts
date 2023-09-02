@@ -1,5 +1,5 @@
-import AddonBoxClient from './backend/client.js';
-import { AddonEntry, Addonlist, AddonlistPageItem } from './model/addonlist.js';
+import AddonBoxClient from '../backend/client.js';
+import { AddonEntry, Addonlist, AddonlistPageItem } from '../model/addonlist.js';
 
 export default function LaunchpadPresent(
 { model,

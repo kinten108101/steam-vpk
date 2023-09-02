@@ -1,6 +1,6 @@
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_FULLNAME, VERSION } from './const.js';
+import { APP_FULLNAME, VERSION } from '../utils/const.js';
 
 export default function AboutWindow(
 { parent_window,

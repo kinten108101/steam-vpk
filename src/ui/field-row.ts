@@ -5,7 +5,7 @@ import {
   registerClass,
   GtkTemplate,
 } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 
 export class FieldRow extends Adw.ActionRow {
   static [GObject.properties] = {

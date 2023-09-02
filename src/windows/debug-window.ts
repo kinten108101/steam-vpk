@@ -3,9 +3,9 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import TypedBuilder from './typed-builder.js';
-import * as Consts from './const.js';
-import { g_param_default, registerClass } from './steam-vpk-utils/utils.js';
+import TypedBuilder from '../utils/typed-builder.js';
+import * as Consts from '../utils/const.js';
+import { g_param_default, registerClass } from '../steam-vpk-utils/utils.js';
 
 class DebugWindowActionRowItem extends GObject.Object {
   static [GObject.properties] = {

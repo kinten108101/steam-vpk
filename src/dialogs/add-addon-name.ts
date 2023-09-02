@@ -3,9 +3,9 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { AsyncSignalMethods, addAsyncSignalMethods } from './async-signals.js';
+import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
 import { GtkInternalChildren, GtkTemplate, registerClass } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 
 type Signals = 'setup';
 

@@ -4,8 +4,8 @@ import {
   GtkChildren,
   GtkTemplate,
   registerClass,
-} from './steam-vpk-utils/utils.js';
-import { APP_RDNN } from './const.js';
+} from '../steam-vpk-utils/utils.js';
+import { APP_RDNN } from '../utils/const.js';
 
 export class ArchiveListRow extends Gtk.ListBoxRow {
   static [GtkTemplate] =

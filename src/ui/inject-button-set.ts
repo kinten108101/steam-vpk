@@ -6,7 +6,7 @@ import {
   param_spec_variant,
   registerClass,
 } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 
 export default class InjectButtonSet extends Gtk.Box {
   static Buttons = {

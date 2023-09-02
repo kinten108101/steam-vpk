@@ -3,7 +3,7 @@ import Gio from "gi://Gio";
 import GLib from "gi://GLib";
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_RDNN } from '../const.js';
+import { APP_RDNN } from '../utils/const.js';
 import {
   GtkChildren,
   GtkCssName,

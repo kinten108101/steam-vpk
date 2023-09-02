@@ -3,8 +3,8 @@ import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { Toast } from './toast-builder.js';
-import { TOAST_TIMEOUT_SHORT } from './gtk.js';
+import { Toast } from '../utils/toast-builder.js';
+import { TOAST_TIMEOUT_SHORT } from '../utils/gtk.js';
 
 export type DiskModal = {
   present(parent_window: Gtk.Window): Promise<number>;

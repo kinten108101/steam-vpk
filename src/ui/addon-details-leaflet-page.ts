@@ -3,9 +3,9 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import TypedBuilder from './typed-builder.js';
-import { APP_RDNN } from './const.js';
-import { param_spec_variant, registerClass } from './steam-vpk-utils/utils.js';
+import TypedBuilder from '../utils/typed-builder.js';
+import { APP_RDNN } from '../utils/const.js';
+import { param_spec_variant, registerClass } from '../steam-vpk-utils/utils.js';
 
 export class BuilderData extends GObject.Object {
   static [GObject.properties] = {

@@ -5,37 +5,40 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 import PreferencesWindow, { SettingsActions } from './preferences-window.js';
-import InjectButtonSet from './ui/inject-button-set.js';
+import InjectButtonSet from '../ui/inject-button-set.js';
 
 import {
   APP_RDNN,
-} from './const.js';
-import { AddonsPanelDiskPage } from './ui/addons-panel.js';
-import StackController from './stack-controller.js';
-import TypedBuilder from './typed-builder.js';
-import InjectConsolePresenter, { InjectorActions } from './inject-console-presenter.js';
-import { ProfileBar } from './ui/profile-bar.js';
+} from '../utils/const.js';
+import AddonsPanel, { AddonsPanelDiskPage } from '../ui/addons-panel.js';
+import StackController from '../actions/stack-controller.js';
+import TypedBuilder from '../utils/typed-builder.js';
+import InjectConsolePresenter from '../presenters/inject-console-presenter.js';
+import { ProfileBar } from '../ui/profile-bar.js';
 import AboutWindow from './about.js';
-import DownloadPagePresent from './download-page-present.js';
-import { DownloadPage } from './download-page.js';
-import AddonDetailsLeafletPage from './addon-details-leaflet-page.js';
-import HeaderBox, { HeaderBoxActions, HeaderboxBuild, HeaderboxConsole } from './ui/headerbox.js';
-import ThemeSelector from './ui/themeselector.js';
-import StatusManager, { StatusActions } from './model/status-manager.js';
-import LaunchpadPresent from './launchpad-present.js';
-import { LaunchpadPage } from './launchpad.js';
-import AddonDetailsActions, { AddonDetailsUpdate } from './addon-details-update.js';
-import StatusBroker from './status-broker.js';
-import AddonStorageControls from './addon-storage-controls.js';
-import { FieldRow } from './ui/field-row.js';
-import ArchiveActions from './archive-controls.js';
-import { AddonsPanelDiskActions } from './addons-panel-actions.js';
-import AddonBoxClient from './backend/client.js';
-import AddAddonUrl, { InputUrl, PreviewDownload } from './dialogs/add-addon-url.js';
-import AddAddonName from './dialogs/add-addon-name.js';
-import AddAddonAction from './add-addon.js';
-import SpinningButton from './ui/spinning-button.js';
+import DownloadPagePresent from '../presenters/download-page-present.js';
+import { DownloadPage } from '../ui/download-page.js';
+import AddonDetailsLeafletPage from '../ui/addon-details-leaflet-page.js';
+import HeaderBox, { HeaderBoxActions, HeaderboxBuild, HeaderboxConsole } from '../ui/headerbox.js';
+import ThemeSelector from '../ui/themeselector.js';
+import StatusManager, { StatusActions } from '../model/status-manager.js';
+import LaunchpadPresent from '../presenters/launchpad-present.js';
+import { LaunchpadPage } from '../ui/launchpad.js';
+import AddonDetailsUpdate from '../presenters/addon-details-update.js';
+import StatusBroker from '../presenters/status-broker.js';
+import AddonStorageControls from '../actions/addon-storage-controls.js';
+import { FieldRow } from '../ui/field-row.js';
+import ArchiveActions from '../actions/archive-controls.js';
+import { AddonsPanelDiskActions } from '../actions/addons-panel-actions.js';
+import AddonBoxClient from '../backend/client.js';
+import AddAddonUrl, { InputUrl, PreviewDownload } from '../dialogs/add-addon-url.js';
+import AddAddonName from '../dialogs/add-addon-name.js';
+import AddAddonAction from '../actions/add-addon.js';
+import SpinningButton from '../ui/spinning-button.js';
+import AddonDetailsActions from '../actions/addon-details.js';
+import InjectorActions from '../actions/injection.js';
 
+GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
 GObject.type_ensure(DownloadPage.$gtype);
 GObject.type_ensure(ProfileBar.$gtype);
@@ -50,7 +53,7 @@ GObject.type_ensure(PreviewDownload.$gtype);
 GObject.type_ensure(AddAddonUrl.$gtype);
 GObject.type_ensure(AddAddonName.$gtype);
 
-export default function Window(
+export default function MainWindow(
 { application,
   client,
   settings,
