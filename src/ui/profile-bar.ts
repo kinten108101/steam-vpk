@@ -45,8 +45,4 @@ export class ProfileBar extends Adw.Bin {
       },
       null as unknown as GObject.TClosure<any, any>);
   }
-
-  send_status_update(msg: string) {
-    this.profile_label.set_label(msg);
-  }
 }
