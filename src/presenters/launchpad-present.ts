@@ -45,16 +45,12 @@ export default function LaunchpadPresent(
         if (x instanceof AddonEntry) x.fetch_addon_data(client);
       });
       deletables.forEach(x => {
-        let i = 0;
-        let item = model.get_item(i);
-        while (item !== x && item !== null) {
-          item = model.get_item(++i);
-        }
-        if (item === null) {
+        const [found, idx] = model.find(x);
+        if (!found) {
           console.log('Item not found?');
           return;
         }
-        model.remove(i);
+        model.remove(idx);
         exists.delete(x.id);
       });
       console.timeEnd('list-item-factory');

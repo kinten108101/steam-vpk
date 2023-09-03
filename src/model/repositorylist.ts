@@ -121,16 +121,12 @@ export default class RepositoryList extends Gio.ListStore<RepositoryItem> {
         }
       });
       deletables.forEach(x => {
-        let i = 0;
-        let item = this.get_item(i);
-        while (item !== x && item !== null) {
-          item = this.get_item(++i);
-        }
-        if (item === null) {
+        const [found, idx] = this.find(x);
+        if (!found) {
           console.log('Item not found?');
           return;
         }
-        this.remove(i);
+        this.remove(idx);
         this.exists.delete(x.id);
       });
   }
