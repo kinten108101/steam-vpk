@@ -4,7 +4,7 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import PreferencesWindow, { SettingsActions } from './preferences-window.js';
+import PreferencesWindow from '../ui/preferences-window.js';
 import InjectButtonSet from '../ui/inject-button-set.js';
 
 import {
@@ -39,6 +39,8 @@ import AddonDetailsActions from '../actions/addon-details.js';
 import InjectorActions from '../actions/injection.js';
 import HeaderBoxActions, { HeaderboxAttachControls } from '../actions/headerbox.js';
 import HeaderboxDetachable from './headerbox-detachable.js';
+import SettingsPresenter from '../presenters/settings.js';
+import SettingsActions from '../actions/settings.js';
 
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
@@ -258,14 +260,15 @@ function WindowActions(
     name: 'show-preferences',
   });
   showPreferences.connect('activate', () => {
-    const prefWin = PreferencesWindow()
-      .bind({
-        parent_window,
-        gsettings: settings,
-        client,
-      })
-      .insert_action_group(group)
-      .build();
+    const prefWin = new PreferencesWindow();
+    prefWin.insert_actions(group);
+    SettingsPresenter({
+      preferences_window: prefWin,
+      client,
+      gsettings: settings,
+    });
+
+    prefWin.set_transient_for(parent_window);
     prefWin.present();
   });
   action_map.add_action(showPreferences);
