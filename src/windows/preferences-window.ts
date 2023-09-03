@@ -67,12 +67,19 @@ export function SettingsActions(
     const val = parameter.recursiveUnpack() as boolean;
     if (val) {
       settings?.set_boolean('remember-winsize', true);
-      const using_dh = main_window.connect('notify::default-height', () => {
+
+      function update_dh() {
         settings?.set_int('default-height', main_window.default_height);
-      });
-      const using_dw = main_window.connect('notify::default-width', () => {
+      }
+      const using_dh = main_window.connect('notify::default-height', update_dh);
+      update_dh();
+
+      function update_dw() {
         settings?.set_int('default-width', main_window.default_width);
-      });
+      }
+      const using_dw = main_window.connect('notify::default-width', update_dw);
+      update_dw();
+
       rw_handlers.push(using_dh, using_dw);
     } else {
       settings?.set_boolean('remember-winsize', false);
@@ -81,6 +88,7 @@ export function SettingsActions(
       });
     }
   });
+  remember_winsize.activate(GLib.Variant.new_boolean(settings?.get_boolean('remember-winsize') || false));
   actions.push(remember_winsize);
 
   const clear_game_dir = new Gio.SimpleAction({
