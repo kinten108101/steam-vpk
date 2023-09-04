@@ -73,8 +73,8 @@ export default function StatusBroker(
           const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
           store.binds.push(binding);
         });
-        binding_store.set(item, store);
       });
+      binding_store.set(item, store);
     }
     function bind_build() {
       if (!(item instanceof BuildStatus)) return;
