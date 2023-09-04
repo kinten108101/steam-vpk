@@ -78,9 +78,22 @@ export default function StatusBroker(
     }
     function bind_build() {
       if (!(item instanceof BuildStatus)) return;
-      headerbox.bind_status('build', (_obj) => {
-        console.log('ok');
+      const store = {
+        binds: [] as GObject.Binding[],
+      };
+      headerbox.bind_status('build', (_obj, build_box) => {
+        const flags = GObject.BindingFlags.SYNC_CREATE;
+        (<[string, GObject.Object, string][]>
+        [
+          ['status', profile_bar, 'status-request'],
+          ['status', build_box, 'status'],
+          ['elapsed', build_box, 'elapsed'],
+        ]).forEach(([src_prop, tgt, tgt_prop]) => {
+          const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
+          store.binds.push(binding);
+        });
       });
+      binding_store.set(item, store);
     }
     if (item instanceof ErrorStatus) {
       bind_error();

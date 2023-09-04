@@ -16,9 +16,9 @@ export default function InjectConsolePresenter(
   status_manager: StatusManager;
 }) {
   const injections = new Map<string, {
-    using_logs_changed: number | undefined;
-    using_cancellable: number | undefined;
-    tracker: BuildStatus | undefined;
+    using_logs_changed: number;
+    using_cancellable: number;
+    tracker: BuildStatus;
   }>();
   const owner_map: WeakMap<HeaderboxConsole, string> = new WeakMap();
   const on_connection_changed = async (connected: boolean) => {
@@ -51,8 +51,9 @@ export default function InjectConsolePresenter(
     console.log('prepare!');
     const tracker = status_manager.add_build_tracker();
     if (inject_console) owner_map.set(inject_console, id);
-    const using_logs_changed = client.services.injector.subscribe('LogsChanged', (_id, msg) => {
+    const using_logs_changed = client.services.injector.subscribe('LogsChanged', (_id, msg: string) => {
       inject_console.add_line(msg);
+      tracker.status = msg.replaceAll('.', '');
     });
     const using_cancellable = client.services.injector.subscribe('Cancelled', () => {
       inject_button_set.hold_set_spinning(true);
@@ -65,19 +66,26 @@ export default function InjectConsolePresenter(
     inject_console.clean_output();
     inject_button_set.set_id(id);
   });
-  client.services.injector.subscribe('SessionStart', () => {
-    inject_button_set.set_state_button(InjectButtonSet.Buttons.hold);
-  });
-  client.services.injector.subscribe('SessionEnd', () => {
-    inject_button_set.set_state_button(InjectButtonSet.Buttons.done);
-  });
-  client.services.injector.subscribe('SessionFinished', () => {
-    inject_button_set.reset();
-  });
-  client.services.injector.subscribe('RunningCleanup', (id: string) => {
+  client.services.injector.subscribe('SessionStart', (id: string) => {
     const mem = injections.get(id);
     if (!mem) return;
-    const { using_logs_changed, using_cancellable } = mem;
+    const { tracker } = mem;
+    tracker.time();
+    inject_button_set.set_state_button(InjectButtonSet.Buttons.hold);
+  });
+  client.services.injector.subscribe('SessionEnd', (id: string) => {
+    const mem = injections.get(id);
+    if (!mem) return;
+    const { tracker } = mem;
+    tracker.timeEnd();
+    inject_button_set.set_state_button(InjectButtonSet.Buttons.done);
+  });
+  client.services.injector.subscribe('SessionFinished', (id: string) => {
+    const mem = injections.get(id);
+    if (!mem) return;
+    const { using_logs_changed, using_cancellable, tracker } = mem;
+    tracker.clear();
+    inject_button_set.reset();
     if (using_logs_changed) client.services.injector.unsubscribe(using_logs_changed);
     if (using_cancellable) client.services.injector.unsubscribe(using_cancellable);
     injections.delete(id);

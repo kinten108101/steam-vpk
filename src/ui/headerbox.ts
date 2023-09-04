@@ -15,10 +15,42 @@ import {
 import HeaderboxDetachable from '../windows/headerbox-detachable.js';
 
 export class HeaderboxBuild extends Gtk.Box {
+  static [GObject.properties] = {
+    elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
+      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+      0, Number.MAX_SAFE_INTEGER, 0),
+    status: GObject.ParamSpec.string('status', '', '',
+      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+      null),
+  };
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;
+  static [GtkInternalChildren] = [
+    'time_elapsed_field',
+    'status_field',
+  ];
 
   static {
     registerClass({}, this);
+  }
+
+  elapsed!: number;
+  status!: string;
+
+  _time_elapsed_field!: Gtk.Label;
+  _status_field!: Gtk.Label;
+
+  constructor(params = {}) {
+    super(params);
+    this.bind_property_full('elapsed', this._time_elapsed_field, 'label', GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: number | null) => {
+        if (from === null) return [true, '0ms'];
+        return [true, `${String(from)}ms`];
+      }, null as unknown as GObject.TClosure);
+    this.bind_property_full('status', this._status_field, 'label', GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: string | null) => {
+        if (from === null) return [true, ''];
+        return [true, from];
+      }, null as unknown as GObject.TClosure);
   }
 }
 
@@ -152,7 +184,7 @@ export type StatusStyles = 'error' | 'generic' | 'build';
 
 export default interface HeaderBox {
   bind_status(type: 'error' | 'generic', cb: (obj: this, title: Gtk.Label, description: Gtk.Label) => void): void;
-  bind_status(type: 'build', cb: (obj: this) => void): void;
+  bind_status(type: 'build', cb: (obj: this, build_box: HeaderboxBuild) => void): void;
 }
 export default class HeaderBox extends Gtk.Box {
   static [GObject.properties] = {
@@ -178,6 +210,7 @@ export default class HeaderBox extends Gtk.Box {
   static [GtkChildren] = [
     'detachable',
     'console_box',
+    'build_box',
   ];
   static [GtkInternalChildren] = [
     'headerbox_revealer',
@@ -200,6 +233,7 @@ export default class HeaderBox extends Gtk.Box {
   /* children */
   detachable!: HeaderboxDetachable;
   console_box!: HeaderboxConsole;
+  build_box!: HeaderboxBuild;
 
   /* internal children */
   _headerbox_revealer!: Gtk.Revealer;
@@ -349,7 +383,7 @@ export default class HeaderBox extends Gtk.Box {
     } else if (type === 'build') {
       this._set_status_style('generic');
       page.box = 'status::build';
-      cb(this);
+      cb(this, this.build_box);
     }
   }
 

@@ -32,14 +32,14 @@ template $StvpkHeaderboxBuild : Gtk.Box {
 
       Gtk.Grid {
         column-spacing: 12;
-        column-homogeneous: true;
 
         Gtk.Label {
-          label: _('Time elapsed');
+          label: _('Elapsed');
 
           ellipsize: start;
 
-          halign: end;
+          halign: start;
+          xalign: 0;
           valign: start;
 
           styles ['dim-label', 'line']
@@ -49,12 +49,13 @@ template $StvpkHeaderboxBuild : Gtk.Box {
           }
         }
 
-        Gtk.Label {
-          label: '05:34:26 PM';
+        Gtk.Label time_elapsed_field {
+          label: '';
 
           ellipsize: end;
 
           halign: start;
+          xalign: 0;
           valign: start;
 
           styles ['line']
@@ -65,11 +66,12 @@ template $StvpkHeaderboxBuild : Gtk.Box {
         }
 
         Gtk.Label {
-          label: _('Build status');
+          label: _('Status');
 
           ellipsize: start;
 
-          halign: end;
+          halign: start;
+          xalign: 0;
           valign: start;
 
           styles ['dim-label', 'line']
@@ -79,7 +81,7 @@ template $StvpkHeaderboxBuild : Gtk.Box {
           }
         }
 
-        Gtk.Label {
+        Gtk.Label status_field {
           label: 'Loading subdirectory';
 
           wrap: true;
@@ -88,44 +90,12 @@ template $StvpkHeaderboxBuild : Gtk.Box {
           ellipsize: end;
 
           halign: start;
+          xalign: 0;
           valign: start;
 
           styles ['line']
           layout {
             row: 1;
-            column: 1;
-          }
-        }
-
-        Gtk.Label {
-          label: _('Build result');
-
-          ellipsize: start;
-
-          halign: end;
-          valign: start;
-
-          styles ['dim-label', 'line']
-          layout {
-            row: 2;
-            column: 0;
-          }
-        }
-
-        Gtk.Label {
-          label: '';
-
-          wrap: true;
-          wrap-mode: word_char;
-          lines: 3;
-          ellipsize: end;
-
-          halign: start;
-          valign: start;
-
-          styles ['line']
-          layout {
-            row: 2;
             column: 1;
           }
         }
