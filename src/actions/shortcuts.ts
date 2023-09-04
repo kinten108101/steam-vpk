@@ -17,6 +17,8 @@ export default function Shortcuts(
     ['win.stack.page-backward', ['<Shift>Left']],
     ['win.stack.page-forward', ['<Shift>Right']],
     ['window.close', ['<Control>w']],
+    ['win.add-addon.add-url', ['<Control>b']],
+    ['win.add-addon.add-name', ['<Control>m']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });
