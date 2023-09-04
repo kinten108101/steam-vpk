@@ -9,6 +9,7 @@ script = [
   'actions/settings.ts',
   'actions/shortcuts.ts',
   'actions/stack-controller.ts',
+  'actions/status-debug-actions.ts',
   'backend/client.ts',
   'dialogs/add-addon-name.ts',
   'dialogs/add-addon-url.ts',

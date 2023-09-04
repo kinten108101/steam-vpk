@@ -21,7 +21,7 @@ import { DownloadPage } from '../ui/download-page.js';
 import AddonDetailsLeafletPage from '../ui/addon-details-leaflet-page.js';
 import HeaderBox, { HeaderboxBuild, HeaderboxConsole } from '../ui/headerbox.js';
 import ThemeSelector from '../ui/themeselector.js';
-import StatusManager, { StatusActions } from '../model/status-manager.js';
+import StatusManager from '../model/status-manager.js';
 import LaunchpadPresent from '../presenters/launchpad-present.js';
 import { LaunchpadPage } from '../ui/launchpad.js';
 import AddonDetailsUpdate from '../presenters/addon-details-update.js';
@@ -41,6 +41,7 @@ import HeaderBoxActions, { HeaderboxAttachControls } from '../actions/headerbox.
 import HeaderboxDetachable from './headerbox-detachable.js';
 import SettingsPresenter from '../presenters/settings.js';
 import SettingsActions from '../actions/settings.js';
+import { StatusDebugActions } from '../actions/status-debug-actions.js';
 
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
@@ -219,7 +220,7 @@ export default function MainWindow(
     headerbox,
     profile_bar,
   }).init_headerbox();
-  StatusActions({
+  StatusDebugActions({
     action_map,
     status_manager,
   });
