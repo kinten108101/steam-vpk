@@ -68,12 +68,16 @@ export class BuildStatus extends Status {
         elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           0, Number.MAX_SAFE_INTEGER, 0),
+        finished: GObject.ParamSpec.boolean('finished', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          false),
       },
     }, this);
   }
 
   status!: string;
   elapsed!: number;
+  finished!: boolean;
 }
 
 export default class StatusManager

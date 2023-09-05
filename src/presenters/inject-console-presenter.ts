@@ -98,7 +98,11 @@ export default function InjectConsolePresenter(
   client.services.injector.subscribe('SessionStart', () => {
     inject_button_set.set_state_button(InjectButtonSet.Buttons.hold);
   });
-  client.services.injector.subscribe('SessionEnd', () => {
+  client.services.injector.subscribe('SessionEnd', (id: string) => {
+    const mem = injections.get(id);
+    if (!mem) return;
+    const { tracker } = mem;
+    if (tracker) tracker.finished = true;
     inject_button_set.set_state_button(InjectButtonSet.Buttons.done);
   });
   function handler_cleanup(id: string) {

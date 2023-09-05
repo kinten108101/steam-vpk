@@ -14,8 +14,13 @@ import {
 } from "../steam-vpk-utils/utils.js";
 import HeaderboxDetachable from '../windows/headerbox-detachable.js';
 
+export type HeaderboxBuildTitleType = 'in-progress' | 'done';
+
 export class HeaderboxBuild extends Gtk.Box {
   static [GObject.properties] = {
+    title_type: GObject.ParamSpec.string('title-type', '', '',
+      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+      null),
     elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
       GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
       0, Number.MAX_SAFE_INTEGER, 0),
@@ -25,6 +30,7 @@ export class HeaderboxBuild extends Gtk.Box {
   };
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;
   static [GtkInternalChildren] = [
+    'title_label',
     'time_elapsed_field',
     'status_field',
   ];
@@ -33,20 +39,37 @@ export class HeaderboxBuild extends Gtk.Box {
     registerClass({}, this);
   }
 
+  title_type!: HeaderboxBuildTitleType;
   elapsed!: number;
   status!: string;
 
+  _title_label!: Gtk.Label;
   _time_elapsed_field!: Gtk.Label;
   _status_field!: Gtk.Label;
 
   constructor(params = {}) {
     super(params);
-    this.bind_property_full('elapsed', this._time_elapsed_field, 'label', GObject.BindingFlags.SYNC_CREATE,
+    this.bind_property_full('title-type', this._title_label, 'label',
+      GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: string | null) => {
+        if (from === null) return [false, ''];
+        switch (from as HeaderboxBuildTitleType) {
+        case 'in-progress':
+          return [true, 'Injection in Progress'];
+        case 'done':
+          return [true, 'Injection Completed'];
+        default:
+          throw new Error;
+        }
+      }, null as unknown as GObject.TClosure);
+    this.bind_property_full('elapsed', this._time_elapsed_field, 'label',
+      GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: number | null) => {
         if (from === null) return [true, '0ms'];
         return [true, `${String(from)}ms`];
       }, null as unknown as GObject.TClosure);
-    this.bind_property_full('status', this._status_field, 'label', GObject.BindingFlags.SYNC_CREATE,
+    this.bind_property_full('status', this._status_field, 'label',
+      GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: string | null) => {
         if (from === null) return [true, ''];
         return [true, from];

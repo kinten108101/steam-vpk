@@ -2,7 +2,7 @@ import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import StatusManager, { BuildStatus, ErrorStatus, Status } from "../model/status-manager.js";
 import type { SignalMethods } from '@girs/gjs';
-import HeaderBox from '../ui/headerbox.js';
+import HeaderBox, { HeaderboxBuildTitleType } from '../ui/headerbox.js';
 import { ProfileBar } from '../ui/profile-bar.js';
 
 export interface HeaderboxFactory extends SignalMethods {
@@ -45,6 +45,16 @@ export class HeaderboxFactory {
   }
 }
 
+const StatusKlasses = [ErrorStatus, BuildStatus];
+interface BinderMap extends WeakMap<Function, Function> {
+  set(key: typeof ErrorStatus, fn: (item: ErrorStatus) => void): this;
+  get(key: typeof ErrorStatus): (item: ErrorStatus) => void;
+  set(key: typeof BuildStatus, fn: (item: BuildStatus) => void): this;
+  get(key: typeof BuildStatus): (item: BuildStatus) => void;
+}
+class BinderMap extends WeakMap<Function, Function> {
+}
+
 export default function StatusBroker(
 { status_manager,
   headerbox,
@@ -56,52 +66,59 @@ export default function StatusBroker(
 }) {
   const factory = new HeaderboxFactory();
   const binding_store: WeakMap<Status, { binds: GObject.Binding[] }> = new WeakMap;
+  const binder_map: BinderMap = new BinderMap;
+  binder_map.set(ErrorStatus, (item: ErrorStatus) => {
+    const store = {
+      binds: [] as GObject.Binding[],
+    };
+    headerbox.bind_status('error', (_obj, title, description) => {
+      title.set_label('A Problem Has Occurred');
+      const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
+      (<[string, GObject.Object, string][]>
+      [
+        ['short', profile_bar, 'status-request'],
+        ['msg', description, 'label'],
+      ]).forEach(([src_prop, tgt, tgt_prop]) => {
+        const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
+        store.binds.push(binding);
+      });
+    });
+    binding_store.set(item, store);
+  });
+  binder_map.set(BuildStatus, (item: BuildStatus) => {
+    const store = {
+      binds: [] as GObject.Binding[],
+    };
+    headerbox.bind_status('build', (_obj, build_box) => {
+      const flags = GObject.BindingFlags.SYNC_CREATE;
+      (<[string, GObject.Object, string][]>
+      [
+        ['status', profile_bar, 'status-request'],
+        ['status', build_box, 'status'],
+        ['elapsed', build_box, 'elapsed'],
+      ]).forEach(([src_prop, tgt, tgt_prop]) => {
+        const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
+        store.binds.push(binding);
+      });
+      const using_finish = item.bind_property_full('finished', build_box, 'title-type', flags,
+        (_binding, from: boolean | null): [boolean, HeaderboxBuildTitleType] => {
+          if (from === null) return [false, 'in-progress'];
+          if (from) {
+            return [true, 'done'];
+          } else {
+            return [true, 'in-progress'];
+          }
+        }, null as unknown as GObject.TClosure);
+      store.binds.push(using_finish);
+    });
+    binding_store.set(item, store);
+  });
   factory.connect('bind', (_obj, item) => {
-    function bind_error() {
-      if (!(item instanceof ErrorStatus)) return;
-      const store = {
-        binds: [] as GObject.Binding[],
-      };
-      headerbox.bind_status('error', (_obj, title, description) => {
-        title.set_label('A Problem Has Occurred');
-        const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
-        (<[string, GObject.Object, string][]>
-        [
-          ['short', profile_bar, 'status-request'],
-          ['msg', description, 'label'],
-        ]).forEach(([src_prop, tgt, tgt_prop]) => {
-          const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
-          store.binds.push(binding);
-        });
-      });
-      binding_store.set(item, store);
-    }
-    function bind_build() {
-      if (!(item instanceof BuildStatus)) return;
-      const store = {
-        binds: [] as GObject.Binding[],
-      };
-      headerbox.bind_status('build', (_obj, build_box) => {
-        const flags = GObject.BindingFlags.SYNC_CREATE;
-        (<[string, GObject.Object, string][]>
-        [
-          ['status', profile_bar, 'status-request'],
-          ['status', build_box, 'status'],
-          ['elapsed', build_box, 'elapsed'],
-        ]).forEach(([src_prop, tgt, tgt_prop]) => {
-          const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
-          store.binds.push(binding);
-        });
-      });
-      binding_store.set(item, store);
-    }
-    if (item instanceof ErrorStatus) {
-      bind_error();
-      return;
-    }
-    if (item instanceof BuildStatus) {
-      bind_build();
-      return;
+    for (const klass of StatusKlasses) {
+      if (item instanceof klass) {
+        binder_map.get(klass as any)(item as any);
+        return;
+      }
     }
   });
   factory.connect('unbind', (_obj, item) => {
