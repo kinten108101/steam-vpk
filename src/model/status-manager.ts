@@ -60,6 +60,10 @@ export class ErrorStatus extends Status {
   }
 }
 
+export namespace BuildStatus {
+  export type TimeUnit = 'second' | 'milisecond';
+}
+
 export class BuildStatus extends Status {
   static {
     registerClass({
@@ -68,6 +72,9 @@ export class BuildStatus extends Status {
         elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           0, Number.MAX_SAFE_INTEGER, 0),
+        time_unit: GObject.ParamSpec.string('time-unit', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          <BuildStatus.TimeUnit>'second'),
         finished: GObject.ParamSpec.boolean('finished', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           false),
@@ -77,6 +84,7 @@ export class BuildStatus extends Status {
 
   status!: string;
   elapsed!: number;
+  time_unit!: BuildStatus.TimeUnit;
   finished!: boolean;
 }
 

@@ -2,7 +2,7 @@ import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import StatusManager, { BuildStatus, ErrorStatus, Status } from "../model/status-manager.js";
 import type { SignalMethods } from '@girs/gjs';
-import HeaderBox, { HeaderboxBuildTitleType } from '../ui/headerbox.js';
+import HeaderBox, { HeaderboxBuild } from '../ui/headerbox.js';
 import { ProfileBar } from '../ui/profile-bar.js';
 
 export interface HeaderboxFactory extends SignalMethods {
@@ -64,10 +64,10 @@ export default function StatusBroker(
   headerbox: HeaderBox;
   profile_bar: ProfileBar;
 }) {
-  const factory = new HeaderboxFactory();
   const binding_store: WeakMap<Status, { binds: GObject.Binding[] }> = new WeakMap;
   const binder_map: BinderMap = new BinderMap;
-  binder_map.set(ErrorStatus, (item: ErrorStatus) => {
+
+  function BindError(item: ErrorStatus) {
     const store = {
       binds: [] as GObject.Binding[],
     };
@@ -84,8 +84,10 @@ export default function StatusBroker(
       });
     });
     binding_store.set(item, store);
-  });
-  binder_map.set(BuildStatus, (item: BuildStatus) => {
+  }
+  binder_map.set(ErrorStatus, BindError);
+
+  function BindBuild(item: BuildStatus) {
     const store = {
       binds: [] as GObject.Binding[],
     };
@@ -100,8 +102,9 @@ export default function StatusBroker(
         const binding = item.bind_property(src_prop, tgt, tgt_prop, flags);
         store.binds.push(binding);
       });
+
       const using_finish = item.bind_property_full('finished', build_box, 'title-type', flags,
-        (_binding, from: boolean | null): [boolean, HeaderboxBuildTitleType] => {
+        (_binding, from: boolean | null): [boolean, HeaderboxBuild.TitleType] => {
           if (from === null) return [false, 'in-progress'];
           if (from) {
             return [true, 'done'];
@@ -110,9 +113,26 @@ export default function StatusBroker(
           }
         }, null as unknown as GObject.TClosure);
       store.binds.push(using_finish);
+
+      const using_time_unit = item.bind_property_full('time-unit', build_box, 'time-unit-word', flags,
+        (_binding, from: BuildStatus.TimeUnit | null): [boolean, HeaderboxBuild.TimeUnitWord] => {
+          if (from === null) return [false, 's'];
+          switch (from) {
+          case 'second':
+            return [true, 's'];
+          case 'milisecond':
+            return [true, 'ms'];
+          default:
+            throw new Error;
+          }
+        }, null as unknown as GObject.TClosure);
+      store.binds.push(using_time_unit);
     });
     binding_store.set(item, store);
-  });
+  }
+  binder_map.set(BuildStatus, BindBuild);
+
+  const factory = new HeaderboxFactory();
   factory.connect('bind', (_obj, item) => {
     for (const klass of StatusKlasses) {
       if (item instanceof klass) {
