@@ -6,7 +6,7 @@ Add-on manager for Left 4 Dead 2
 <br />
 </div>
 <div align="center">
-<img style="vertical-align: middle;" src="data/resources/screenshots/windows-v1.png" alt="Preview" width="640" />
+<img style="vertical-align: middle;" src="data/resources/screenshots/windows-v1.png" alt="Preview" />
 </div>
 <br />
 
