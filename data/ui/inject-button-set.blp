@@ -16,22 +16,21 @@ template $StvpkInjectButtonSet: Gtk.Box {
   styles ['inject-button-3']
   Adw.SplitButton inject {
     visible: true;
-    styles ['thin-button', 'blue']
+    styles ['thin-button']
     action-name: 'win.injector.run';
-    icon-name: 'play-large-symbolic';
+    icon-name: 'play-symbolic';
     popover: popover_menu;
   }
 
   Adw.SplitButton hold {
     visible: false;
-    styles ['thin-button', 'red']
+    styles ['thin-button']
     action-name: 'win.injector.cancel';
     action-target: bind template.id as <GLib.Variant>;
-    icon-name: 'stop-large-symbolic';
 
     Gtk.Box {
       Gtk.Image hold-icon {
-        icon-name: 'stop-large-symbolic';
+        icon-name: 'stop-symbolic';
       }
 
       Gtk.Spinner hold-spinner {
