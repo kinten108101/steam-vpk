@@ -1,5 +1,4 @@
 import GObject from 'gi://GObject';
-import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import {
   param_spec_string,
@@ -75,37 +74,6 @@ export class BuildStatus extends Status {
 
   status!: string;
   elapsed!: number;
-  _using_set_interval: GLib.Source | undefined;
-
-  time(): boolean {
-    if (this._using_set_interval !== undefined) {
-      console.warn('BuildStatus::time:', 'Timing has already begun');
-      return false;
-    }
-    this._using_set_interval = setInterval(() => {
-      this.elapsed++;
-    }, 1);
-    return true;
-  }
-
-  timeEnd(): boolean {
-    if (this._using_set_interval === undefined) {
-      console.warn('BuildStatus::timeEnd', 'No timing is taking place!');
-      return false;
-    }
-    this._using_set_interval.destroy();
-    this._using_set_interval = undefined;
-    return true;
-  }
-
-  clear(): boolean {
-    if (this._using_set_interval !== undefined) {
-      console.warn('BuildStatus::clear', 'Cannot clear status while timing is ongoing');
-      return false;
-    }
-    super.clear();
-    return true;
-  }
 }
 
 export default class StatusManager

@@ -216,6 +216,7 @@ export default interface AddonBoxClient extends GObject.Object {
   connect(signal: 'notify', callback: ($obj: this, spec: GObject.ParamSpec) => void): number;
   services: {
     injector: BackendServices;
+    injections: (id: string) => BackendServices;
     addons: BackendServices;
     workshop: BackendServices;
     settings: BackendServices;
@@ -239,6 +240,12 @@ export default class AddonBoxClient extends GObject.Object {
       interface_name: 'com.github.kinten108101.SteamVPK.Server.Injector',
       obj_path: '/com/github/kinten108101/SteamVPK/Server/injector',
     }),
+    injections(id: string) {
+      return BackendPortal({
+        interface_name: 'com.github.kinten108101.SteamVPK.Server.Injection',
+        obj_path: `/com/github/kinten108101/SteamVPK/Server/injections/${get_formatted_unique_name_str(id)}`,
+      });
+    },
     addons: BackendPortal({
       interface_name: 'com.github.kinten108101.SteamVPK.Server.Addons',
       obj_path: '/com/github/kinten108101/SteamVPK/Server/addons',
