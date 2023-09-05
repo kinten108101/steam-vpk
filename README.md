@@ -11,14 +11,14 @@
 
 This application is under development - not ready for practical usage. Any feedback, contribution, or feature request is greatly appreciated!
 
-### Install with GNOME Builder
+## Install with GNOME Builder
 
 1. Download [GNOME Builder](https://flathub.org/apps/details/org.gnome.Builder).
 2. In Builder, click the "Clone Repository" button at the bottom, using `https://github.com/kinten108101/addon-box.git` as the URL.
 3. Click on the popdown button next to build button. Verify that "manifest.json" is the Active Configuration.
 3. Click the build button at the top once the project is loaded.
 
-### Install with Flatpak Builder
+## Install with Flatpak Builder
 
 Download the necessary runtime, SDK, and extension for Flatpak:
 
@@ -32,7 +32,7 @@ Then run the builder tool:
 flatpak-builder --force-clean --user --install build build-aux/com.github.kinten108101.SteamVPK.yml
 ```
 
-### Install with Meson
+## Install with Meson
 
 Dependencies:
 
@@ -51,3 +51,47 @@ yarn install
 meson configure build-meson
 sudo meson install -C build-meson
 ```
+## Feature ideas
+<details>
+  <summary>Ideas (may change during development)</summary>
+  
+- Add-ons
+	- [x] View add-ons
+	- [ ] Create empty add-on
+	- [ ] Delete add-on
+	- [ ] Detect existing add-on
+	- [ ] Download from Workshop
+	- [ ] Download from Gamemaps
+	- [x] View add-on details
+	- [ ] Modify add-on details
+	- [ ] Use multiple archives per add-on
+	- [ ] Search add-ons
+- Load order
+	- [x] View loadorder
+	- [ ] Add, remove add-on entry
+	- [ ] Move add-on entry
+	- [ ] Drag n drop add-on entry
+	- [ ] Add, remove, move n drag separator entry
+	- [ ] Randomized add-on list
+	- [ ] Search add-on entry
+	- [ ] Detect conflicts between add-on entries
+	- [ ] Detect conflicts against external add-ons
+- Injection
+	- [x] Install add-ons as symlinks
+	- [ ] Modify in-game add-on details
+- Profiles
+	- [ ] View profiles
+	- [ ] Create, delete profile
+	- [ ] Import, export add-on list
+	- [ ] Modify profile details
+- Archives
+	- [ ] Add archive
+	- [ ] Delete archive
+	- [ ] Move n drag archive entry in add-on
+	- [ ] Archive installation wizard when steam id is found
+- (Linux) Patcher
+	- [ ] No background music patch
+	- [ ] Unchanging background clip patch
+	- [ ] Chinese characters patch
+
+</details>
