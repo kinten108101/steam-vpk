@@ -2,13 +2,14 @@
 <img style="vertical-align: middle;" src="data/resources/logo/com.github.kinten108101.SteamVPK.svg" alt="Project's logo" width="120" height="120" align="center" />
 <br />
 <h1>Steam VPK</h1>
-Add-on manager for Left 4 Dead 2
-<br />
+<p></p>Add-on manager for Left 4 Dead 2<br /></p>
 </div>
 <div align="center">
-<img style="vertical-align: middle;" src="data/resources/screenshots/windows-v1.png" alt="Preview" width="640" />
+<img style="vertical-align: middle;" src="data/resources/screenshots/windows-v1.png" alt="Preview" />
 </div>
 <br />
+
+This application is under development - not ready for practical usage. Any feedback, contribution, or feature request is greatly appreciated!
 
 ### Install with GNOME Builder
 
