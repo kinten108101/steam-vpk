@@ -11,6 +11,10 @@
 
 This application is under development - not ready for practical usage. Any feedback, contribution, or feature request is greatly appreciated!
 
+# Installation
+
+Steam VPK is a GUI client of Add-on Box. [Download it first!](https://github.com/kinten108101/steam-vpk-server)
+
 ## Install with GNOME Builder
 
 1. Download [GNOME Builder](https://flathub.org/apps/details/org.gnome.Builder).
