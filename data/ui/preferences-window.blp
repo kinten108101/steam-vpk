@@ -59,4 +59,34 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
       }
     }
   }
+
+  Adw.PreferencesPage {
+    icon-name: 'applications-science-symbolic';
+    title: _('Advanced');
+
+    Adw.PreferencesGroup {
+      title: _('Experimental');
+      description: _('Features below are unstable.');
+
+      Adw.ActionRow {
+        title: _('Run Button Style');
+
+        [suffix]
+        Gtk.DropDown inject_button_styles {
+          valign: center;
+          factory:
+            Gtk.BuilderListItemFactory {
+              template Gtk.ListItem {
+                child:
+                  Gtk.Label {
+                    label: bind template.item as <StringObject>.string;
+                  };
+              }
+            };
+          model:
+            Gtk.StringList {};
+        }
+      }
+    }
+  }
 }

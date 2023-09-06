@@ -11,6 +11,7 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
   static [GtkTemplate] = `resource://${APP_RDNN}/ui/preferences-window.ui`;
   static [GtkChildren] = [
     'enable_remember_winsize',
+    'inject_button_styles',
   ];
   static [GtkInternalChildren] = [
     'clear_game_dir',
@@ -21,9 +22,16 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
   }
 
   enable_remember_winsize!: Gtk.Switch;
+  inject_button_styles!: {
+    get_model(): Gtk.StringList;
+    get_selected_item(): {
+      get_string(): string;
+    } & GObject.Object;
+  } & Gtk.DropDown;
 
   _clear_game_dir!: Gtk.Button;
   _game_dir_path!: Gtk.Label;
+  _inject_button_styles_dropdown!: Gtk.DropDown;
 
   constructor(params = {}) {
     super(params);

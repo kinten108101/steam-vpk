@@ -2,7 +2,6 @@ import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import {
-  GtkTemplate,
   param_spec_variant,
   registerClass,
 } from '../steam-vpk-utils/utils.js';
@@ -15,29 +14,67 @@ export default class InjectButtonSet extends Gtk.Box {
     done: 'done',
   };
 
-  static [GObject.properties] = {
-    'prop-id': param_spec_variant({ name: 'id', type: GLib.VariantType.new('s'), default_value: GLib.Variant.new_string('placeholder id') }),
-  };
-
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/inject-button-set.ui`;
+  static ButtonStylesList = [
+    'minimal',
+    'blue',
+  ];
 
   static {
     registerClass({
-
-      Children: ['inject', 'hold', 'hold-spinner', 'hold-icon', 'done'],
+      Properties: {
+        'prop-id': param_spec_variant({ name: 'id', type: GLib.VariantType.new('s'), default_value: GLib.Variant.new_string('placeholder id') }),
+        button_style: GObject.ParamSpec.string('button-style', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          <InjectButtonSet['button_style']>'minimal'),
+      },
+      Template: `resource://${APP_RDNN}/ui/inject-button-set.ui`,
+      Children: [
+        'inject',
+        'hold',
+        'hold-spinner',
+        'hold-icon',
+        'done',
+      ],
     }, this);
   }
 
-  inject?: Gtk.Button;
-  hold?: Gtk.Button;
-  hold_spinner?: Gtk.Spinner;
-  hold_icon?: Gtk.Image;
-  done?: Gtk.Button;
+  button_style!: 'minimal' | 'blue';
+
+  inject!: {
+    set_icon_name(name: 'play-symbolic' | 'play-large-symbolic'): void;
+  } & Gtk.Button;
+  hold!: Gtk.Button;
+  hold_spinner!: Gtk.Spinner;
+  hold_icon!: {
+    set_from_icon_name(name: 'stop-symbolic' | 'stop-large-symbolic'): void;
+  } & Gtk.Image;
+  done!: Gtk.Button;
+
   id?: GLib.Variant;
 
   constructor(params = {}) {
     super(params);
     this.reset();
+    this.connect('notify::button-style', this._update_button_styles.bind(this));
+    this._update_button_styles();
+  }
+
+  _update_button_styles() {
+    switch (this.button_style) {
+    default:
+    case 'minimal':
+      this.inject.set_icon_name('play-symbolic');
+      this.inject.remove_css_class('blue');
+      this.hold_icon.set_from_icon_name('stop-symbolic');
+      this.hold.remove_css_class('red');
+      break;
+    case 'blue':
+      this.inject.set_icon_name('play-large-symbolic');
+      this.inject.add_css_class('blue');
+      this.hold_icon.set_from_icon_name('stop-large-symbolic');
+      this.hold.add_css_class('red');
+      break;
+    }
   }
 
   reset() {

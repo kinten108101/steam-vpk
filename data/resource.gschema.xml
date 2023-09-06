@@ -13,5 +13,8 @@
     <key name="default-height" type="i">
       <default>-1</default>
     </key>
+    <key name="inject-button-style" type="s">
+      <default>""</default>
+    </key>
   </schema>
 </schemalist>

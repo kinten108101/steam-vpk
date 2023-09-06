@@ -42,6 +42,8 @@ import HeaderboxDetachable from './headerbox-detachable.js';
 import SettingsPresenter from '../presenters/settings.js';
 import SettingsActions from '../actions/settings.js';
 import { StatusDebugActions } from '../actions/status-debug-actions.js';
+import SettingsInjectButtonStylesPresenter from '../presenters/settings/inject-button-styles.js';
+import InjectButtonSetRestore from '../presenters/inject-button-set-restore.js';
 
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
@@ -90,8 +92,14 @@ export default function MainWindow(
     .get_typed_object<Adw.ViewStack>('win-view-stack');
   const leaflet = builder
     .get_typed_object<Adw.Leaflet>('leaflet');
+
   const inject_button_set = builder
     .get_typed_object<InjectButtonSet>('inject-button-set');
+  InjectButtonSetRestore({
+    inject_button_set,
+    gsettings: settings,
+  });
+
   const profile_bar = builder
     .get_typed_object<ProfileBar>('profileBar');
   const launchpad_page = builder
@@ -126,14 +134,70 @@ export default function MainWindow(
     leaflet,
   });
 
-  WindowActions({
-    action_map,
-    leaflet,
+  const group = new Gio.SimpleActionGroup();
+  SettingsActions({
     parent_window,
     main_window: window,
     settings,
     client,
+  }).export2actionMap(group);
+
+  const showPreferences = new Gio.SimpleAction({
+    name: 'show-preferences',
   });
+  showPreferences.connect('activate', () => {
+    const prefWin = new PreferencesWindow();
+    prefWin.insert_actions(group);
+    SettingsPresenter({
+      preferences_window: prefWin,
+      client,
+      gsettings: settings,
+    });
+    SettingsInjectButtonStylesPresenter({
+      inject_button_styles: prefWin.inject_button_styles,
+      gsettings: settings,
+    })
+
+    prefWin.set_transient_for(parent_window);
+    prefWin.present();
+  });
+  action_map.add_action(showPreferences);
+
+  const reloadAddons = new Gio.SimpleAction({
+    name: 'reload-addons',
+  });
+  reloadAddons.connect('activate', () => {
+    (async () => {
+      await client.services.addons.call('ForceUpdate');
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(reloadAddons);
+
+  const showAbout = new Gio.SimpleAction({ name: 'show-about' });
+  showAbout.connect('activate', () => {
+    AboutWindow({
+      parent_window,
+    }).present();
+  });
+  action_map.add_action(showAbout);
+
+  let back_from: string | null = null;
+
+  const back = new Gio.SimpleAction({ name: 'back' });
+  back.connect('activate', () => {
+    const _back_from = leaflet.get_visible_child_name();
+    if (_back_from === 'addons-page') return;
+    leaflet.set_visible_child_name('addons-page');
+    back_from = _back_from;
+  });
+  action_map.add_action(back);
+
+  const forward = new Gio.SimpleAction({ name: 'forward' });
+  forward.connect('activate', () => {
+    if (back_from === null) return;
+    leaflet.set_visible_child_name(back_from);
+  });
+  action_map.add_action(forward);
 
   const addon_details_builder = AddonDetailsLeafletPage({
     leaflet_page_entry: leaflet.get_child_by_name('addon-details-page') as Adw.Bin,
@@ -168,6 +232,7 @@ export default function MainWindow(
   AddonStorageControls({
     action_map,
     parent_window,
+    client,
   });
 
   AddonsPanelDiskActions({
@@ -232,81 +297,4 @@ export default function MainWindow(
   });
 
   return window;
-}
-
-function WindowActions(
-{ action_map,
-  leaflet,
-  parent_window,
-  main_window,
-  settings,
-  client,
-}:
-{ action_map: Gio.ActionMap;
-  leaflet: Adw.Leaflet;
-  parent_window: Gtk.Window;
-  main_window: Gtk.ApplicationWindow;
-  settings: Gio.Settings;
-  client: AddonBoxClient;
-}) {
-  const group = new Gio.SimpleActionGroup();
-  SettingsActions({
-    parent_window,
-    main_window,
-    settings,
-    client,
-  }).export2actionMap(group);
-
-  const showPreferences = new Gio.SimpleAction({
-    name: 'show-preferences',
-  });
-  showPreferences.connect('activate', () => {
-    const prefWin = new PreferencesWindow();
-    prefWin.insert_actions(group);
-    SettingsPresenter({
-      preferences_window: prefWin,
-      client,
-      gsettings: settings,
-    });
-
-    prefWin.set_transient_for(parent_window);
-    prefWin.present();
-  });
-  action_map.add_action(showPreferences);
-
-  const reloadAddons = new Gio.SimpleAction({
-    name: 'reload-addons',
-  });
-  reloadAddons.connect('activate', () => {
-    (async () => {
-      await client.services.addons.call('ForceUpdate');
-    })().catch(error => logError(error));
-  });
-  action_map.add_action(reloadAddons);
-
-  const showAbout = new Gio.SimpleAction({ name: 'show-about' });
-  showAbout.connect('activate', () => {
-    AboutWindow({
-      parent_window,
-    }).present();
-  });
-  action_map.add_action(showAbout);
-
-  let back_from: string | null = null;
-
-  const back = new Gio.SimpleAction({ name: 'back' });
-  back.connect('activate', () => {
-    const _back_from = leaflet.get_visible_child_name();
-    if (_back_from === 'addons-page') return;
-    leaflet.set_visible_child_name('addons-page');
-    back_from = _back_from;
-  });
-  action_map.add_action(back);
-
-  const forward = new Gio.SimpleAction({ name: 'forward' });
-  forward.connect('activate', () => {
-    if (back_from === null) return;
-    leaflet.set_visible_child_name(back_from);
-  });
-  action_map.add_action(forward);
 }
