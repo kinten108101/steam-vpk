@@ -65,19 +65,23 @@ export default function SettingsActions(
     if (val) {
       settings.set_boolean('remember-winsize', true);
 
-      function update_dh() {
-        settings.set_int('default-height', main_window.default_height);
+      function update_size() {
+        try {
+          settings.set_value('window-size', GLib.Variant.new_tuple([
+            GLib.Variant.new_int32(main_window.default_width),
+            GLib.Variant.new_int32(main_window.default_height),
+            GLib.Variant.new_boolean(main_window.maximized)
+          ]));
+        } catch (error) {
+          logError(error);
+        }
       }
-      const using_dh = main_window.connect('notify::default-height', update_dh);
-      update_dh();
+      const using_dh = main_window.connect('notify::default-height', update_size);
+      const using_dw = main_window.connect('notify::default-width', update_size);
+      const using_maximized = main_window.connect('notify::maximized', update_size);
+      update_size();
 
-      function update_dw() {
-        settings.set_int('default-width', main_window.default_width);
-      }
-      const using_dw = main_window.connect('notify::default-width', update_dw);
-      update_dw();
-
-      rw_handlers.push(using_dh, using_dw);
+      rw_handlers.push(using_dh, using_dw, using_maximized);
     } else {
       settings.set_boolean('remember-winsize', false);
       rw_handlers.forEach(x => {

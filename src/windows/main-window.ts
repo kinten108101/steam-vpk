@@ -74,11 +74,14 @@ export default function MainWindow(
   builder.add_from_resource(`${APP_RDNN}/ui/window.ui`);
   const window = builder.get_typed_object<Adw.ApplicationWindow>('window');
   window.set_application(application);
-  if (settings.get_boolean('remember-winsize')) {
-    window.set_default_size(
-      settings.get_int('default-width'),
-      settings.get_int('default-height'),
-    );
+  try {
+    if (settings.get_boolean('remember-winsize')) {
+      const val: [number, number, boolean] = settings.get_value('window-size').recursiveUnpack();
+      window.set_default_size(val[0], val[1]);
+      if (val[2] === true) window.maximize();
+    }
+  } catch (error) {
+    logError(error);
   }
   client.services.injector.call
   const window_group = new Gtk.WindowGroup();

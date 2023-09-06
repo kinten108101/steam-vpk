@@ -7,11 +7,8 @@
     <key name="remember-winsize" type="b">
       <default>false</default>
     </key>
-    <key name="default-width" type="i">
-      <default>-1</default>
-    </key>
-    <key name="default-height" type="i">
-      <default>-1</default>
+    <key name="window-size" type="(iib)">
+      <default>(-1,-1,false)</default>
     </key>
     <key name="inject-button-style" type="s">
       <default>""</default>
