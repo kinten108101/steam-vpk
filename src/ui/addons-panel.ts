@@ -6,6 +6,44 @@ import TypedBuilder from '../utils/typed-builder.js';
 import { FieldRow } from './field-row.js';
 import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
 
+export namespace UsageMeter {
+  export type Colors = 'yellow' | 'red';
+}
+
+export class UsageMeter extends Gtk.ProgressBar {
+  static Colors = ['yellow', 'red'];
+
+  static {
+    GObject.registerClass({
+      GTypeName: 'StvpkUsageMeter',
+    }, this);
+  }
+
+  constructor(params = {}) {
+    super(params);
+    this.connect('notify::fraction', this._update_usage_meter.bind(this));
+    this._update_usage_meter();
+  }
+
+  _update_usage_meter() {
+    const remove_all_except = (except: string) => {
+      UsageMeter.Colors.forEach(color => {
+        if (color === except) return;
+        this.remove_css_class(color);
+      });
+    };
+    if (this.fraction < 0.8) {
+      remove_all_except('');
+    } else if (this.fraction < 0.9) {
+      this.add_css_class('yellow');
+      remove_all_except('yellow');
+    } else {
+      this.add_css_class('red');
+      remove_all_except('red');
+    }
+  }
+}
+
 export default class AddonsPanel extends Adw.PreferencesGroup {
   static [GObject.properties] = {
     icon_name: GObject.ParamSpec.string('icon-name', '', '',

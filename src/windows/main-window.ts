@@ -10,7 +10,7 @@ import InjectButtonSet from '../ui/inject-button-set.js';
 import {
   APP_RDNN,
 } from '../utils/const.js';
-import AddonsPanel, { AddonsPanelDiskPage } from '../ui/addons-panel.js';
+import AddonsPanel, { AddonsPanelDiskPage, UsageMeter } from '../ui/addons-panel.js';
 import StackController from '../actions/stack-controller.js';
 import TypedBuilder from '../utils/typed-builder.js';
 import InjectConsolePresenter from '../presenters/inject-console-presenter.js';
@@ -46,6 +46,7 @@ import SettingsInjectButtonStylesPresenter from '../presenters/settings/inject-b
 import InjectButtonSetRestore from '../presenters/inject-button-set-restore.js';
 import UsagePresenter from '../presenters/usage-presenter.js';
 
+GObject.type_ensure(UsageMeter.$gtype);
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
 GObject.type_ensure(DownloadPage.$gtype);
