@@ -1,5 +1,4 @@
 interface = [
-  'gtk/menus.blp',
   'gtk/help-overlay.blp',
   'ui/add-addon-name.blp',
   'ui/add-addon-url-input-url.blp',

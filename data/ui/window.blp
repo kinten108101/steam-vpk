@@ -11,7 +11,7 @@ menu add_menu {
   }
 }
 
-menu primary-menu {
+menu primary_menu {
   section {
     item {
       custom: 'themeselector';
@@ -29,15 +29,7 @@ menu primary-menu {
   }
 }
 
-menu run_menu {
-  section {
-    item (_("Run"), "app.placeholder-command")
-    item (_("Run with script..."), "app.placeholder-command")
-  }
-}
-
 Adw.ApplicationWindow window {
-  resizable: true;
   default-width: 864;
   default-height: 600;
 
@@ -120,6 +112,7 @@ Adw.ApplicationWindow window {
                     Gtk.MenuButton {
                       valign: start;
                       margin-top: 4;
+
                       visible: true;
                       margin-start: 4;
                       always-show-arrow: true;
@@ -134,6 +127,7 @@ Adw.ApplicationWindow window {
                     Gtk.WindowControls {
                       valign: start;
                       margin-top: 4;
+
                       side: end;
                     }
 
@@ -141,11 +135,14 @@ Adw.ApplicationWindow window {
                     Gtk.MenuButton {
                       valign: start;
                       margin-top: 4;
+
                       icon-name: "open-menu-symbolic";
                       popover:
                         Gtk.PopoverMenu main_menu {
-                          menu-model: primary-menu;
+                          menu-model: primary_menu;
                         };
+
+                      tooltip-text: _('Main Menu');
                     }
 
                     [end]
