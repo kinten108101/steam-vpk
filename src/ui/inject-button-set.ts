@@ -17,6 +17,7 @@ export default class InjectButtonSet extends Gtk.Box {
   static ButtonStylesList = [
     'minimal',
     'blue',
+    'blue-pure',
   ];
 
   static {
@@ -38,7 +39,7 @@ export default class InjectButtonSet extends Gtk.Box {
     }, this);
   }
 
-  button_style!: 'minimal' | 'blue';
+  button_style!: 'minimal' | 'blue' | 'blue-pure';
 
   inject!: {
     set_icon_name(name: 'play-symbolic' | 'play-large-symbolic'): void;
@@ -73,6 +74,12 @@ export default class InjectButtonSet extends Gtk.Box {
       this.inject.add_css_class('blue');
       this.hold_icon.set_from_icon_name('stop-large-symbolic');
       this.hold.add_css_class('red');
+      break;
+    case 'blue-pure':
+      this.inject.set_icon_name('play-large-symbolic');
+      this.inject.add_css_class('blue');
+      this.hold_icon.set_from_icon_name('stop-symbolic');
+      this.hold.remove_css_class('red');
       break;
     }
   }
