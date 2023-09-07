@@ -128,7 +128,6 @@ export default function MainWindow(
   StackController({
     stack: win_view_stack,
     action_map,
-    application,
   });
 
   DownloadPagePresent({

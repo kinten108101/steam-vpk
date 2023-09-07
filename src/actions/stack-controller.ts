@@ -1,15 +1,12 @@
 import Gio from 'gi://Gio';
-import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 export default function StackController(
 { stack,
   action_map,
-  application,
 }:
 { stack?: Adw.ViewStack;
   action_map: Gio.ActionMap;
-  application: Gtk.Application;
 }) {
   if (!stack) return;
   const model = stack.get_pages();
@@ -27,7 +24,6 @@ export default function StackController(
     model.select_item(next, true);
   });
   action_map.add_action(pageForward);
-  application.set_accels_for_action('win.stack.page-forward', ['<Shift>Right']);
 
   const pageBackward = new Gio.SimpleAction({
     name: 'stack.page-backward',
@@ -39,5 +35,4 @@ export default function StackController(
     model.select_item(next, true);
   });
   action_map.add_action(pageBackward);
-  application.set_accels_for_action('win.stack.page-backward', ['<Shift>Left']);
 }
