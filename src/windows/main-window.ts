@@ -167,9 +167,7 @@ export default function MainWindow(
     SettingsInjectButtonStylesPresenter({
       inject_button_styles: prefWin.inject_button_styles,
       gsettings: settings,
-    })
-
-    prefWin.set_transient_for(parent_window);
+    });
     prefWin.present();
   });
   action_map.add_action(showPreferences);
