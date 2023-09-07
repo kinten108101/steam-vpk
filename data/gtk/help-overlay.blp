@@ -2,45 +2,62 @@ using Gtk 4.0;
 
 Gtk.ShortcutsWindow help_overlay {
   modal: true;
+
   Gtk.ShortcutsSection {
-    section-name: 'addons';
-    title: _('Add-ons');
+    section-name: 'all';
+    title: _('All');
+    max-height: 10;
+
+    Gtk.ShortcutsGroup {
+      title: _('General');
+
+      Gtk.ShortcutsShortcut {
+        title: _('Quit');
+        action-name: 'app.quit';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Toggle primary menu');
+        accelerator: 'F10';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('New window');
+        action-name: 'app.new-window';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Close window');
+        action-name: 'window.close';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Preferences');
+        action-name: 'win.show-preferences';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Keyboard Shortcuts');
+        action-name: 'win.show-help-overlay';
+      }
+    }
 
     Gtk.ShortcutsGroup {
       title: _('Add-ons');
 
       Gtk.ShortcutsShortcut {
+        title: _('Reload data from disk');
+        action-name: 'win.reload-addons';
+      }
+
+      Gtk.ShortcutsShortcut {
         title: _('Detect add-on folder');
-        accelerator: '<Control>m';
+        action-name: 'win.add-addon.add-name';
       }
 
       Gtk.ShortcutsShortcut {
         title: _('Import from Workshop');
-        accelerator: '<Control>b';
-      }
-    }
-  }
-
-  Gtk.ShortcutsSection {
-    section-name: 'navigation';
-    title: _('Navigation');
-
-    Gtk.ShortcutsGroup {
-      title: _('Windows');
-
-      Gtk.ShortcutsShortcut {
-        title: _('New window');
-        accelerator: '<Control>n';
-      }
-
-      Gtk.ShortcutsShortcut {
-        title: _('Close window');
-        accelerator: '<Control>w';
-      }
-
-      Gtk.ShortcutsShortcut {
-        title: _('Preferences');
-        accelerator: '<Control>comma';
+        action-name: 'win.add-addon.add-url';
       }
     }
 
@@ -48,22 +65,23 @@ Gtk.ShortcutsWindow help_overlay {
       title: _('Browsing');
 
       Gtk.ShortcutsShortcut {
+        title: _('Switch to left tab');
+        action-name: 'win.stack.page-backward';
+      }
+
+      Gtk.ShortcutsShortcut {
+        title: _('Switch to right tab');
+        action-name: 'win.stack.page-forward';
+      }
+
+      Gtk.ShortcutsShortcut {
         title: _('Go back');
-        accelerator: '<Alt>Left';
+        action-name: 'win.back';
       }
 
       Gtk.ShortcutsShortcut {
         title: _('Go forth');
-        accelerator: '<Alt>Right';
-      }
-    }
-
-    Gtk.ShortcutsGroup {
-      title: _('Application');
-
-      Gtk.ShortcutsShortcut {
-        title: _('Quit');
-        accelerator: '<Control>q';
+        action-name: 'win.forward';
       }
     }
   }
