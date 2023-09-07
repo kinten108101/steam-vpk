@@ -44,6 +44,7 @@ import SettingsActions from '../actions/settings.js';
 import { StatusDebugActions } from '../actions/status-debug-actions.js';
 import SettingsInjectButtonStylesPresenter from '../presenters/settings/inject-button-styles.js';
 import InjectButtonSetRestore from '../presenters/inject-button-set-restore.js';
+import UsagePresenter from '../presenters/usage-presenter.js';
 
 GObject.type_ensure(AddonsPanel.$gtype);
 GObject.type_ensure(LaunchpadPage.$gtype);
@@ -107,8 +108,15 @@ export default function MainWindow(
     .get_typed_object<ProfileBar>('profileBar');
   const launchpad_page = builder
     .get_typed_object<LaunchpadPage>('launchpadPage');
+
   const download_page = builder
     .get_typed_object<DownloadPage>('downloadPage');
+
+  UsagePresenter({
+    client,
+    addons_panel: download_page.panel,
+  });
+
   const headerbox = builder
     .get_typed_object<HeaderBox>('headerbox');
 

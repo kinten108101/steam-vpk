@@ -12,11 +12,13 @@ template $StvpkAddonsPanel : Adw.PreferencesGroup {
         margin-end: 12;
         margin-top: 8;
         margin-bottom: 16;
-        Gtk.Image {
+
+        Gtk.Image real_icon {
           halign: start;
           icon-name: 'drive-removable-media';
           pixel-size: 64;
         }
+
         Gtk.Box {
           margin-top: 4;
           orientation: vertical;
@@ -27,6 +29,7 @@ template $StvpkAddonsPanel : Adw.PreferencesGroup {
             Gtk.Box {
               halign: fill;
               orientation: vertical;
+
               Gtk.Label {
                 halign: fill;
                 xalign: 0;
@@ -35,6 +38,7 @@ template $StvpkAddonsPanel : Adw.PreferencesGroup {
                 ellipsize: end;
                 lines: 1;
               }
+
               Gtk.Label {
                 halign: fill;
                 xalign: 0;
@@ -45,29 +49,30 @@ template $StvpkAddonsPanel : Adw.PreferencesGroup {
               }
             }
 
-            Gtk.Box {
+            Gtk.Box stat_box {
               visible: true;
               margin-start: 8;
               orientation: vertical;
               halign: fill;
-              Gtk.Label used {
+
+              Gtk.Label main_row {
                 halign: end;
                 justify: right;
-                label: '824.618 MB Used';
+                label: '15.6 GB Available';
                 ellipsize: start; lines: 1;
               }
-              Gtk.Label allocated {
+
+              Gtk.Label sub_row {
                 halign: end;
                 justify: right;
-                use-markup: true;
-                label: '<span size=\'small\'>3.5 GB Allocated</span>';
+                label: '1.6 GB Used';
                 styles ['dim-label', 'size-subtitle']
                 ellipsize: start; lines: 1;
               }
             }
           }
 
-          Gtk.ProgressBar usage-meter {
+          Gtk.ProgressBar usage_meter {
             visible: false;
             halign: fill;
             hexpand: true;

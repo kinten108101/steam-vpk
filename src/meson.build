@@ -27,6 +27,7 @@ script = [
   'presenters/launchpad-present.ts',
   'presenters/settings.ts',
   'presenters/status-broker.ts',
+  'presenters/usage-presenter.ts',
   'steam-vpk-utils/dbus-utils.ts',
   'steam-vpk-utils/files.ts',
   'steam-vpk-utils/portals.ts',

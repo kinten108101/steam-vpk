@@ -14,6 +14,7 @@ import {
 } from '../steam-vpk-utils/utils.js';
 import { APP_RDNN } from '../utils/const.js';
 import RepositoryList, { UseStates } from '../model/repositorylist.js';
+import AddonsPanel from './addons-panel.js';
 
 export class UseButton extends Gtk.Button {
   static [GObject.properties] = {
@@ -75,16 +76,26 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
 }
 
 export class DownloadPage extends Adw.PreferencesPage {
-  static [GObject.properties] = {
-    addons: param_spec_object({ name: 'addons', objectType: RepositoryList.$gtype }),
-  }
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/download-page.ui`;
-  static [GtkChildren] = [ 'local_addons', 'remote_addons', 'local_group', 'remote_group' ];
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkDownloadPage',
+      Properties: {
+        addons: param_spec_object({ name: 'addons', objectType: RepositoryList.$gtype }),
+      },
+      Template: `resource://${APP_RDNN}/ui/download-page.ui`,
+      Children: [
+        'panel',
+        'local_addons',
+        'remote_addons',
+        'local_group',
+        'remote_group',
+      ],
+    }, this);
   };
 
   addons: RepositoryList;
+
+  panel!: AddonsPanel;
   local_addons!: Gtk.ListBox;
   remote_addons!: Gtk.ListBox;
   local_group!: Adw.PreferencesGroup;
