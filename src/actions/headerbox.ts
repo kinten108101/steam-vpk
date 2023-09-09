@@ -10,14 +10,13 @@ export default function HeaderBoxActions(
 { action_map: Gio.ActionMap;
   headerbox: HeaderBox;
 }) {
+  let next_reveal = false;
   const reveal = new Gio.SimpleAction({
     name: "headerbox.reveal",
-    parameter_type: GLib.VariantType.new('b'),
   });
-  reveal.connect("activate", (_action, parameter) => {
-    if (parameter === null) throw new Error;
-    const next = parameter.get_boolean();
-    headerbox.reveal_child = next;
+  reveal.connect("activate", (_action) => {
+    next_reveal = !next_reveal;
+    headerbox.reveal_child = next_reveal;
   });
   action_map.add_action(reveal);
 

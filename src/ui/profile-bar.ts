@@ -1,4 +1,3 @@
-import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
@@ -51,11 +50,6 @@ export class ProfileBar extends Adw.Bin {
   }
 
   _setup_actionable() {
-    this.primary_button.bind_property_full('active', this.primary_button, 'action-target',
-      GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: boolean) => {
-        return [true, GLib.Variant.new_boolean(from)];
-      }, null as unknown as GObject.TClosure);
     // For some reasons, GtkToggleButton with an action specified will act like a GtkButton aka not toggleable.
     // This is a workaround
     this.primary_button.connect('clicked', () => {
