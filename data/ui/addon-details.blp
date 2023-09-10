@@ -2,11 +2,11 @@ using Gtk 4.0;
 using Adw 1;
 using GLib 2.0;
 
-Gtk.Box page {
+template $StvpkAddonDetails : Gtk.Box {
   styles ['addon-details']
   orientation: vertical;
 
-  Gtk.Stack headerbar-stack {
+  Gtk.Stack headerbar_stack {
     transition-type: crossfade;
     Gtk.StackPage {
       name: 'flat';
@@ -33,7 +33,7 @@ Gtk.Box page {
         Adw.HeaderBar {
           styles ['flat']
           title-widget:
-            Adw.WindowTitle wintitle-full {
+            Adw.WindowTitle wintitle_full {
               title: 'Zhengcheng Lv 7.2'; // placeholder
             };
 
@@ -99,7 +99,7 @@ Gtk.Box page {
                       margin-start: 8;
                       orientation: vertical;
                       halign: end;
-                      Gtk.Label used {
+                      Gtk.Label used_label {
                         halign: end;
                         justify: right;
                         label: '824.618 MB Used';
@@ -135,64 +135,70 @@ Gtk.Box page {
               };
           } // preferences row
 
-          $StvpkFieldRow stvpkid {
-            icon-name: 'fingerprint-symbolic';
-            title: _('Internal ID');
-            //subtitle: _('For add-on management.');
-            value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
+          Adw.ExpanderRow {
+            title: _('Advanced');
 
-            [suffix]
-            Gtk.Button stvpkid-copy {
-              icon-name: 'edit-copy-symbolic';
-              action-name: 'win.addon-details.copy-string';
-              action-target: bind (data as <$StvpkBuilderData>).id;
-              valign: center;
-              styles ['flat']
+            $StvpkFieldRow stvpkid_row {
+              icon-name: 'fingerprint-symbolic';
+              title: _('Internal ID');
+              //subtitle: _('For add-on management.');
+              value: 'zengcheng-lv7-3@爱都有罪love'; // placeholder
+
+              [suffix]
+              Gtk.Button stvpkid-copy {
+                icon-name: 'edit-copy-symbolic';
+                action-name: 'win.addon-details.copy-string';
+                action-target: bind template.id-gvariant as <GLib.Variant>;
+                valign: center;
+                styles ['flat']
+              }
             }
+
+            $StvpkFieldRow steamid_row {
+              visible: false;
+              icon-name: 'fingerprint-symbolic';
+              title: _('Steamworks ID');
+              //subtitle: _('For vanity data and other resources.');
+              value: '2396847377'; // placeholder
+
+              [suffix]
+              Gtk.Button steamid-copy {
+                icon-name: 'edit-copy-symbolic';
+                action-name: 'win.addon-details.copy-string';
+                action-target: bind template.steamid-gvariant as <GLib.Variant>;
+                valign: center;
+                styles ['flat']
+              }
+            }
+
           }
 
-          $StvpkFieldRow steamid {
-            visible: false;
-            icon-name: 'fingerprint-symbolic';
-            title: _('Steamworks ID');
-            //subtitle: _('For vanity data and other resources.');
-            value: '2396847377'; // placeholder
-
-            [suffix]
-            Gtk.Button steamid-copy {
-              icon-name: 'edit-copy-symbolic';
-              action-name: 'win.addon-details.copy-string';
-              action-target: bind (data as <$StvpkBuilderData>).steamid;
-              valign: center;
-              styles ['flat']
-            }
-          }
-
-          Adw.ActionRow visit-steam-row {
+          $StvpkActionRow visit_workshop_row {
             visible: false;
             title: _('View in Workshop');
             subtitle: ''; // placeholder
-            activatable-widget: visit-steam-button;
+            activatable-widget: visit_workshop_button;
 
             [suffix]
-            Gtk.Button visit-steam-button {
+            Gtk.Button visit_workshop_button {
               action-name: 'win.addon-details.visit-website';
-              action-target: bind (data as <$StvpkBuilderData>).steam-url;
+              //action-target: bind (data as <$StvpkBuilderData>).steam-url;
+              action-target: bind template.steamurl-gvariant as <GLib.Variant>;
               icon-name: 'step-out-symbolic';
               valign: center;
               styles ['flat']
             }
           }
 
-          Adw.ActionRow {
+          $StvpkActionRow visit_subdir_row {
             title: _('Open in Explorer');
-            activatable-widget: explore-button;
+            activatable-widget: explore_button;
 
             [suffix]
-            Gtk.Button explore-button {
+            Gtk.Button explore_button {
               icon-name: 'folder-symbolic';
               action-name: 'win.addon-details.explore-fs';
-              action-target: bind (data as <$StvpkBuilderData>).subdir-uri;
+              action-target: bind template.subdir-gvariant as <GLib.Variant>;
               valign: center;
               styles ['flat']
             }
@@ -276,7 +282,7 @@ Gtk.Box page {
             [suffix]
             Gtk.Button delete-button {
               action-name: 'win.addons.trash';
-              action-target: bind (data as <$StvpkBuilderData>).id;
+              action-target: bind template.id-gvariant as <GLib.Variant>;
               valign: center;
               label: _('Delete');
               styles ['destructive-action']
@@ -286,7 +292,4 @@ Gtk.Box page {
       }
     }
   }
-
 }
-
-$StvpkBuilderData data {}

@@ -25,11 +25,11 @@ interface = [
   'ui/launchpad-page.blp',
   'ui/launchpad-row.blp',
   'ui/launchpad-section.blp',
+  'ui/main-window.blp',
   'ui/preferences-window.blp',
   'ui/profile-bar.blp',
   'ui/spinning-button.blp',
   'ui/themeselector.blp',
-  'ui/window.blp',
 ]
 
 interface_files = files(interface)

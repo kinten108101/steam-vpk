@@ -1,25 +1,28 @@
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
-import {
-  param_spec_string,
-  registerClass,
-  GtkTemplate,
-} from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
+import UseSensitivitySemaphore from '../utils/sensitivity-semaphore.js';
 
-export class FieldRow extends Adw.ActionRow {
-  static [GObject.properties] = {
-    value: param_spec_string({ name: 'value', blurb: 'Markup is allowed' }),
-  };
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/field-row.ui`;
-
+export class ActionRow extends UseSensitivitySemaphore(Adw.ActionRow) {
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkActionRow',
+    }, this);
+  }
+}
+
+export class FieldRow extends ActionRow {
+  static {
+    GObject.registerClass({
+      GTypeName: 'StvpkFieldRow',
+      Properties: {
+        value: GObject.ParamSpec.string(
+          'value', 'Value', 'Field value, markup is allowed',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+      },
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/field-row.ui',
+    }, this);
   }
 
   value!: string;
-
-  set_value(val: string) {
-    this.value = val;
-  }
 }

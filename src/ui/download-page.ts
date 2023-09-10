@@ -13,7 +13,7 @@ import {
   registerClass,
 } from '../steam-vpk-utils/utils.js';
 import { APP_RDNN } from '../utils/const.js';
-import RepositoryList, { UseStates } from '../model/repositorylist.js';
+import RepositoryList, { UseStates } from '../model/repository.js';
 import AddonsPanel from './addons-panel.js';
 
 export class UseButton extends Gtk.Button {
@@ -50,8 +50,6 @@ export class UseButton extends Gtk.Button {
       this.add_css_class('suggested-action');
       this.set_sensitive(true);
       break;
-    default:
-      throw new Error(`Unexpected UseButton.States. Details: ${state}`);
     }
   }
 }
@@ -93,7 +91,7 @@ export class DownloadPage extends Adw.PreferencesPage {
     }, this);
   };
 
-  addons: RepositoryList;
+  addons: RepositoryList | null = null;
 
   panel!: AddonsPanel;
   local_addons!: Gtk.ListBox;
@@ -103,31 +101,47 @@ export class DownloadPage extends Adw.PreferencesPage {
 
   constructor(params = {}) {
     super(params);
-    this.addons = new RepositoryList();
-    // NOTE(kinten): For GtkNoSelection, use the constructor with { model } param, DO NOT use the constructor with positional param (did not work).
-    (<[Gtk.ListBox, Gio.ListModel, Adw.PreferencesGroup][]>
-    [
-      [this.local_addons, this.addons.local_addons, this.local_group],
-      [this.remote_addons, this.addons.remote_addons, this.remote_group],
-    ]).forEach(([list, model, group]) => {
-      list.bind_model(model, (item: GObject.Object) => {
-        const widget = new DownloadPageRow();
-        const flags = GObject.BindingFlags.BIDIRECTIONAL | GObject.BindingFlags.SYNC_CREATE;
-        (<[string, Gtk.Widget, string][]>[
-          ['name', widget.title, 'label'],
-          ['creator', widget.subtitle, 'label'],
-          ['use-state', widget.use_button, 'state'],
-          ['id-gvariant', widget, 'id_gvariant'],
-          ['description', widget.description, 'label'],
-        ]).forEach(([prop, child, child_prop]) => {
-          item.bind_property(prop, child, child_prop, flags);
+    this.connect('notify::addons', () => {
+      if (this.addons === null) return;
+      // NOTE(kinten): For GtkNoSelection, use the constructor with { model } param, DO NOT use the constructor with positional param (did not work).
+      (<[Gtk.ListBox, Gio.ListModel, Adw.PreferencesGroup][]>
+      [
+        [this.local_addons, this.addons.local_addons, this.local_group],
+        [this.remote_addons, this.addons.remote_addons, this.remote_group],
+      ]).forEach(([list, model, group]) => {
+        list.bind_model(model, (item: GObject.Object) => {
+          const widget = new DownloadPageRow();
+          const flags = GObject.BindingFlags.SYNC_CREATE;
+          (<[string, Gtk.Widget, string][]>[
+            ['name', widget.title, 'label'],
+            ['use-state', widget.use_button, 'state'],
+            ['description', widget.description, 'label'],
+          ]).forEach(([prop, child, child_prop]) => {
+            item.bind_property(prop, child, child_prop, flags);
+          });
+          item.bind_property_full('creators', widget.subtitle, 'label',
+            GObject.BindingFlags.SYNC_CREATE,
+            (_binding, from: { id: string }[] | null): [boolean, string] => {
+              console.log(from);
+              if (from === null) return [false, ''];
+              const name = from[0]?.id;
+              if (name === undefined) return [false, ''];
+              return [true, name];
+            },
+            () => {});
+          item.bind_property_full('id', widget, 'id-gvariant',
+            GObject.BindingFlags.SYNC_CREATE,
+            (_binding, from: string | null): [boolean, GLib.Variant] => {
+              if (from === null) return [true, GLib.Variant.new_string('')];
+              return [true, GLib.Variant.new_string(from)];
+            },
+            () => {});
+          return widget;
         });
-        return widget;
+        model.connect('notify::n-items', update_group_with_list.bind(null, model, group));
+        update_group_with_list(model, group);
       });
-      model.connect('notify::n-items', update_group_with_list.bind(null, model, group));
-      update_group_with_list(model, group);
     });
-
   }
 }
 

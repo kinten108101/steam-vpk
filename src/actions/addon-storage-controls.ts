@@ -4,6 +4,7 @@ import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 import { SimpleAction } from '../utils/action-builder.js';
 import { MessageDialog } from '../dialogs/message-dialog.js';
+import AddonBoxClient from '../backend/client.js';
 
 export function logged(func: Function) {
   return function (this: any, ...args: any[]) {
@@ -16,9 +17,11 @@ export function logged(func: Function) {
 export default function AddonStorageControls(
 { action_map,
   parent_window,
+  client,
 }:
 { action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
+  client: AddonBoxClient;
 }) {
   const builder = SimpleAction.builder({ prefix: 'addons' });
 
@@ -132,12 +135,16 @@ export default function AddonStorageControls(
       const response = await msg.choose_async(null)
       switch (response) {
       case 'trash.cancel':
-        console.log('Action addons.trash dismissed. Quitting...');
         return;
       case 'trash.proceed':
         break;
       default:
-        throw new Error(`Unknown message dialog response. Got ${response}`);
+        throw new Error;
+      }
+      try {
+        await client.services.addons.async_call('Delete', id)
+      } catch (error) {
+        logError(error);
       }
     })
     .insert(action_map)

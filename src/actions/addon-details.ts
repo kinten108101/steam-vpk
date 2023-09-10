@@ -7,18 +7,39 @@ import Adw from 'gi://Adw';
 
 import { Toast } from '../utils/toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../utils/gtk.js';
+import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
+import Repository from '../model/repository.js';
 
 export default function
 AddonDetailsActions(
 { toaster,
   action_map,
   parent_window,
+  repository,
+  presenter,
 }:
 { toaster?: Adw.ToastOverlay;
   action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
-  present_details: (arg0: string) => any;
+  repository: Repository;
+  presenter: AddonDetailsPresenter;
 }) {
+  const seeDetails = new Gio.SimpleAction({
+    name: 'addon-details.see-details',
+    parameter_type: GLib.VariantType.new('s'),
+  });
+  seeDetails.connect('activate', (_action, parameter) => {
+    (async () => {
+      if (parameter === null) throw new Error;
+      const [id] = parameter.get_string();
+      if (id === null) throw new Error;
+      const item = repository.get(id);
+      if (item === undefined) return;
+      presenter.item = item;
+      presenter.present();
+    })().catch(error => logError(error));
+  });
+  action_map.add_action(seeDetails);
   const visit_website = new Gio.SimpleAction({
     name: 'addon-details.visit-website',
     parameter_type: GLib.VariantType.new('s'),

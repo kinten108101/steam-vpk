@@ -14,6 +14,8 @@ import MainWindow from './windows/main-window.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
+import Repository from './model/repository.js';
+import RepositoryProxy from './presenters/repository-proxy.js';
 
 let application!: Gtk.Application;
 
@@ -29,10 +31,16 @@ export default function Application() {
     application_id: APP_ID,
   });
   GLib.set_application_name(APP_FULLNAME);
+  GLib.log_set_debug_enabled(true);
 
   const client = new AddonBoxClient();
   const settings = new Gio.Settings({
     schema_id: APP_ID,
+  });
+  const repository = new Repository();
+  RepositoryProxy({
+    model: repository,
+    client,
   });
 
   application.connect('notify::is-registered', () => {
@@ -101,10 +109,11 @@ export default function Application() {
   });
 
   const create_new_window = () => {
-    const mainWindow = MainWindow({
+    const mainWindow = new MainWindow({
       application,
       client,
-      settings,
+      gsettings: settings,
+      repository,
     });
     mainWindow.present();
   };

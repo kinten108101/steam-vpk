@@ -2,19 +2,23 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
-import {
-  g_param_default,
-  registerClass,
-} from '../steam-vpk-utils/utils.js';
+
 import AddonBoxClient from '../backend/client.js';
 
-export class AddonlistPageItem extends GObject.Object {
+export class AddonlistItem extends GObject.Object {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkAddonlistPageItem',
       Properties: {
-        'id': GObject.ParamSpec.string('id', 'id', 'id', GObject.ParamFlags.READWRITE, ''),
-        'pos': GObject.ParamSpec.uint64('pos', '', '', g_param_default, 0, Number.MAX_SAFE_INTEGER, 0),
+        'id': GObject.ParamSpec.string(
+          'id', '', '',
+          GObject.ParamFlags.READWRITE,
+          null),
+        'pos': GObject.ParamSpec.uint64(
+          'pos', '', '',
+          GObject.ParamFlags.READWRITE,
+          0, Number.MAX_SAFE_INTEGER,
+          0),
       },
     }, this);
   }
@@ -30,14 +34,26 @@ export class AddonlistPageItem extends GObject.Object {
   }
 }
 
-export class AddonEntry extends AddonlistPageItem {
+export class AddonEntry extends AddonlistItem {
   static {
-    registerClass({
+    GObject.registerClass({
+      GTypeName: 'StvpkAddonEntry',
       Properties: {
-        'name': GObject.ParamSpec.string('name', 'name', 'name', GObject.ParamFlags.READWRITE, ''),
-        'enabled': GObject.ParamSpec.boolean('enabled', 'enabled', 'enabled', GObject.ParamFlags.READWRITE, true),
-        'description': GObject.ParamSpec.string('description', 'description', 'description', GObject.ParamFlags.READWRITE, ''),
-        'last-update': GObject.ParamSpec.jsobject('last-update', '', '', g_param_default),
+        name: GObject.ParamSpec.string(
+          'name', '', '',
+          GObject.ParamFlags.READWRITE,
+          null),
+        enabled: GObject.ParamSpec.boolean(
+          'enabled', '', '',
+          GObject.ParamFlags.READWRITE,
+          true),
+        description: GObject.ParamSpec.string(
+          'description', 'description', 'description',
+          GObject.ParamFlags.READWRITE,
+          null),
+        last_update: GObject.ParamSpec.jsobject(
+          'last-update', '', '',
+          GObject.ParamFlags.READWRITE),
       }
     }, this);
   }
@@ -51,7 +67,7 @@ export class AddonEntry extends AddonlistPageItem {
     enabled?: boolean,
     description?: string,
     last_update?: Date,
-  } & ConstructorParameters<typeof AddonlistPageItem>[0]) {
+  } & ConstructorParameters<typeof AddonlistItem>[0]) {
     super(params);
   }
 
@@ -67,9 +83,22 @@ export class AddonEntry extends AddonlistPageItem {
   }
 }
 
+export class SeparatorEntry extends AddonlistItem {
+  static {
+    GObject.registerClass({
+      GTypeName: 'StvpkSeparatorEntry',
+      Properties: {
+        name: ,
+      },
+    }, this);
+  }
+}
+
 export class Addonlist extends Gio.ListStore {
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkAddonlist',
+    }, this);
   }
 
   sort_model: Gtk.SortListModel;
@@ -82,7 +111,7 @@ export class Addonlist extends Gio.ListStore {
     });
     this.sorter = new Gtk.CustomSorter();
     const sort_func: GLib.CompareDataFunc = (a, b) => {
-      if (!(a instanceof AddonlistPageItem && b instanceof AddonlistPageItem)) {
+      if (!(a instanceof AddonlistItem && b instanceof AddonlistItem)) {
         console.warn('Addonlist sort_func:', 'operands must be of type AddonlistPageItem');
         return 0;
       }

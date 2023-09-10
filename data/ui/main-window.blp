@@ -29,14 +29,14 @@ menu primary_menu {
   }
 }
 
-Adw.ApplicationWindow window {
+template $StvpkMainWindow : Adw.ApplicationWindow {
   default-width: 864;
   default-height: 600;
 
-  Adw.ToastOverlay toastOverlay {
+  Adw.ToastOverlay primary_toast_overlay {
     vexpand: true;
 
-    Adw.Leaflet leaflet {
+    Adw.Leaflet primary_leaflet {
       can-unfold: false;
 
       Adw.LeafletPage {
@@ -54,7 +54,7 @@ Adw.ApplicationWindow window {
                   orientation: vertical;
                   valign: start;
 
-                  Adw.HeaderBar header-bar {
+                  Adw.HeaderBar headerbar {
                     vexpand: false;
                     centering-policy: strict;
                     show-start-title-buttons: false;
@@ -79,18 +79,18 @@ Adw.ApplicationWindow window {
                             Gtk.Box {
                               spacing: 8;
 
-                              $StvpkProfileBar profileBar {
+                              $StvpkProfileBar profile_bar {
                                 valign: center;
                                 vexpand: false;
                               }
 
-                              $StvpkInjectButtonSet inject-button-set {
+                              $StvpkInjectButtonSet inject_button_set {
                                 valign: start;
                               }
                             }
 
                             $StvpkHeaderBox headerbox {
-                              reveal-toggle: bind ((profileBar as <$StvpkProfileBar>).primary-button as <Gtk.ToggleButton>);
+                              reveal-toggle: bind ((profile_bar as <$StvpkProfileBar>).primary-button as <Gtk.ToggleButton>);
                             }
 
                             Gtk.Revealer view_switcher_revealer {
@@ -101,7 +101,7 @@ Adw.ApplicationWindow window {
                                 Adw.ViewSwitcher view_switcher {
                                   name: 'primary-view-switcher';
                                   policy: wide;
-                                  stack: win-view-stack;
+                                  stack: primary_view_stack;
                                 };
                             }
                           }
@@ -139,7 +139,7 @@ Adw.ApplicationWindow window {
                       icon-name: "open-menu-symbolic";
                       primary: true;
                       popover:
-                        Gtk.PopoverMenu main_menu {
+                        Gtk.PopoverMenu primary_menu_popover {
                           menu-model: primary_menu;
                         };
 
@@ -187,72 +187,46 @@ Adw.ApplicationWindow window {
                         sensitive: false;
                         name: 'primary-view-switcher';
                         policy: wide;
-                        stack: win-view-stack;
+                        stack: primary_view_stack;
                       }
                     }
 
-                    Adw.ViewStack win-view-stack {
+                    Adw.ViewStack primary_view_stack {
                       vexpand: true;
 
                       Adw.ViewStackPage {
                         name: "main-page";
                         title: _("Load-order");
                         icon-name: "map-symbolic";
-                        child: $StvpkLaunchpadPage launchpadPage {};
+                        child: $StvpkLaunchpadPage launchpad_page {};
                       }
 
                       Adw.ViewStackPage {
                         name: "download-page";
                         title: _("Browse");
                         icon-name: "harddisk-symbolic";
-                        child: $StvpkDownloadPage downloadPage {};
+                        child: $StvpkDownloadPage download_page {};
                       }
                     }
                   };
               }
             }
-
 
             Adw.ViewSwitcherBar {
-              stack: win-view-stack;
+              stack: primary_view_stack;
               reveal: false;
-            }
-
-            Gtk.Revealer toolbar-revealer {
-              visible: false;
-              transition-type: slide_up;
-              Adw.HeaderBar {
-                centering-policy: strict;
-                show-start-title-buttons: false;
-                show-end-title-buttons: false;
-                title-widget:
-                  Gtk.CenterBox {
-                    [center]
-                    Adw.Clamp {
-                      maximum-size: 400;
-
-                      Gtk.Box {
-                        orientation: vertical;
-                        margin-start: 8;
-                        margin-end: 8;
-                      }
-                    }
-                  };
-              }
             }
           };
       } // adwleafletpage
 
       Adw.LeafletPage {
         name: 'addon-details-page';
-        child: Adw.Bin {};
-        // will expand in code
+        child: $StvpkAddonDetails addon_details {};
       }
 
       Adw.LeafletPage tertiary-page {
         name: 'addons-panel-disk-page';
-        child: Adw.Bin {};
-        // will expand in code
+        child: $StvpkAddonsPanelDisk addons_panel_disk {};
       }
     }
   }
