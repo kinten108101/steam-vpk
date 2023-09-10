@@ -45,6 +45,7 @@ import AddonDetails from '../ui/addon-details.js';
 import AddonsPanelDisk from '../ui/addons-panel-disk.js';
 import Repository from '../model/repository.js';
 import AddonlistProxy from '../presenters/addonlist-proxy.js';
+import ProfileBarActions from '../actions/profile-bar.js';
 
 GObject.type_ensure(ActionRow.$gtype);
 GObject.type_ensure(UsageMeter.$gtype);
@@ -291,6 +292,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }
 
   _setup_headerbox() {
+    ProfileBarActions({
+      action_map: this,
+      profile_bar: this._profile_bar,
+    });
     HeaderBoxActions({
       action_map: this,
       headerbox: this._headerbox,

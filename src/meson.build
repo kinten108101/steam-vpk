@@ -6,6 +6,7 @@ script = [
   'actions/archive-controls.ts',
   'actions/headerbox.ts',
   'actions/injection.ts',
+  'actions/profile-bar.ts',
   'actions/settings.ts',
   'actions/shortcuts.ts',
   'actions/stack-controller.ts',

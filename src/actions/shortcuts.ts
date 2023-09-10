@@ -20,7 +20,7 @@ export default function Shortcuts(
     ['window.close', ['<Primary>w']],
     ['win.add-addon.add-url', ['<Primary>b']],
     ['win.add-addon.add-name', ['<Primary>m']],
-    ['win.headerbox.reveal', ['<Primary><Shift>p']],
+    ['win.profile-bar.toggle-primary-button', ['<Primary>p']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });
