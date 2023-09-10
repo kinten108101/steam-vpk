@@ -16,8 +16,6 @@ interface = [
   'ui/debug-window-action-row.blp',
   'ui/download-page-row.blp',
   'ui/download-page.blp',
-  'ui/download-window-row.blp',
-  'ui/download-window.blp',
   'ui/field-row.blp',
   'ui/headerbox-build.blp',
   'ui/headerbox-console.blp',
