@@ -18,8 +18,9 @@ export default function Shortcuts(
     ['win.stack.page-backward', ['<Shift>Left']],
     ['win.stack.page-forward', ['<Shift>Right']],
     ['window.close', ['<Primary>w']],
-    ['win.add-addon.add-url', ['<Primary>b']],
+    ['win.add-addon.add-url', ['<Primary>g']],
     ['win.add-addon.add-name', ['<Primary>m']],
+    ['win.injector.run', ['<Primary>b']],
     ['win.profile-bar.toggle-primary-button', ['<Primary>p']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
