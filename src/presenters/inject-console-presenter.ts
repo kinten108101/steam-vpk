@@ -60,7 +60,6 @@ export default function InjectConsolePresenter(
 
       let using_logs_changed;
       const update_logs_changed = (msg: string) => {
-        console.log('logs-changed', msg);
         inject_console.add_line(msg);
         tracker.status = msg.replaceAll('.', '');
       };
