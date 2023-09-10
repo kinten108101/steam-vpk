@@ -4,7 +4,6 @@ import Adw from 'gi://Adw';
 import { APP_RDNN } from '../utils/const.js';
 import {
   GtkChildren,
-  GtkCssName,
   GtkInternalChildren,
   GtkTemplate,
   param_spec_boolean,
@@ -238,18 +237,6 @@ class BoxPage extends GObject.Object {
   }
 }
 
-
-
-export class StatusPage extends GObject.Object {
-  static {
-    registerClass({}, this);
-  }
-
-  set_build() {
-
-  }
-}
-
 export type StatusStyles = 'error' | 'generic' | 'build';
 
 export default interface HeaderBox {
@@ -257,47 +244,53 @@ export default interface HeaderBox {
   bind_status(type: 'build', cb: (obj: this, build_box: HeaderboxBuild) => void): void;
 }
 export default class HeaderBox extends Gtk.Box {
-  static [GObject.properties] = {
-    revealed: param_spec_boolean({
-      name: 'child-revealed',
-      default_value: false,
-    }),
-    reveal_toggle: param_spec_object({
-      name: 'reveal-toggle',
-      objectType: Gtk.ToggleButton.$gtype,
-    }),
-    current_page: param_spec_string<BoxPages>({
-      name: 'current-page',
-      default_value: 'status_box',
-    }),
-    reveal_child: param_spec_boolean({
-      name: 'reveal-child',
-      default_value: false,
-    }),
-  }
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox.ui`;
-  static [GtkCssName] = 'headerbox';
-  static [GtkChildren] = [
-    'detachable',
-    'console_box',
-    'build_box',
-  ];
-  static [GtkInternalChildren] = [
-    'headerbox_revealer',
-    'content_revealer',
-    'box_stack',
-    'frame_stack',
-    'button_status',
-    'button_console',
-    'status_box',
-    'status_title',
-    'status_description',
-    'content_type_stack',
-    'panel_controls',
-  ];
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkHeaderBox',
+      Properties: {
+        child_revealed: GObject.ParamSpec.boolean(
+          'child-revealed', 'Child revealed',
+          'Whether or not child is revealed after reaching animation target',
+          GObject.ParamFlags.READABLE,
+          false),
+        reveal_child: GObject.ParamSpec.boolean(
+          'reveal-child', 'Reveal child',
+          'Set reveal state',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          false),
+        reveal_toggle: GObject.ParamSpec.object(
+          'reveal-toggle', 'Reveal toggle',
+          'The toggle button widget that controls this widget\'s reveal state',
+          GObject.ParamFlags.WRITABLE | GObject.ParamFlags.CONSTRUCT,
+          Gtk.ToggleButton.$gtype),
+        current_page: GObject.ParamSpec.string(
+          'current-page', 'Current page',
+          'The current box page being displayed',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          // workaround so that typechecking is enforced
+          ((): BoxPages => 'status_box')()),
+      },
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/headerbox.ui',
+      CssName: 'headerbox',
+      Children: [
+        'detachable',
+        'console_box',
+        'build_box',
+      ],
+      InternalChildren: [
+        'headerbox_revealer',
+        'content_revealer',
+        'box_stack',
+        'frame_stack',
+        'button_status',
+        'button_console',
+        'status_box',
+        'status_title',
+        'status_description',
+        'content_type_stack',
+        'panel_controls',
+      ],
+    }, this);
   }
 
   /* children */
@@ -319,16 +312,19 @@ export default class HeaderBox extends Gtk.Box {
   _panel_controls!: Adw.ViewStack;
 
   current_page!: BoxPages;
-  reveal_toggle?: Gtk.ToggleButton;
+  _reveal_toggle!: Gtk.ToggleButton | null;
+  set reveal_toggle(val: Gtk.ToggleButton) {
+    if (this._reveal_toggle === val) return;
+    this._reveal_toggle = val;
+  }
   reveal_child!: boolean;
-  _child_reveal!: boolean;
-
+  _child_revealed!: boolean;
   get child_revealed() {
-    return this._child_reveal;
+    return this._child_revealed;
   }
 
   _set_child_revealed(val: boolean) {
-    this._child_reveal = val;
+    this._child_revealed = val;
     this.notify('child-revealed');
   }
 
