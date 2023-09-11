@@ -83,17 +83,6 @@ export class AddonEntry extends AddonlistItem {
   }
 }
 
-export class SeparatorEntry extends AddonlistItem {
-  static {
-    GObject.registerClass({
-      GTypeName: 'StvpkSeparatorEntry',
-      Properties: {
-        name: ,
-      },
-    }, this);
-  }
-}
-
 export class Addonlist extends Gio.ListStore {
   static {
     GObject.registerClass({
