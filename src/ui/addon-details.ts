@@ -3,7 +3,7 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { APP_RDNN } from '../utils/const.js';
-import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
+import { bytes2humanreadable } from '../utils/files.js';
 import { ActionRow, FieldRow } from './field-row.js';
 
 export default class AddonDetails extends Gtk.Box {

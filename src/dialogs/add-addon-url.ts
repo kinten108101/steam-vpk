@@ -13,9 +13,9 @@ import {
 } from '../steam-vpk-utils/utils.js';
 import { APP_RDNN } from '../utils/const.js';
 import SpinningButton from '../ui/spinning-button.js';
-import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
 import { MakeTitleCompat } from '../utils/markup.js';
 import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
+import { bytes2humanreadable } from '../utils/files.js';
 
 type Signals = 'input-page::setup' | 'validate' | 'preview-page::setup';
 

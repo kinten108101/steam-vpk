@@ -2,7 +2,7 @@ import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import { APP_RDNN } from '../utils/const.js';
-import { bytes2humanreadable } from '../steam-vpk-utils/files.js';
+import { bytes2humanreadable } from '../utils/files.js';
 
 export namespace UsageMeter {
   export type Colors = 'yellow' | 'red';
