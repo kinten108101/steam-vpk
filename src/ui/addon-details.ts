@@ -5,6 +5,7 @@ import Adw from 'gi://Adw';
 import { APP_RDNN } from '../utils/const.js';
 import { bytes2humanreadable } from '../utils/files.js';
 import { ActionRow, FieldRow } from './field-row.js';
+import ArchiveList from './addon-details/archive-list.js';
 
 export default class AddonDetails extends Gtk.Box {
   static {
@@ -62,6 +63,9 @@ export default class AddonDetails extends Gtk.Box {
           0),
       },
       Template: `resource://${APP_RDNN}/ui/addon-details.ui`,
+      Children: [
+        'archive_list',
+      ],
       InternalChildren: [
         'wintitle_full',
         'headerbar_stack',
@@ -91,6 +95,8 @@ export default class AddonDetails extends Gtk.Box {
   subdir_gvariant!: GLib.Variant | null;
   remote!: boolean;
   used!: number;
+
+  archive_list!: ArchiveList;
 
   _wintitle_full!: Adw.WindowTitle;
   _headerbar_stack!: Gtk.Stack;

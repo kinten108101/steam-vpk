@@ -9,6 +9,7 @@ import { Toast } from '../utils/toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../utils/gtk.js';
 import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
 import Repository from '../model/repository.js';
+import StaticArchiveStorePresenter from '../presenters/static-archive-store-presenter.js';
 
 export default function
 AddonDetailsActions(
@@ -17,12 +18,14 @@ AddonDetailsActions(
   parent_window,
   repository,
   presenter,
+  store_presenter,
 }:
 { toaster?: Adw.ToastOverlay;
   action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
   repository: Repository;
   presenter: AddonDetailsPresenter;
+  store_presenter: StaticArchiveStorePresenter;
 }) {
   const seeDetails = new Gio.SimpleAction({
     name: 'addon-details.see-details',
@@ -36,6 +39,7 @@ AddonDetailsActions(
       const item = repository.get(id);
       if (item === undefined) return;
       presenter.item = item;
+      store_presenter.item = item;
       presenter.present();
     })().catch(error => logError(error));
   });

@@ -1,0 +1,30 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkArchiveRow : Gtk.ListBoxRow {
+  [prefix]
+  Gtk.Box {
+    margin-top: 8;
+    margin-bottom: 8;
+    margin-start: 8;
+    spacing: 8;
+
+    Gtk.Image {
+      valign: center;
+      icon-name: 'list-drag-handle-symbolic';
+      styles ['dim-label']
+    }
+
+    Gtk.Box {
+      margin-start: 8;
+      orientation: vertical;
+
+      Gtk.Label title_label {
+        halign: start;
+        label: 'MW2019Ellis.vpk'; // placeholder
+        ellipsize: end;
+        styles ['ztitle']
+      }
+    }
+  }
+}

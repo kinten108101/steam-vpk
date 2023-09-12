@@ -1,5 +1,5 @@
-import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
+import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 
 export enum UseStates {
@@ -43,6 +43,10 @@ export class RepositoryItem extends GObject.Object {
           'use-state', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           null),
+        //
+        archives: GObject.ParamSpec.jsobject(
+          'archives', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT),
       },
     }, this);
   }
@@ -55,6 +59,9 @@ export class RepositoryItem extends GObject.Object {
   creators!: { id: string }[] | null;
   description!: string | null;
   use_state!: UseStates | null;
+  archives!: {
+    path: string,
+  }[]
 
   constructor(params: {
     id: string;
@@ -65,6 +72,9 @@ export class RepositoryItem extends GObject.Object {
     creators: { id: string }[] | null;
     description: string | null;
     use_state: UseStates | null;
+    archives: null | {
+      path: string;
+    }[],
   }) {
     super(params);
   }
@@ -86,7 +96,9 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
   }
 
   constructor() {
-    super();
+    super({
+      item_type: RepositoryItem.$gtype,
+    });
     this.local_addons = new Gtk.FilterListModel({
       model: this,
       filter: (() => {

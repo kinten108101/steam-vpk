@@ -20,6 +20,7 @@ export default function RepositoryProxy(
         creators: x['creators'] || null,
         description: x['description'] || null,
         use_state: null,
+        archives: x['archive_group'] || null,
       });
       return item;
     });

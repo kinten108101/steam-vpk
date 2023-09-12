@@ -1,9 +1,12 @@
+import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 
 import { RepositoryItem } from '../model/repository.js';
 import AddonDetails from '../ui/addon-details.js';
 import AddonBoxClient from '../backend/client.js';
+import { ArchiveRow } from '../ui/addon-details/archive-list.js';
+import { ArchiveItem } from '../model/archive-store.js';
 
 export default class AddonDetailsPresenter extends GObject.Object {
   static {
@@ -25,6 +28,10 @@ export default class AddonDetailsPresenter extends GObject.Object {
           'client', 'Client', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           AddonBoxClient.$gtype),
+        archive_model: GObject.ParamSpec.object(
+          'archive-model', 'Archive Model', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          Gio.ListModel.$gtype),
       },
     }, this);
   }
@@ -34,6 +41,7 @@ export default class AddonDetailsPresenter extends GObject.Object {
   leaflet!: Adw.Leaflet;
   addon_details!: AddonDetails;
   client!: AddonBoxClient;
+  archive_model!: Gio.ListModel;
 
   _bindings: GObject.Binding[] = [];
 
@@ -41,20 +49,25 @@ export default class AddonDetailsPresenter extends GObject.Object {
     leaflet: Adw.Leaflet;
     addon_details: AddonDetails;
     client: AddonBoxClient;
+    archive_model: Gio.ListModel;
   }) {
     super(params);
+    this.addon_details.archive_list.bind_model(params.archive_model, (item: GObject.Object) => {
+      if (!(item instanceof ArchiveItem)) throw new Error;
+      return new ArchiveRow({
+        name: item.id,
+      });
+    });
   }
 
   set item(val: RepositoryItem | null) {
-    if (val === null) {
-      this._unbind_item();
-      this._item = null;
-      this.notify('item');
-    } else if (val !== this.item) {
-      this._item = val;
+    if (val === this.item) return;
+    this._unbind_item();
+    this._item = val;
+    if (val !== null) {
       this._bind_item();
-      this.notify('item');
     }
+    this.notify('item');
   }
 
   present() {

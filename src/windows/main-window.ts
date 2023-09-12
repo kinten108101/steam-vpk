@@ -46,7 +46,14 @@ import AddonsPanelDisk from '../ui/addons-panel-disk.js';
 import Repository from '../model/repository.js';
 import AddonlistProxy from '../presenters/addonlist-proxy.js';
 import ProfileBarActions from '../actions/profile-bar.js';
+import ArchiveStore from '../model/archive-store.js';
+import ArchiveList from '../ui/addon-details/archive-list.js';
+import { ArchiveRow } from '../ui/addon-details/archive-list.js';
+import StaticArchiveStorePresenter from '../presenters/static-archive-store-presenter.js';
 
+GObject.type_ensure(ArchiveRow.$gtype);
+GObject.type_ensure(ArchiveList.$gtype);
+GObject.type_ensure(AddonDetails.$gtype);
 GObject.type_ensure(ActionRow.$gtype);
 GObject.type_ensure(UsageMeter.$gtype);
 GObject.type_ensure(AddonsPanelDisk.$gtype);
@@ -334,10 +341,15 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }
 
   _setup_addon_details() {
+    const archive_store = new ArchiveStore();
+    const store_presenter = new StaticArchiveStorePresenter({
+      archive_store,
+    });
     const presenter = new AddonDetailsPresenter({
       leaflet: this._primary_leaflet,
       addon_details: this._addon_details,
       client: this.client,
+      archive_model: archive_store,
     });
     AddonDetailsActions({
       toaster: this._primary_toast_overlay,
@@ -345,6 +357,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
       parent_window: this,
       repository: this.repository,
       presenter,
+      store_presenter,
     });
   }
 }
