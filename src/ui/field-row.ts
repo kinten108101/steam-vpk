@@ -1,14 +1,5 @@
 import GObject from 'gi://GObject';
-import Adw from 'gi://Adw';
-import UseSensitivitySemaphore from '../utils/sensitivity-semaphore.js';
-
-export class ActionRow extends UseSensitivitySemaphore(Adw.ActionRow) {
-  static {
-    GObject.registerClass({
-      GTypeName: 'StvpkActionRow',
-    }, this);
-  }
-}
+import { ActionRow } from './sensitizable-widgets.js';
 
 export class FieldRow extends ActionRow {
   static {

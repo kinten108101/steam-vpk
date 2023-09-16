@@ -3,6 +3,7 @@ import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
 import { APP_RDNN } from '../utils/const.js';
 import { bytes2humanreadable } from '../utils/files.js';
+import { PreferencesRow } from './sensitizable-widgets.js';
 
 export namespace UsageMeter {
   export type Colors = 'yellow' | 'red';
@@ -69,6 +70,7 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
       GTypeName: 'StvpkAddonsPanel',
       Template: `resource://${APP_RDNN}/ui/addons-panel.ui`,
       InternalChildren: [
+        'panel',
         'real_icon',
         'stat_box',
         'main_row',
@@ -84,27 +86,23 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
   size!: number;
   _stat_enabled!: boolean;
 
-  _stat_disable_semaphore: number = 0;
   set stat_enabled(val: boolean) {
-    if (val) {
-      this._stat_disable_semaphore--;
-    } else {
-      this._stat_disable_semaphore++;
-    }
-    const newval = this._stat_disable_semaphore <= 0;
-    if (newval === this._stat_enabled) return;
-    this._stat_enabled = newval;
+    if (val === this._stat_enabled) return;
+    this._stat_enabled = val;
     this.notify('stat-enabled');
   }
   get stat_enabled() {
     return this._stat_enabled;
   }
 
+  _panel!: PreferencesRow;
   _real_icon!: Gtk.Image;
   _stat_box!: Gtk.Box;
   _main_row!: Gtk.Label;
   _sub_row!: Gtk.Label;
   _usage_meter!: Gtk.ProgressBar;
+
+  _prev_panel_sensitive: boolean | undefined = undefined;
 
   constructor(params = {}) {
     super(params);
@@ -133,7 +131,7 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
       (_binding, from: number | null): [boolean, number] => {
         if (from === null) return [false, 0];
         if (from > this.size) return [false, 0];
-        return [true, (this.size - from)/this.size];
+        return [true, (this.size - from)/this.size || 0];
       },
       null as unknown as GObject.TClosure);
     this.bind_property_full('size', this._usage_meter, 'fraction',
@@ -141,7 +139,7 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
       (_binding, from: number | null): [boolean, number] => {
         if (from === null) return [false, 0];
         if (this.free > from) return [false, 0];
-        return [true, (from - this.free)/from];
+        return [true, (from - this.free)/from || 0];
       },
       null as unknown as GObject.TClosure);
 
@@ -149,6 +147,8 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
       GObject.BindingFlags.SYNC_CREATE);
     this.bind_property('stat-enabled', this._usage_meter, 'visible',
       GObject.BindingFlags.SYNC_CREATE);
+    this.connect('notify::stat-enabled', this._update_panel.bind(this));
+    this._update_panel();
   }
 
   _setup_icon() {
@@ -159,5 +159,17 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
         return [true, from];
       },
       null as unknown as GObject.TClosure);
+  }
+
+  _update_panel() {
+    if (this.stat_enabled === this._prev_panel_sensitive) return;
+    this._prev_panel_sensitive = this.stat_enabled;
+    if (this.stat_enabled) {
+      this._panel.sensitize();
+    } else {
+      this._panel.insensitize();
+    }
+    console.debug('stat-enabled:', this.stat_enabled);
+    console.debug('semaphore:', this._panel._insensitize_requests);
   }
 }

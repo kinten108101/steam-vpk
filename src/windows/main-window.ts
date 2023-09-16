@@ -21,7 +21,7 @@ import StatusManager from '../model/status-manager.js';
 import { LaunchpadPage } from '../ui/launchpad.js';
 import StatusBroker from '../presenters/status-broker.js';
 import AddonStorageControls from '../actions/addon-storage-controls.js';
-import { ActionRow, FieldRow } from '../ui/field-row.js';
+import { FieldRow } from '../ui/field-row.js';
 import ArchiveActions from '../actions/archive-controls.js';
 import { AddonsPanelDiskActions } from '../actions/addons-panel-actions.js';
 import AddonBoxClient from '../backend/client.js';
@@ -50,7 +50,9 @@ import ArchiveStore from '../model/archive-store.js';
 import ArchiveList from '../ui/addon-details/archive-list.js';
 import { ArchiveRow } from '../ui/addon-details/archive-list.js';
 import StaticArchiveStorePresenter from '../presenters/static-archive-store-presenter.js';
+import { ActionRow, PreferencesRow } from '../ui/sensitizable-widgets.js';
 
+GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
 GObject.type_ensure(ArchiveList.$gtype);
 GObject.type_ensure(AddonDetails.$gtype);
@@ -295,6 +297,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
     UsagePresenter({
       client: this.client,
       addons_panel: this._download_page.panel,
+      addons_panel_disk: this._addons_panel_disk,
     });
   }
 

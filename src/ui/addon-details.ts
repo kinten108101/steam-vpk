@@ -4,8 +4,9 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { APP_RDNN } from '../utils/const.js';
 import { bytes2humanreadable } from '../utils/files.js';
-import { ActionRow, FieldRow } from './field-row.js';
+import { FieldRow } from './field-row.js';
 import ArchiveList from './addon-details/archive-list.js';
+import { ActionRow } from './sensitizable-widgets.js';
 
 export default class AddonDetails extends Gtk.Box {
   static {
@@ -80,8 +81,6 @@ export default class AddonDetails extends Gtk.Box {
       ],
     }, this);
   }
-
-  [prop: string]: any;
 
   name!: string | null;
   creator!: string | null;
@@ -182,11 +181,11 @@ export default class AddonDetails extends Gtk.Box {
       if (this.remote === prev_remote) return;
       prev_remote = this.remote;
       if (this.remote) {
-        this._steamid_row.sensitize();
-        this._visit_workshop_row.sensitize();
+        this._steamid_row.make_visible();
+        this._visit_workshop_row.make_visible();
       } else {
-        this._steamid_row.insensitize();
-        this._visit_workshop_row.insensitize();
+        this._steamid_row.make_invisible();
+        this._visit_workshop_row.make_invisible();
       }
     };
     this.connect('notify::remote', update_remote);
@@ -230,12 +229,13 @@ export default class AddonDetails extends Gtk.Box {
     this.bind_property('id', this._stvpkid_row, 'value',
       GObject.BindingFlags.SYNC_CREATE);
 
-    let prev_stvpkid: string | null;
+    let prev_stvpkid_nonnull: boolean | undefined = undefined;
     const update_stvpkid = () => {
-      if (this.stvpkid === prev_stvpkid) return;
-      prev_stvpkid = this.stvpkid;
-      if (this.stvpkid === null) this._stvpkid_row.insensitize();
-      else this._stvpkid_row.sensitize();
+      const val = this.id !== null;
+      if (val === prev_stvpkid_nonnull) return;
+      prev_stvpkid_nonnull = val;
+      if (val === null) this._stvpkid_row.make_invisible();
+      else this._stvpkid_row.make_visible();
     };
     this.connect('notify::stvpkid', update_stvpkid);
     update_stvpkid();
@@ -243,34 +243,39 @@ export default class AddonDetails extends Gtk.Box {
     this.bind_property('steamid', this._steamid_row, 'value',
       GObject.BindingFlags.SYNC_CREATE);
 
-    let prev_steamid: string | null;
+    let prev_steamid_nonnull: boolean | undefined = undefined;
     const update_steamid = () => {
-      if (this.steamid === prev_steamid) return;
-      prev_steamid = this.steamid;
-      if (this.steamid === null) this._steamid_row.insensitize();
-      else this._steamid_row.sensitize();
+      const val = this.steamid !== null;
+      if (val === prev_steamid_nonnull) return;
+      prev_steamid_nonnull = val;
+      if (!val) this._steamid_row.make_invisible();
+      else this._steamid_row.make_visible();
+      console.debug('steamid_nonnull:', val);
+      console.debug('requests:', this._steamid_row._invisible_requests);
     };
     this.connect('notify::steamid', update_steamid);
     update_steamid();
   }
 
   _setup_link_rows() {
-    let prev_steamurl: string | null;
+    let prev_steamurl_nonnull: boolean | undefined = undefined;
     const update_steamurl = () => {
-      if (this.steamurl === prev_steamurl) return;
-      prev_steamurl = this.steamurl;
-      if (this.steamurl === null) this._visit_workshop_row.insensitize();
-      else this._visit_workshop_row.sensitize();
+      const val = this.steamurl !== null;
+      if (val === prev_steamurl_nonnull) return;
+      prev_steamurl_nonnull = val;
+      if (this.steamurl === null) this._visit_workshop_row.make_invisible();
+      else this._visit_workshop_row.make_visible();
     };
     this.connect('notify::steamurl', update_steamurl);
     update_steamurl();
 
-    let prev_subdir: string | null;
+    let prev_subdir_nonnull: boolean | undefined = undefined;
     const update_subdir = () => {
-      if (this.subdir === prev_subdir) return;
-      prev_subdir = this.subdir;
-      if (this.subdir === null) this._visit_subdir_row.insensitize();
-      else this._visit_subdir_row.sensitize();
+      const val = this.subdir !== null;
+      if (val === prev_subdir_nonnull) return;
+      prev_subdir_nonnull = val;
+      if (this.subdir === null) this._visit_subdir_row.make_invisible();
+      else this._visit_subdir_row.make_visible();
     };
     this.connect('notify::subdir', update_subdir);
     update_subdir();
