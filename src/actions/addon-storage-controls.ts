@@ -6,14 +6,6 @@ import { SimpleAction } from '../utils/action-builder.js';
 import { MessageDialog } from '../dialogs/message-dialog.js';
 import AddonBoxClient from '../backend/client.js';
 
-export function logged(func: Function) {
-  return function (this: any, ...args: any[]) {
-    console.log(`<${func.name}>`);
-    func(args);
-    console.log(`</${func.name}>`);
-  }
-}
-
 export default function AddonStorageControls(
 { action_map,
   parent_window,
