@@ -58,9 +58,10 @@ export class AddonEntry extends AddonlistItem {
     }, this);
   }
 
-  name!: string;
+  name!: string | null;
   enabled!: boolean;
-  description!: string;
+  description!: string | null;
+  last_update!: Date | null;
 
   constructor(params: {
     name?: string,

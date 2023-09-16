@@ -4,21 +4,21 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { APP_RDNN } from '../utils/const.js';
-import { GtkChildren, GtkInternalChildren, GtkTemplate, registerClass } from '../steam-vpk-utils/utils.js';
-
 export default class PreferencesWindow extends Adw.PreferencesWindow {
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/preferences-window.ui`;
-  static [GtkChildren] = [
-    'enable_remember_winsize',
-    'inject_button_styles',
-  ];
-  static [GtkInternalChildren] = [
-    'clear_game_dir',
-    'game-dir-path',
-  ];
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkPreferencesWindow',
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/preferences-window.ui',
+      Children: [
+        'enable_remember_winsize',
+        'inject_button_styles',
+        'enable_text_markup',
+      ],
+      InternalChildren: [
+        'clear_game_dir',
+        'game-dir-path',
+      ],
+    }, this);
   }
 
   enable_remember_winsize!: Gtk.Switch;
@@ -28,14 +28,24 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
       get_string(): string;
     } & GObject.Object;
   } & Gtk.DropDown;
+  enable_text_markup!: Gtk.Switch;
 
   _clear_game_dir!: Gtk.Button;
   _game_dir_path!: Gtk.Label;
-  _inject_button_styles_dropdown!: Gtk.DropDown;
 
   constructor(params = {}) {
     super(params);
-    this.enable_remember_winsize.bind_property_full('active', this.enable_remember_winsize, 'action-target', GObject.BindingFlags.SYNC_CREATE,
+    this._setup_actionables();
+  }
+
+  _setup_actionables() {
+    this.enable_remember_winsize.bind_property_full('active', this.enable_remember_winsize, 'action-target',
+      GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: boolean) => {
+        return [true, GLib.Variant.new_boolean(!from)];
+      }, null as unknown as GObject.TClosure);
+    this.enable_text_markup.bind_property_full('active', this.enable_text_markup, 'action-target',
+      GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: boolean) => {
         return [true, GLib.Variant.new_boolean(!from)];
       }, null as unknown as GObject.TClosure);

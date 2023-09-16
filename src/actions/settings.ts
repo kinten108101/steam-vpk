@@ -102,6 +102,17 @@ export default function SettingsActions(
   });
   actions.push(clear_game_dir);
 
+  const enable_text_markup = new Gio.SimpleAction({
+    name: 'settings.enable-text-markup',
+    parameter_type: GLib.VariantType.new('b'),
+  });
+  enable_text_markup.connect('activate', (_action, parameter) => {
+    const val = parameter?.get_boolean();
+    if (typeof val !== 'boolean') throw new Error;
+    settings.set_boolean('enable-text-markup', val);
+  });
+  actions.push(enable_text_markup);
+
   function export2actionMap(action_map: Gio.ActionMap) {
     actions.forEach(x => {
       action_map.add_action(x);

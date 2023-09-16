@@ -6,9 +6,6 @@ import Adw from 'gi://Adw';
 import PreferencesWindow from '../ui/preferences-window.js';
 import InjectButtonSet from '../ui/inject-button-set.js';
 
-import {
-  APP_RDNN,
-} from '../utils/const.js';
 import AddonsPanel, { UsageMeter } from '../ui/addons-panel.js';
 import StackController from '../actions/stack-controller.js';
 import InjectConsolePresenter from '../presenters/inject-console-presenter.js';
@@ -44,13 +41,17 @@ import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
 import AddonDetails from '../ui/addon-details.js';
 import AddonsPanelDisk from '../ui/addons-panel-disk.js';
 import Repository from '../model/repository.js';
-import AddonlistProxy from '../presenters/addonlist-proxy.js';
 import ProfileBarActions from '../actions/profile-bar.js';
 import ArchiveStore from '../model/archive-store.js';
 import ArchiveList from '../ui/addon-details/archive-list.js';
 import { ArchiveRow } from '../ui/addon-details/archive-list.js';
 import StaticArchiveStorePresenter from '../presenters/static-archive-store-presenter.js';
+import DownloadPagePresenter from '../presenters/download-page-presenter.js';
 import { ActionRow, PreferencesRow } from '../ui/sensitizable-widgets.js';
+import ProfileProxy from '../backend/profile-proxy.js';
+import LaunchpadPagePresenter from '../presenters/launchpad-page-presenter.js';
+import TextMarkupPresenter from '../presenters/text-markup-presenter.js';
+import SettingsTextMarkupPresenter from '../presenters/settings/text-markup.js';
 
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
@@ -96,7 +97,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           Gio.Settings.$gtype),
       },
-      Template: `resource://${APP_RDNN}/ui/main-window.ui`,
+      Template: `resource:///com/github/kinten108101/SteamVPK/ui/main-window.ui`,
       InternalChildren: [
         'primary_toast_overlay',
         'primary_leaflet',
@@ -221,6 +222,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
         inject_button_styles: prefWin.inject_button_styles,
         gsettings: this.gsettings,
       });
+      SettingsTextMarkupPresenter({
+        enable_text_markup: prefWin.enable_text_markup,
+        gsettings: this.gsettings,
+      });
       prefWin.present();
     });
     this.add_action(showPreferences);
@@ -280,9 +285,22 @@ export default class MainWindow extends Adw.ApplicationWindow {
       parent_window: this,
       client: this.client,
     });
-    this._download_page.addons = this.repository;
-
-    AddonlistProxy({
+    DownloadPagePresenter({
+      download_page: this._download_page,
+      local_addons: this.repository.local_addons,
+      remote_addons: this.repository.remote_addons,
+    });
+    LaunchpadPagePresenter({
+      boxed_list: this._launchpad_page.addonlist_box,
+      loadorder_model: this.addonlist.sort_model,
+      launchpad_page: this._launchpad_page,
+    });
+    TextMarkupPresenter({
+      gsettings: this.gsettings,
+      launchpad_page: this._launchpad_page,
+      download_page: this._download_page,
+    });
+    ProfileProxy({
       model: this._addonlist,
       client: this.client,
     });

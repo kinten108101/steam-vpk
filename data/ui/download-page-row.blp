@@ -21,13 +21,13 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
         orientation: vertical;
         valign: center;
 
-        Gtk.Label title {
+        Gtk.Label title_label {
           styles ["title"]
           ellipsize: end;
           xalign: 0;
         }
 
-        Gtk.Label subtitle {
+        Gtk.Label subtitle_label {
           styles ["subtitle"]
           ellipsize: end;
           xalign: 0;
@@ -39,7 +39,7 @@ template $StvpkDownloadPageRow: Gtk.ListBoxRow {
         }
       }
 
-      Gtk.Label description {
+      Gtk.Label description_label {
         styles ["dim-label"]
 
         margin-top: 5;
