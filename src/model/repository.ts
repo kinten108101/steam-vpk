@@ -127,24 +127,26 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
 
   refill(items: RepositoryItem[]) {
     const deletables: Map<string, RepositoryItem> = new Map(this.exists);
-      items.forEach(x => {
-        deletables.delete(x.id);
-        if (this.exists.has(x.id)) {
-          // row-scope update
-        } else {
-          // append
-          this.append(x);
-          this.exists.set(x.id, x);
-        }
-      });
-      deletables.forEach(x => {
-        const [found, idx] = this.find(x);
-        if (!found) {
-          console.log('Item not found?');
-          return;
-        }
-        this.remove(idx);
-        this.exists.delete(x.id);
-      });
+    items.forEach(x => {
+      deletables.delete(x.id);
+      if (this.exists.has(x.id)) {
+        // row-scope update
+      } else {
+        // append
+        this.append(x);
+        this.exists.set(x.id, x);
+        console.debug('repository:', `Added new list item \"${x.id}\"`);
+      }
+    });
+    deletables.forEach(x => {
+      const [found, idx] = this.find(x);
+      if (!found) {
+        console.error('repository:', 'To-be-deleted item not found?');
+        return;
+      }
+      this.remove(idx);
+      this.exists.delete(x.id);
+      console.debug('repository:', `Removed list item \"${x.id}\"`);
+    });
   }
 }
