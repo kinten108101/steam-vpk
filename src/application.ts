@@ -15,7 +15,7 @@ import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
 import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
 import Repository from './model/repository.js';
-import RepositoryProxy from './presenters/repository-proxy.js';
+import AddonsProxy from './backend/addons-proxy.js';
 
 let application!: Gtk.Application;
 
@@ -38,7 +38,7 @@ export default function Application() {
     schema_id: APP_ID,
   });
   const repository = new Repository();
-  RepositoryProxy({
+  AddonsProxy({
     model: repository,
     client,
   });

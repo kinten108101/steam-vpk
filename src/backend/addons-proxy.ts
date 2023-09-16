@@ -1,11 +1,15 @@
-import AddonBoxClient from '../backend/client.js';
-import RepositoryList, { RepositoryItem } from '../model/repository.js';
+import AddonBoxClient from './client.js';
+import Repository, { RepositoryItem } from '../model/repository.js';
 
-export default function RepositoryProxy(
+type States = {
+  name?: string;
+};
+
+export default function AddonsProxy(
 { model,
   client,
 }:
-{ model: RepositoryList;
+{ model: Repository;
   client: AddonBoxClient;
 }) {
   const on_addons_update = (new_list: any[]) => {
@@ -27,4 +31,13 @@ export default function RepositoryProxy(
     model.refill(view_items);
   };
   client.services.addons.subscribe('AddonsChanged', on_addons_update);
+
+  client.services.addons.subscribe('AddonsStateChange',
+    (id: string, states: States ) => {
+      const item = model.get(id);
+      if (item === undefined) return;
+      const { name } = states;
+      if (name) item.name = name;
+    });
 }
+

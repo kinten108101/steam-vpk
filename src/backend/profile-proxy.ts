@@ -1,7 +1,7 @@
 import AddonBoxClient from '../backend/client.js';
 import { AddonEntry, Addonlist, AddonlistItem } from '../model/addonlist.js';
 
-export default function AddonlistProxy(
+export default function ProfileProxy(
 { model,
   client,
 }:
@@ -47,7 +47,7 @@ export default function AddonlistProxy(
       deletables.forEach(x => {
         const [found, idx] = model.find(x);
         if (!found) {
-          console.log('Item not found?');
+          console.error(`item \"${x.id}\" not found`);
           return;
         }
         model.remove(idx);
