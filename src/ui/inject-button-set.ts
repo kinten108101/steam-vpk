@@ -1,11 +1,6 @@
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
-import {
-  param_spec_variant,
-  registerClass,
-} from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
 
 export default class InjectButtonSet extends Gtk.Box {
   static Buttons = {
@@ -21,14 +16,18 @@ export default class InjectButtonSet extends Gtk.Box {
   ];
 
   static {
-    registerClass({
+    GObject.registerClass({
+      GTypeName: 'StvpkInjectButtonSet',
       Properties: {
-        'prop-id': param_spec_variant({ name: 'id', type: GLib.VariantType.new('s'), default_value: GLib.Variant.new_string('placeholder id') }),
+        id: GObject.param_spec_variant('id', '', '',
+          GLib.VariantType.new('s'),
+          GLib.Variant.new_string(''),
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT),
         button_style: GObject.ParamSpec.string('button-style', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           <InjectButtonSet['button_style']>'minimal'),
       },
-      Template: `resource://${APP_RDNN}/ui/inject-button-set.ui`,
+      Template: `resource:///com/github/kinten108101/SteamVPK/ui/inject-button-set.ui`,
       Children: [
         'inject',
         'hold',
