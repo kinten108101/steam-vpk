@@ -57,4 +57,15 @@ export default function InjectorActions(
     })().catch(error => logError(error));
   });
   action_map.add_action(run_game);
+
+  return {
+    get_actions() {
+      return {
+        run,
+        done,
+        cancel,
+        run_game,
+      }
+    }
+  }
 }

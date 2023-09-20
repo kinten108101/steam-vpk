@@ -344,10 +344,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }
 
   _setup_injection() {
-    InjectorActions({
+    const { run, done, cancel } = InjectorActions({
       action_map: this,
       client: this.client,
-    });
+    }).get_actions();
     InjectButtonSetPresenter({
       inject_button_set: this._inject_button_set,
       gsettings: this.gsettings,
@@ -356,6 +356,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
       inject_console: this._headerbox.console_box,
       headerbox: this._headerbox,
       inject_button_set: this._inject_button_set,
+      inject_actions: [
+        run, done, cancel,
+      ],
       client: this.client,
       status_manager: this._status_manager,
     }).init();

@@ -10,7 +10,7 @@ export default function SettingsInjectButtonStylesPresenter(
   gsettings: Gio.Settings;
 }) {
   const model = inject_button_styles.get_model();
-  model.splice(0, 0, InjectButtonSet.ButtonStylesList);
+  model.splice(0, 0, InjectButtonSet.ButtonStyles as unknown as string[]);
 
   function get_prev_val_gsettings() {
     let prev_style: InjectButtonSet['button_style'];
@@ -42,8 +42,8 @@ export default function SettingsInjectButtonStylesPresenter(
       if (val === null) return;
       const prev_val = get_prev_val_gsettings();
       if (val === prev_val) return;
-      inject_button_styles.set_selected(Math.max(InjectButtonSet.ButtonStylesList.indexOf(val), 0))
+      inject_button_styles.set_selected(Math.max(InjectButtonSet.ButtonStyles.indexOf(val), 0))
     }
   });
-  inject_button_styles.set_selected(Math.max(InjectButtonSet.ButtonStylesList.indexOf(prev_style || ''), 0));
+  inject_button_styles.set_selected(Math.max(InjectButtonSet.ButtonStyles.indexOf(prev_style || ''), 0));
 }
