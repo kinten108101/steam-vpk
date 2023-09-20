@@ -34,7 +34,7 @@ import SettingsPresenter from '../presenters/settings.js';
 import SettingsActions from '../actions/settings.js';
 import { StatusDebugActions } from '../actions/status-debug-actions.js';
 import SettingsInjectButtonStylesPresenter from '../presenters/settings/inject-button-styles.js';
-import InjectButtonSetRestore from '../presenters/inject-button-set-restore.js';
+import InjectButtonSetPresenter from '../presenters/inject-button-set-presenter.js';
 import UsagePresenter from '../presenters/usage-presenter.js';
 import { Addonlist } from '../model/addonlist.js';
 import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
@@ -348,7 +348,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
       action_map: this,
       client: this.client,
     });
-    InjectButtonSetRestore({
+    InjectButtonSetPresenter({
       inject_button_set: this._inject_button_set,
       gsettings: this.gsettings,
     });

@@ -1,7 +1,7 @@
 import Gio from 'gi://Gio';
 import InjectButtonSet from '../ui/inject-button-set.js';
 
-export default function InjectButtonSetRestore(
+export default function InjectButtonSetPresenter(
 { inject_button_set,
   gsettings,
 }:
