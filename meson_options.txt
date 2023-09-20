@@ -1,2 +1,2 @@
 option('offline-mirror', type: 'string')
-option('doc', type: 'boolean', value: false)
+option('flatpak', type: 'boolean', value: false)

@@ -2,6 +2,29 @@
 
 import GLib from 'gi://GLib';
 
+globalThis.config = {
+  name: '@APP_ID@',
+  version: '@VERSION@',
+  prefix: '@PREFIX@',
+  libdir: '@LIBDIR@',
+  flatpak: '@FLATPAK@' === 'True',
+  toString() {
+    let str = '';
+    let first = true;
+    for (const key in this) {
+      const val = this[key];
+      if (typeof val === 'function') continue;
+      if (!first) {
+        str += `\n${key} = ${val}`;
+      } else {
+        str += `${key} = ${val}`;
+        first = false;
+      }
+    }
+    return str;
+  },
+};
+
 imports.package.init({
   name: '@APP_ID@',
   version: '@VERSION@',

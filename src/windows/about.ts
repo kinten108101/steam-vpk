@@ -1,6 +1,7 @@
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_FULLNAME, VERSION } from '../utils/const.js';
+import { APP_FULLNAME } from '../utils/const.js';
+import { globalThis } from '../utils/ts-helper.js';
 
 export default function AboutWindow(
 { parent_window,
@@ -11,7 +12,7 @@ export default function AboutWindow(
     application_icon: 'addon-box',
     application_name: APP_FULLNAME,
     license_type: Gtk.License.GPL_3_0,
-    version: VERSION,
+    version: (globalThis as unknown as globalThis).config.version,
     issue_url: 'https://github.com/kinten108101/steam-vpk/issues',
     developers: [ 'Kinten Le <kinten108101@protonmail.com>' ],
     transient_for: parent_window || null,
@@ -19,6 +20,7 @@ export default function AboutWindow(
     comments: `Add-on manager for Left 4 Dead 2.
 
 All data is provided by the Add-on Box daemon.`,
+    debug_info: String((globalThis as unknown as globalThis).config),
   });
 
   function present() {

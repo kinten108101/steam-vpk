@@ -6,8 +6,6 @@ import Adw from 'gi://Adw';
 import {
   APP_FULLNAME,
   APP_ID,
-  BUILD_TYPE,
-  VERSION,
 } from './utils/const.js';
 import Shortcuts from './actions/shortcuts.js';
 import MainWindow from './windows/main-window.js';
@@ -54,10 +52,6 @@ export default function Application() {
   });
 
   application.connect('startup', () => {
-    console.info(`${APP_FULLNAME} (${APP_ID})`);
-    console.info(`build-type: ${BUILD_TYPE}`);
-    console.info(`version: ${VERSION}`);
-
     Shortcuts({
       application,
     });

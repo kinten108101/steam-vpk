@@ -36,6 +36,7 @@ modules:
     buildsystem: meson
     config-opts:
       - -Doffline-mirror=/app/yarn-mirror
+      - -Dflatpak=true
     sources:
       - type: dir
         path: ../
