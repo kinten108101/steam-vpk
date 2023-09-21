@@ -6,6 +6,10 @@ menu inject_menu {
   section {
     item (_('Inject & Start game'), 'win.injector.inject-with-game')
   }
+  section {
+    label: _('Settings');
+    item (_('Launch game when finished'), 'win.injector.toggle-start-game')
+  }
 }
 
 Gtk.PopoverMenu popover_menu {

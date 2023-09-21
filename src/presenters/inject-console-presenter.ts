@@ -11,6 +11,7 @@ export default function InjectConsolePresenter(
   inject_actions,
   client,
   status_manager,
+  gsettings,
 }:
 { inject_console: HeaderboxConsole;
   headerbox: HeaderBox;
@@ -18,6 +19,7 @@ export default function InjectConsolePresenter(
   inject_actions: Gio.SimpleAction[];
   client: AddonBoxClient;
   status_manager: StatusManager;
+  gsettings: Gio.Settings;
 }) {
 
   function enable_inject_actions() {
@@ -121,6 +123,22 @@ export default function InjectConsolePresenter(
       });
       inject_console.clean_output();
       inject_button_set.set_id(id);
+
+      let enable_start_game: boolean = false;
+      try {
+        enable_start_game = gsettings.get_boolean('injector-enable-start-game');
+      } catch (error) {
+        logError(error);
+      }
+
+      if (enable_start_game) {
+        try {
+          await client.services.injector.call('EnableRunWithGame', null, id, true);
+        } catch (error) {
+          logError(error);
+        }
+      }
+
       try {
         await client.services.injector.property_set('RunningPrepared', GLib.Variant.new_boolean(true));
       } catch (error) {

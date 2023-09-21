@@ -5,9 +5,11 @@ import AddonBoxClient from '../backend/client.js';
 export default function InjectorActions(
 { action_map,
   client,
+  gsettings,
 }:
 { action_map: Gio.ActionMap;
   client: AddonBoxClient;
+  gsettings: Gio.Settings;
 }) {
   const run = new Gio.SimpleAction({
     name: 'injector.run',
@@ -47,7 +49,6 @@ export default function InjectorActions(
   });
   action_map.add_action(cancel);
 
-  // TODO(kinten): Radio to choose strategy instead of activating
   const run_game = new Gio.SimpleAction({
     name: 'injector.inject-with-game',
   });
@@ -58,6 +59,38 @@ export default function InjectorActions(
   });
   action_map.add_action(run_game);
 
+  const toggle_start_game = new Gio.SimpleAction({
+    name: 'injector.toggle-start-game',
+    state: GLib.Variant.new_boolean(false),
+  });
+  toggle_start_game.connect('activate', (action) => {
+    const val = action.get_state();
+    if (val === null) throw new Error;
+    const newval = (() => {
+      const _newval = val.get_boolean();
+      if (_newval === null) throw new Error;
+      return GLib.Variant.new_boolean(!_newval);
+    })();
+    gsettings.set_value('injector-enable-start-game', newval);
+  });
+  toggle_start_game.connect('change-state', (action, value) => {
+    if (value === null) throw new Error;
+    action.set_state(value);
+  });
+  function update_enable_start_game() {
+    let val: GLib.Variant;
+    try {
+      val = gsettings.get_value('injector-enable-start-game');
+    } catch (error) {
+      logError(error);
+      return;
+    }
+    toggle_start_game.change_state(val);
+  }
+  gsettings.connect('changed::injector-enable-start-game', update_enable_start_game);
+  update_enable_start_game();
+  action_map.add_action(toggle_start_game);
+
   return {
     get_actions() {
       return {
@@ -65,6 +98,7 @@ export default function InjectorActions(
         done,
         cancel,
         run_game,
+        toggle_start_game,
       }
     }
   }
