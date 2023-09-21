@@ -7,6 +7,7 @@ globalThis.config = {
   version: '@VERSION@',
   prefix: '@PREFIX@',
   libdir: '@LIBDIR@',
+  buildtype: '@BUILDTYPE@',
   flatpak: '@FLATPAK@' === 'True',
   toString() {
     let str = '';

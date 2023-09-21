@@ -8,6 +8,7 @@ export interface globalThis {
     version: string,
     prefix: string,
     libdir: string,
+    buildtype:  'plain' | 'debug' | 'debugoptimized' | 'release' | 'minsize' | 'custom',
     flatpak: string,
     toString(): string,
   },

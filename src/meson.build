@@ -122,6 +122,7 @@ steam_vpk_launcher = configure_file(
     'VERSION': meson.project_version(),
     'PREFIX': get_option('prefix'),
     'LIBDIR': get_option('prefix') / get_option('libdir'),
+    'BUILDTYPE': get_option('buildtype'),
     'FLATPAK': get_option('flatpak'),
   },
 )

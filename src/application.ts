@@ -14,6 +14,7 @@ import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
 import Repository from './model/repository.js';
 import AddonsProxy from './backend/addons-proxy.js';
+import { globalThis } from './utils/ts-helper.js';
 
 let application!: Gtk.Application;
 
@@ -28,8 +29,11 @@ export default function Application() {
   const application = new Adw.Application({
     application_id: APP_ID,
   });
+  const buildtype = (globalThis as unknown as globalThis).config.buildtype;
+  if (buildtype === 'debug')
+    GLib.log_set_debug_enabled(true);
+
   GLib.set_application_name(APP_FULLNAME);
-  GLib.log_set_debug_enabled(true);
 
   const client = new AddonBoxClient();
   const settings = new Gio.Settings({

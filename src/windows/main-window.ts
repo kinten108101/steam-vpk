@@ -52,6 +52,7 @@ import ProfileProxy from '../backend/profile-proxy.js';
 import LaunchpadPagePresenter from '../presenters/launchpad-page-presenter.js';
 import TextMarkupPresenter from '../presenters/text-markup-presenter.js';
 import SettingsTextMarkupPresenter from '../presenters/settings/text-markup.js';
+import { globalThis } from '../utils/ts-helper.js';
 
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
@@ -140,6 +141,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
+    this._setup_style();
     this._setup_group();
     this._setup_themeselector();
     this._setup_winsize();
@@ -154,6 +156,13 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   get addonlist() {
     return this._addonlist;
+  }
+
+  _setup_style() {
+    const buildtype = (globalThis as unknown as globalThis).config.buildtype;
+    if (buildtype === 'debug' || buildtype === 'debugoptimized') {
+      this.add_css_class('devel');
+    }
   }
 
   _setup_group() {
