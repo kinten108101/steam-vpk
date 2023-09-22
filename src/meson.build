@@ -40,6 +40,8 @@ script = [
   'steam-vpk-utils/utils.ts',
   'steam-vpk-utils/weakrefmap.ts',
   'ui/addon-details/archive-list.ts',
+  'ui/headerbox/build.ts',
+  'ui/headerbox/console.ts',
   'ui/addon-details.ts',
   'ui/addons-panel-disk.ts',
   'ui/addons-panel.ts',

@@ -1,182 +1,9 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_RDNN } from '../utils/const.js';
-import {
-  GtkChildren,
-  GtkInternalChildren,
-  GtkTemplate,
-  param_spec_boolean,
-  param_spec_object,
-  param_spec_string,
-  registerClass,
-} from "../steam-vpk-utils/utils.js";
 import HeaderboxDetachable from '../windows/headerbox-detachable.js';
-
-export namespace HeaderboxBuild {
-  export type TitleType = 'in-progress' | 'done';
-  export type ElapsedDisplayMode = 'free' | 'fixed';
-  export type TimeUnitWord = 's' | 'ms';
-}
-
-export class HeaderboxBuild extends Gtk.Box {
-  static [GObject.properties] = {
-    title_type: GObject.ParamSpec.string('title-type', '', '',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-      <HeaderboxBuild.TitleType>'in-progress'),
-    elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-      0, Number.MAX_SAFE_INTEGER, 0),
-    elapsed_display_mode: GObject.ParamSpec.string('elapsed-display-mode', '', '',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-      <HeaderboxBuild.ElapsedDisplayMode>'free'),
-    status: GObject.ParamSpec.string('status', '', '',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-      null),
-    time_unit_word: GObject.ParamSpec.string('time-unit-word', '', '',
-      GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-      <HeaderboxBuild.TimeUnitWord>'s'),
-  };
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-build.ui`;
-  static [GtkInternalChildren] = [
-    'title_label',
-    'time_elapsed_field',
-    'status_field',
-  ];
-
-  static {
-    registerClass({}, this);
-  }
-
-  title_type!: HeaderboxBuild.TitleType;
-  elapsed!: number;
-  elapsed_display_mode!: HeaderboxBuild.ElapsedDisplayMode;
-  status!: string;
-  /** @todo(kinten) Make this private */
-  time_unit_word!: HeaderboxBuild.TimeUnitWord;
-
-  _title_label!: Gtk.Label;
-  _time_elapsed_field!: Gtk.Label;
-  _status_field!: Gtk.Label;
-
-  _should_update: (time: number) => [boolean, number] = (time: number) => [true, time];
-
-  constructor(params = {}) {
-    super(params);
-    this.bind_property_full('title-type', this._title_label, 'label',
-      GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: string | null) => {
-        if (from === null) return [false, ''];
-        switch (from as HeaderboxBuild.TitleType) {
-        case 'in-progress':
-          return [true, 'Injection in Progress'];
-        case 'done':
-          return [true, 'Injection Completed'];
-        default:
-          throw new Error;
-        }
-      }, null as unknown as GObject.TClosure);
-
-    this.bind_property_full('elapsed', this._time_elapsed_field, 'label',
-      GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: number | null): [boolean, string] => {
-        if (from === null)
-          return [false, ''];
-        const [ready_update, val] = this._should_update(from);
-        if (!ready_update)
-          return [false, ''];
-        switch (this.elapsed_display_mode) {
-        case 'free':
-          return [true, `${String(val)}${this.time_unit_word}`];
-        case 'fixed':
-          throw new Error('Not implemented');
-        default:
-          throw new Error;
-        }
-      }, null as unknown as GObject.TClosure);
-
-    this.connect('notify::time-unit-word', this._update_time_unit.bind(this));
-    this._update_time_unit();
-
-    this.bind_property_full('status', this._status_field, 'label',
-      GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: string | null) => {
-        if (from === null) return [true, ''];
-        return [true, from];
-      }, null as unknown as GObject.TClosure);
-  }
-
-  _update_time_unit() {
-    switch (this.time_unit_word) {
-    case 'ms':
-      this._should_update = (time: number) => [true, time];
-      break;
-    case 's':
-      this._should_update = (time: number) => {
-        if (time % 1000 !== 0) return [false, 0];
-        return [true, time / 1000];
-      };
-      break;
-    default:
-      throw new Error;
-    }
-  }
-}
-
-export class HeaderboxConsole extends Gtk.Box {
-  static [GObject.signals] = {
-    'lines-changed': {},
-  };
-
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-console.ui`;
-  static [GtkChildren] = [
-    'output',
-  ];
-  static {
-    registerClass({}, this);
-  }
-
-  lines: string[] = [];
-  output!: Gtk.Label;
-
-  page_data!: BoxPage;
-
-  constructor(params = {}) {
-    super(params);
-    this.connect('lines-changed', this.#render_lines.bind(this));
-  }
-
-  bind(page_data: BoxPage) {
-    this.page_data = page_data;
-  }
-
-  reset() {
-    this.clean_output();
-  }
-
-  #render_lines() {
-    const text = this.lines.reduce((acc, val, i) => {
-      if (i === 0) return `${val}`;
-      return `${acc}\n${val}`;
-    }, '');
-    if (text === '') {
-      this.page_data.set_empty(true);
-    } else {
-      this.page_data.set_empty(false);
-    }
-    this.output?.set_label(text);
-  }
-
-  add_line(line: string) {
-    this.lines.push(line);
-    this.emit('lines-changed');
-  }
-
-  clean_output() {
-    this.lines = [];
-    this.emit('lines-changed');
-  }
-}
+import HeaderboxBuild from './headerbox/build.js';
+import HeaderboxConsole from './headerbox/console.js';
 
 export type BoxPages = 'status_box' | 'console_box';
 export type BoxSchemes =
@@ -207,15 +34,28 @@ class BoxPage extends GObject.Object {
     }
   }
 
-  static [GObject.properties] = {
-    button: param_spec_object({ name: 'button', objectType: Gtk.ToggleButton.$gtype }),
-    empty: param_spec_boolean({ name: 'empty', default_value: true }),
-    box: param_spec_string<BoxSchemes>({ name: 'box' }),
-    panel: param_spec_string<PanelSchemes>({ name: 'panel' }),
-  }
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkBoxPage',
+      Properties: {
+        button: GObject.ParamSpec.object(
+          'button', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          Gtk.ToggleButton.$gtype),
+        empty: GObject.ParamSpec.boolean(
+          'empty', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          true),
+        box: GObject.ParamSpec.string(
+          'box', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        panel: GObject.ParamSpec.string(
+          'panel', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+      },
+    }, this);
   }
 
   button!: Gtk.ToggleButton;
@@ -328,7 +168,9 @@ export default class HeaderBox extends Gtk.Box {
     this.notify('child-revealed');
   }
 
-  pages: Map<string, BoxPage> = new Map;
+  pages: {
+    get(name: BoxPages): BoxPage;
+  } & Map<string, BoxPage> = new Map;
 
   constructor(params = {}) {
     super(params);
@@ -338,10 +180,10 @@ export default class HeaderBox extends Gtk.Box {
     const arr:
       [BoxPages, Gtk.ToggleButton, { bind(page: BoxPage): void }?][] =
     [
-      ['status_box', this._button_status, undefined],
-      ['console_box', this._button_console, this.console_box],
+      ['status_box', this._button_status],
+      ['console_box', this._button_console],
     ];
-    arr.forEach(([page_name, button, bindable]) => {
+    arr.forEach(([page_name, button]) => {
       const page = BoxPage.make_default(page_name, { button });
       this.pages.set(page_name, page);
       [
@@ -351,8 +193,14 @@ export default class HeaderBox extends Gtk.Box {
       ].forEach(noti_sig => {
         page.connect(noti_sig, this._update_box_stack.bind(this));
       });
-      bindable?.bind(page);
     });
+
+    const update_console_box_empty = () => {
+      const page = this.pages.get('console_box');
+      page.set_empty(this.console_box.text_empty)
+    };
+    this.console_box.connect('notify::text-empty', update_console_box_empty);
+    update_console_box_empty();
   }
 
   _setup_box_switcher() {

@@ -2,8 +2,9 @@ import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
 import StatusManager, { BuildStatus, ErrorStatus, Status } from "../model/status-manager.js";
 import type { SignalMethods } from '@girs/gjs';
-import HeaderBox, { HeaderboxBuild } from '../ui/headerbox.js';
 import { ProfileBar } from '../ui/profile-bar.js';
+import HeaderBox from '../ui/headerbox.js';
+import { HeaderboxBuildEnums } from '../ui/headerbox/build.js';
 
 export interface HeaderboxFactory extends SignalMethods {
   connect(signal: 'bind', cb: ($obj: this, item: Status) => void): number;
@@ -104,7 +105,7 @@ export default function StatusBroker(
       });
 
       const using_finish = item.bind_property_full('finished', build_box, 'title-type', flags,
-        (_binding, from: boolean | null): [boolean, HeaderboxBuild.TitleType] => {
+        (_binding, from: boolean | null): [boolean, HeaderboxBuildEnums.TitleType] => {
           if (from === null) return [false, 'in-progress'];
           if (from) {
             return [true, 'done'];
@@ -115,7 +116,7 @@ export default function StatusBroker(
       store.binds.push(using_finish);
 
       const using_time_unit = item.bind_property_full('time-unit', build_box, 'time-unit-word', flags,
-        (_binding, from: BuildStatus.TimeUnit | null): [boolean, HeaderboxBuild.TimeUnitWord] => {
+        (_binding, from: BuildStatus.TimeUnit | null): [boolean, HeaderboxBuildEnums.TimeUnitWord] => {
           if (from === null) return [false, 's'];
           switch (from) {
           case 'second':

@@ -1,6 +1,7 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import HeaderBox, { HeaderboxConsole } from '../ui/headerbox.js';
+import HeaderBox from '../ui/headerbox.js';
+import HeaderboxConsole from '../ui/headerbox/console.js';
 import InjectButtonSet from '../ui/inject-button-set.js';
 import StatusManager, { BuildStatus } from '../model/status-manager.js';
 import AddonBoxClient from '../backend/client.js';
