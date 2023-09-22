@@ -230,7 +230,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
         gsettings: this.gsettings,
       });
       SettingsInjectButtonStylesPresenter({
-        inject_button_styles: prefWin.inject_button_styles,
+        inject_button_styles_view: prefWin.inject_button_styles_view,
         gsettings: this.gsettings,
       });
       SettingsTextMarkupPresenter({

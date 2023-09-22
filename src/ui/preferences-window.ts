@@ -3,18 +3,25 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
+import PreferencesWindowInjectButtonStylesView from './preferences-window/inject-button-styles-view.js';
 
 export default class PreferencesWindow extends Adw.PreferencesWindow {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkPreferencesWindow',
+      Properties: {
+        inject_button_styles_view: GObject.ParamSpec.object(
+          'inject-button-styles-view', '', '',
+          GObject.ParamFlags.READABLE,
+          PreferencesWindowInjectButtonStylesView.$gtype),
+      },
       Template: 'resource:///com/github/kinten108101/SteamVPK/ui/preferences-window.ui',
       Children: [
         'enable_remember_winsize',
-        'inject_button_styles',
         'enable_text_markup',
       ],
       InternalChildren: [
+        'inject_button_styles',
         'clear_game_dir',
         'game-dir-path',
       ],
@@ -22,19 +29,21 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
   }
 
   enable_remember_winsize!: Gtk.Switch;
-  inject_button_styles!: {
-    get_model(): Gtk.StringList;
-    get_selected_item(): {
-      get_string(): string;
-    } & GObject.Object;
-  } & Gtk.DropDown;
   enable_text_markup!: Gtk.Switch;
+  _inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
+  get inject_button_styles_view() {
+    return this._inject_button_styles_view;
+  }
 
+  _inject_button_styles!: Gtk.DropDown;
   _clear_game_dir!: Gtk.Button;
   _game_dir_path!: Gtk.Label;
 
   constructor(params = {}) {
     super(params);
+    this._inject_button_styles_view = new PreferencesWindowInjectButtonStylesView({
+      dropdown: this._inject_button_styles,
+    });
     this._setup_actionables();
   }
 
