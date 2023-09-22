@@ -1,5 +1,6 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
+import Adw from 'gi://Adw';
 
 export default interface PreferencesWindowInjectButtonStylesView {
   connect(signal: 'notify::selected', callback: (object: this, pspec: GObject.ParamSpec) => void): number;
@@ -27,10 +28,10 @@ export default class PreferencesWindowInjectButtonStylesView extends GObject.Obj
     return this._selected;
   }
 
-  _dropdown: Gtk.DropDown;
+  _dropdown: Adw.ComboRow;
 
   constructor(params: {
-    dropdown: Gtk.DropDown;
+    dropdown: Adw.ComboRow;
   }) {
     const { dropdown, ...gparams } = params;
     super(gparams);

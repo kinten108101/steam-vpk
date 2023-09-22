@@ -35,7 +35,7 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
     return this._inject_button_styles_view;
   }
 
-  _inject_button_styles!: Gtk.DropDown;
+  _inject_button_styles!: Adw.ComboRow;
   _clear_game_dir!: Gtk.Button;
   _game_dir_path!: Gtk.Label;
 

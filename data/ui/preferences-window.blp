@@ -68,24 +68,10 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
       title: _('Experimental');
       description: _('Features below are unstable.');
 
-      Adw.ActionRow {
+      Adw.ComboRow inject_button_styles {
         title: _('Run Button Style');
-
-        [suffix]
-        Gtk.DropDown inject_button_styles {
-          valign: center;
-          factory:
-            Gtk.BuilderListItemFactory {
-              template Gtk.ListItem {
-                child:
-                  Gtk.Label {
-                    label: bind template.item as <StringObject>.string;
-                  };
-              }
-            };
-          model:
-            Gtk.StringList {};
-        }
+        model:
+          Gtk.StringList {};
       }
 
       Adw.ActionRow {
