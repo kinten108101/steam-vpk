@@ -55,6 +55,7 @@ import LaunchpadPagePresenter from '../presenters/launchpad-page-presenter.js';
 import TextMarkupPresenter from '../presenters/text-markup-presenter.js';
 import SettingsTextMarkupPresenter from '../presenters/settings/text-markup.js';
 import { globalThis } from '../utils/ts-helper.js';
+import Notifier from '../presenters/notifier.js';
 
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
@@ -90,6 +91,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
         status_manager: GObject.ParamSpec.object('status-manager', '', '',
           GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
           Addonlist.$gtype),
+        notifier: GObject.ParamSpec.object('notifier', '', '',
+          GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
+          Notifier.$gtype),
         repository: GObject.ParamSpec.object('repository', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           Repository.$gtype),
@@ -119,6 +123,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _addonlist: Addonlist = new Addonlist;
   _status_manager: StatusManager = new StatusManager;
+  _notifier: Notifier;
 
   client!: AddonBoxClient;
   gsettings!: Gio.Settings;
@@ -143,6 +148,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
+    this._notifier = new Notifier({
+      toast_overlay: this._primary_toast_overlay,
+    });
     this._setup_style();
     this._setup_group();
     this._setup_themeselector();
@@ -158,6 +166,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   get addonlist() {
     return this._addonlist;
+  }
+
+  get notifier() {
+    return this._notifier;
   }
 
   _setup_style() {
@@ -216,6 +228,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
       main_window: this,
       settings: this.gsettings,
       client: this.client,
+      notifier: this.notifier,
     }).export2actionMap(group);
 
     const showPreferences = new Gio.SimpleAction({

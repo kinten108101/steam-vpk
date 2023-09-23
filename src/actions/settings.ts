@@ -4,6 +4,7 @@ import Gtk from 'gi://Gtk';
 
 import FileDialog from '../dialogs/file-dialog.js';
 import AddonBoxClient from '../backend/client.js';
+import Notifier from '../presenters/notifier.js';
 
 Gio._promisify(Gtk.FileDialog.prototype, 'select_folder', 'select_folder_finish');
 
@@ -12,11 +13,13 @@ export default function SettingsActions(
   main_window,
   settings,
   client,
+  notifier,
 }:
 { parent_window: Gtk.Window;
   main_window: Gtk.ApplicationWindow;
   settings: Gio.Settings;
   client: AddonBoxClient;
+  notifier: Notifier;
 }) {
   const actions: Gio.Action[] = [];
   const set_game_dir = new Gio.SimpleAction({
@@ -50,7 +53,13 @@ export default function SettingsActions(
         }
         path = file?.get_path() || '';
       }
-      await client.services.settings.property_set('GameDirectory', GLib.Variant.new_string(path));
+      try {
+        await client.services.settings.property_set('GameDirectory', GLib.Variant.new_string(path));
+      } catch (error) {
+        if (error instanceof GLib.Error && error.matches(Gio.dbus_error_quark(), Gio.DBusError.SERVICE_UNKNOWN)) {
+          notifier.show_global_error('Could not connect to server');
+        } else throw error;
+      }
     })().catch(error => logError(error));
   });
   actions.push(set_game_dir);

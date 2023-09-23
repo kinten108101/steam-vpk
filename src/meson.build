@@ -30,6 +30,7 @@ script = [
   'presenters/inject-button-set-presenter.ts',
   'presenters/inject-console-presenter.ts',
   'presenters/launchpad-page-presenter.ts',
+  'presenters/notifier.ts',
   'presenters/settings.ts',
   'presenters/static-archive-store-presenter.ts',
   'presenters/status-broker.ts',
