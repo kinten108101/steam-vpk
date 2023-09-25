@@ -7,9 +7,9 @@ import Adw from 'gi://Adw';
 
 import { Toast } from '../utils/toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../utils/gtk.js';
-import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
 import Repository from '../model/repository.js';
-import StaticArchiveStorePresenter from '../presenters/static-archive-store-presenter.js';
+import AddonDetailsSelectModel from '../model/addon-details-select.js';
+import ArchiveSelectModel from '../model/archive-select.js';
 
 export default function
 AddonDetailsActions(
@@ -17,15 +17,19 @@ AddonDetailsActions(
   action_map,
   parent_window,
   repository,
-  presenter,
-  store_presenter,
+  stack,
+  addon_details_select_model,
+  archive_select_model,
 }:
 { toaster?: Adw.ToastOverlay;
   action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
   repository: Repository;
-  presenter: AddonDetailsPresenter;
-  store_presenter: StaticArchiveStorePresenter;
+  stack: {
+    set_visible_child_name(name: string): void;
+  };
+  addon_details_select_model: AddonDetailsSelectModel;
+  archive_select_model: ArchiveSelectModel;
 }) {
   const seeDetails = new Gio.SimpleAction({
     name: 'addon-details.see-details',
@@ -38,9 +42,9 @@ AddonDetailsActions(
       if (id === null) throw new Error;
       const item = repository.get(id);
       if (item === undefined) return;
-      presenter.item = item;
-      store_presenter.item = item;
-      presenter.present();
+      addon_details_select_model.item = item;
+      archive_select_model.item = item;
+      stack.set_visible_child_name('addon-details-page');
     })().catch(error => logError(error));
   });
   action_map.add_action(seeDetails);

@@ -55,7 +55,10 @@ import LaunchpadPagePresenter from '../presenters/launchpad-page-presenter.js';
 import TextMarkupPresenter from '../presenters/text-markup-presenter.js';
 import SettingsTextMarkupPresenter from '../presenters/settings/text-markup.js';
 import { globalThis } from '../utils/ts-helper.js';
-import Notifier from '../presenters/notifier.js';
+import NotificationModel from '../model/notification.js';
+import NotificationPresenter from '../presenters/notification.js';
+import AddonDetailsSelectModel from '../model/addon-details-select.js';
+import ArchiveSelectModel from '../model/archive-select.js';
 
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
@@ -91,9 +94,15 @@ export default class MainWindow extends Adw.ApplicationWindow {
         status_manager: GObject.ParamSpec.object('status-manager', '', '',
           GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
           Addonlist.$gtype),
-        notifier: GObject.ParamSpec.object('notifier', '', '',
+        notification_model: GObject.ParamSpec.object('notification-model', '', '',
           GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
-          Notifier.$gtype),
+          NotificationModel.$gtype),
+        addon_details_select_model: GObject.ParamSpec.object('addon-details-select-model', '', '',
+          GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
+          AddonDetailsSelectModel.$gtype),
+        archive_select_model: GObject.ParamSpec.object('archive-select-model', '', '',
+          GObject.ParamFlags.READABLE | GObject.ParamFlags.CONSTRUCT,
+          ArchiveSelectModel.$gtype),
         repository: GObject.ParamSpec.object('repository', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           Repository.$gtype),
@@ -123,7 +132,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _addonlist: Addonlist = new Addonlist;
   _status_manager: StatusManager = new StatusManager;
-  _notifier: Notifier;
+  _notification_model: NotificationModel = new NotificationModel;
+  _addon_details_select_model: AddonDetailsSelectModel = new AddonDetailsSelectModel;
+  _archive_select_model: ArchiveSelectModel = new ArchiveSelectModel;
 
   client!: AddonBoxClient;
   gsettings!: Gio.Settings;
@@ -148,11 +159,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
-    this._notifier = new Notifier({
-      toast_overlay: this._primary_toast_overlay,
-    });
     this._setup_style();
     this._setup_group();
+    this._setup_notification();
     this._setup_themeselector();
     this._setup_winsize();
     this._setup_connection_monitor();
@@ -168,8 +177,20 @@ export default class MainWindow extends Adw.ApplicationWindow {
     return this._addonlist;
   }
 
-  get notifier() {
-    return this._notifier;
+  get status_manager() {
+    return this._status_manager;
+  }
+
+  get notification_model() {
+    return this._notification_model;
+  }
+
+  get addon_details_select_model() {
+    return this._addon_details_select_model;
+  }
+
+  get archive_select_model() {
+    return this._archive_select_model;
   }
 
   _setup_style() {
@@ -228,7 +249,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
       main_window: this,
       settings: this.gsettings,
       client: this.client,
-      notifier: this.notifier,
+      notification_model: this._notification_model,
     }).export2actionMap(group);
 
     const showPreferences = new Gio.SimpleAction({
@@ -392,22 +413,31 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _setup_addon_details() {
     const archive_store = new ArchiveStore();
-    const store_presenter = new StaticArchiveStorePresenter({
+    StaticArchiveStorePresenter({
+      select_model: this._archive_select_model,
       archive_store,
     });
-    const presenter = new AddonDetailsPresenter({
-      leaflet: this._primary_leaflet,
-      addon_details: this._addon_details,
-      client: this.client,
+    AddonDetailsPresenter({
       archive_model: archive_store,
+      page: this._addon_details,
+      page_model: this._addon_details_select_model,
+      client: this.client,
     });
     AddonDetailsActions({
       toaster: this._primary_toast_overlay,
       action_map: this,
       parent_window: this,
       repository: this.repository,
-      presenter,
-      store_presenter,
+      stack: this._primary_leaflet,
+      addon_details_select_model: this._addon_details_select_model,
+      archive_select_model: this._archive_select_model,
+    });
+  }
+
+  _setup_notification() {
+    NotificationPresenter({
+      toast_overlay: this._primary_toast_overlay,
+      model: this._notification_model,
     });
   }
 }
