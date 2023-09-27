@@ -83,6 +83,16 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
           action-name: 'pref-win.settings.enable-text-markup';
         }
       }
+
+      Adw.ActionRow {
+        title: _('devel Style for windows');
+
+        [suffix]
+        Gtk.Switch enable_devel_style {
+          valign: center;
+          action-name: 'pref-win.settings.enable-devel-style';
+        }
+      }
     }
   }
 }

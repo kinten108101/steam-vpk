@@ -16,6 +16,9 @@
     <key name="enable-text-markup" type="b">
       <default>true</default>
     </key>
+    <key name="enable-devel-style" type="b">
+      <default>true</default>
+    </key>
     <key name="injector-enable-start-game" type="b">
       <default>false</default>
     </key>

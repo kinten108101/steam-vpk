@@ -122,6 +122,17 @@ export default function SettingsActions(
   });
   actions.push(enable_text_markup);
 
+  const enable_devel_style = new Gio.SimpleAction({
+    name: 'settings.enable-devel-style',
+    parameter_type: GLib.VariantType.new('b'),
+  });
+  enable_devel_style.connect('activate', (_action, parameter) => {
+    const val = parameter?.get_boolean();
+    if (typeof val !== 'boolean') throw new Error;
+    settings.set_boolean('enable-devel-style', val);
+  });
+  actions.push(enable_devel_style);
+
   function export2actionMap(action_map: Gio.ActionMap) {
     actions.forEach(x => {
       action_map.add_action(x);

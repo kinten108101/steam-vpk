@@ -59,6 +59,7 @@ import NotificationModel from '../model/notification.js';
 import NotificationPresenter from '../presenters/notification.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
 import ArchiveSelectModel from '../model/archive-select.js';
+import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
 
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
@@ -193,11 +194,18 @@ export default class MainWindow extends Adw.ApplicationWindow {
     return this._archive_select_model;
   }
 
-  _setup_style() {
+  _update_style() {
+    const val = this.gsettings.get_boolean('enable-devel-style');
     const buildtype = (globalThis as unknown as globalThis).config.buildtype;
-    if (buildtype === 'debug' || buildtype === 'debugoptimized') {
+    if (val && (buildtype === 'debug' || buildtype === 'debugoptimized'))
       this.add_css_class('devel');
-    }
+    else
+      this.remove_css_class('devel');
+  }
+
+  _setup_style() {
+    this.gsettings.connect('changed::enable-devel-style', this._update_style.bind(this));
+    this._update_style();
   }
 
   _setup_group() {
@@ -269,6 +277,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
       });
       SettingsTextMarkupPresenter({
         enable_text_markup: prefWin.enable_text_markup,
+        gsettings: this.gsettings,
+      });
+      SettingsDevelStylePresenter({
+        enable_switch: prefWin.enable_devel_style,
         gsettings: this.gsettings,
       });
       prefWin.present();

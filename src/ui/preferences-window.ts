@@ -19,6 +19,7 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
       Children: [
         'enable_remember_winsize',
         'enable_text_markup',
+        'enable_devel_style',
       ],
       InternalChildren: [
         'inject_button_styles',
@@ -30,6 +31,7 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
 
   enable_remember_winsize!: Gtk.Switch;
   enable_text_markup!: Gtk.Switch;
+  enable_devel_style!: Gtk.Switch;
   _inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
   get inject_button_styles_view() {
     return this._inject_button_styles_view;
@@ -54,6 +56,11 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
         return [true, GLib.Variant.new_boolean(!from)];
       }, null as unknown as GObject.TClosure);
     this.enable_text_markup.bind_property_full('active', this.enable_text_markup, 'action-target',
+      GObject.BindingFlags.SYNC_CREATE,
+      (_binding, from: boolean) => {
+        return [true, GLib.Variant.new_boolean(!from)];
+      }, null as unknown as GObject.TClosure);
+    this.enable_devel_style.bind_property_full('active', this.enable_devel_style, 'action-target',
       GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: boolean) => {
         return [true, GLib.Variant.new_boolean(!from)];

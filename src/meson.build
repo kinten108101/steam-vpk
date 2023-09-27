@@ -26,6 +26,7 @@ script = [
   'model/notification.ts',
   'model/repository.ts',
   'model/status-manager.ts',
+  'presenters/settings/devel-style.ts',
   'presenters/settings/inject-button-styles.ts',
   'presenters/settings/text-markup.ts',
   'presenters/addon-details-presenter.ts',
