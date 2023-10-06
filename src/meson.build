@@ -59,6 +59,7 @@ script = [
   'ui/preferences-window.ts',
   'ui/profile-bar.ts',
   'ui/sensitizable-widgets.ts',
+  'ui/shortcut-label.ts',
   'ui/spinning-button.ts',
   'ui/themeselector.ts',
   'utils/action-builder.ts',

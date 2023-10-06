@@ -60,7 +60,9 @@ import NotificationPresenter from '../presenters/notification.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
 import ArchiveSelectModel from '../model/archive-select.js';
 import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
+import { ShortcutLabel } from '../ui/shortcut-label.js';
 
+GObject.type_ensure(ShortcutLabel.$gtype);
 GObject.type_ensure(PreferencesRow.$gtype);
 GObject.type_ensure(ArchiveRow.$gtype);
 GObject.type_ensure(ArchiveList.$gtype);

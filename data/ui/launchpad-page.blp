@@ -39,10 +39,10 @@ template $StvpkLaunchpadPage : Adw.Bin {
                 label: _('Detect add-on folder');
               }
 
-              Gtk.ShortcutLabel {
+              $StvpkShortcutLabel {
                 layout { row: 0; column: 1;}
                 halign: end;
-                accelerator: '<Control>m';
+                action-name: 'win.add-addon.add-name';
               }
 
               Gtk.Label {
@@ -51,10 +51,10 @@ template $StvpkLaunchpadPage : Adw.Bin {
                 label: _('Import from Workshop');
               }
 
-              Gtk.ShortcutLabel {
+              $StvpkShortcutLabel {
                 layout { row: 1; column: 1;}
                 halign: end;
-                accelerator: '<Control>b';
+                action-name: 'win.add-addon.add-url';
               }
             };
         };
