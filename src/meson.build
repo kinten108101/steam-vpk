@@ -48,6 +48,7 @@ script = [
   'ui/headerbox/build.ts',
   'ui/headerbox/console.ts',
   'ui/preferences-window/inject-button-styles-view.ts',
+  'ui/activatable-row.ts',
   'ui/addon-details.ts',
   'ui/addons-panel-disk.ts',
   'ui/addons-panel.ts',

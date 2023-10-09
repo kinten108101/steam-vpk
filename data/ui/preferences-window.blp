@@ -12,15 +12,9 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
     Adw.PreferencesGroup {
       title: _('Window');
 
-      Adw.ActionRow {
+      $StvpkSwitchRow enable_remember_winsize {
         title: _('Remember Window Size');
-
-        [suffix]
-        Gtk.Switch enable_remember_winsize {
-          valign: center;
-          action-name: 'pref-win.settings.remember-winsize';
-          action-target: 'false'; // programmed
-        }
+        action-name: 'pref-win.settings.remember-winsize';
       }
     }
 
@@ -74,24 +68,14 @@ template $StvpkPreferencesWindow : Adw.PreferencesWindow {
           Gtk.StringList {};
       }
 
-      Adw.ActionRow {
+      $StvpkSwitchRow enable_text_markup {
         title: _('Text markup');
-
-        [suffix]
-        Gtk.Switch enable_text_markup {
-          valign: center;
-          action-name: 'pref-win.settings.enable-text-markup';
-        }
+        action-name: 'pref-win.settings.enable-text-markup';
       }
 
-      Adw.ActionRow {
+      $StvpkSwitchRow enable_devel_style {
         title: _('devel Style for windows');
-
-        [suffix]
-        Gtk.Switch enable_devel_style {
-          valign: center;
-          action-name: 'pref-win.settings.enable-devel-style';
-        }
+        action-name: 'pref-win.settings.enable-devel-style';
       }
     }
   }

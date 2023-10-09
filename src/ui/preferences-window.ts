@@ -4,6 +4,7 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import PreferencesWindowInjectButtonStylesView from './preferences-window/inject-button-styles-view.js';
+import { SwitchRow } from './activatable-row.js';
 
 export default class PreferencesWindow extends Adw.PreferencesWindow {
   static {
@@ -29,9 +30,9 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
     }, this);
   }
 
-  enable_remember_winsize!: Gtk.Switch;
-  enable_text_markup!: Gtk.Switch;
-  enable_devel_style!: Gtk.Switch;
+  enable_remember_winsize!: SwitchRow;
+  enable_text_markup!: SwitchRow;
+  enable_devel_style!: SwitchRow;
   _inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
   get inject_button_styles_view() {
     return this._inject_button_styles_view;
