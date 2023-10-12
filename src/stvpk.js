@@ -30,7 +30,7 @@ import('resource://@APP_RDNN@/js/config.js')
         usr_state_dir: GLib.get_user_state_dir(),
         pkg_usr_state_dir: GLib.build_filenamev([GLib.get_user_state_dir(), `@APP_SHORTNAME@`]),
         build_type: '@BUILD_TYPE@',
-        webapi: 'a495b2096303c5909ee32b808fa608b3',
+        webapi: '6169ADBAC88B2021C279E28693AEF6A9',
         oauth: 'ac52a3a6c7496f8f71be2cf9f3fefdc7',
       });
       getConfig.quit();

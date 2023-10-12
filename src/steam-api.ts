@@ -3,7 +3,6 @@ import Gio from 'gi://Gio';
 import Soup from 'gi://Soup';
 import { Encoder } from './utils.js';
 import { read_json_bytes } from './file.js';
-import { OAUTH } from './const.js';
 
 export type GetPublishedFileDetailsResponse = Partial<{
   response: {
@@ -45,22 +44,6 @@ export default class SteamworkServices {
       requestBody,
     );
     const gbytes = await this.session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, this.cancellable);
-    const bytes = gbytes.get_data();
-    if (bytes === null) throw new Error('Response is empty');
-    const response = read_json_bytes(bytes);
-    return response;
-  }
-
-  async getPlayerSummaries(user_id: string): Promise<any> {
-    const webapi = OAUTH;
-    const uri = GLib.Uri.parse(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?access_token=${webapi}&steamids=${user_id}&key=`, GLib.UriFlags.NONE);
-
-    const msg = new Soup.Message({
-      method: 'GET',
-      uri,
-    });
-
-    const gbytes = await this.session.send_and_read_async(msg, GLib.PRIORITY_DEFAULT, null);
     const bytes = gbytes.get_data();
     if (bytes === null) throw new Error('Response is empty');
     const response = read_json_bytes(bytes);

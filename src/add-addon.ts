@@ -238,8 +238,8 @@ export class AddAddon extends GObject.Object {
 
       let playerDetails: any;
       {
-        const webapi = Config.config.oauth;
-        const uriParse = GLib1.Uri.parse(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?access_token=${webapi}&steamids=${creator}&key=`, GLib.UriFlags.NONE);
+        const webapi = Config.config.webapi;
+        const uriParse = GLib1.Uri.parse(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v2/?key=${webapi}&steamids=${creator}`, GLib.UriFlags.NONE);
         if (uriParse.code !== Results.OK) {
           console.debug('Bad URL');
           showErrorMsg('Programming Error');
