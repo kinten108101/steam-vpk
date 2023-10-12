@@ -72,10 +72,45 @@ export default function AddAddonAction(
     window.connect_signal('preview-page::setup', async (_window, url, page) => {
       const data = cache.get(url);
       if (data === undefined) return false;
-      page.name_request = data['title'] || 'Untitled add-on';
-      page.creator_request = data['creator'] || 'Unknown creator';
-      page.excerpt_request = data['description'] || 'Unknown description';
-      page.size_request = data['file_size'] || 0;
+      const gpfd = data['gpfd'];
+      const gps = data['gps'];
+      page.name_request = gpfd['title'] || 'Untitled add-on';
+      page.creator_request = gps['personaname'] || 'Unknown creator';
+      page.excerpt_request = gpfd['description'] || 'Unknown description';
+      page.size_request = gpfd['file_size'] || 0;
+      return true;
+    });
+    window.connect_signal('download', async (_window, request_error, url, _config) => {
+      const data = cache.get(url);
+      const gpfd_handle = data['gpfd']['_handle'];
+      const gps_handle = data['gps']['_handle'];
+      let status: number;
+      let response: any;
+      try {
+        ([status, response] = await client.services.addons.async_call('CreateFromWorkshop', gpfd_handle, gps_handle, {}));
+      } catch (error) {
+        request_error(String(error));
+        return false;
+      }
+      if (status !== 0) {
+        const msg = (() => {
+          if (typeof response['code'] !== 'number') {
+            return undefined;
+          }
+          switch (response['code']) {
+          case 1:
+          case 2:
+            return 'Incorrect Workshop item URL format.';
+          default:
+            console.log('Unknown code. Received', response['code']);
+            return undefined;
+          }
+        })();
+        request_error(msg);
+        return false;
+      }
+      response
+      console.log('success');
       return true;
     });
     window.show();

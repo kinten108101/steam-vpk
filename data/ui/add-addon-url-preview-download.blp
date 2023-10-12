@@ -108,12 +108,12 @@ template $StvpkPreviewDownload : Gtk.Box {
           hexpand: true;
         }
 
-        $StvpkSpinningButton validate_button {
+        $StvpkSpinningButton download_button {
           halign: end;
           valign: center;
           styles ['suggested-action']
           label: _('Download');
-          action-name: 'window.close';
+          action-name: 'add-addon-url.download';
         }
       }
     }

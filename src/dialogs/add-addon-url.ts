@@ -3,55 +3,85 @@ import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import {
-  GtkInternalChildren,
-  GtkChildren,
-  GtkTemplate,
-  registerClass,
-  param_spec_string,
-  param_spec_boolean,
-} from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
 import SpinningButton from '../ui/spinning-button.js';
 import { MakeTitleCompat } from '../utils/markup.js';
 import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
 import { bytes2humanreadable } from '../utils/files.js';
+import { vardict_make } from '../steam-vpk-utils/utils.js';
 
 type Signals = 'input-page::setup' | 'validate' | 'preview-page::setup';
 
 export class PreviewDownload extends Gtk.Box {
-  static [GObject.properties] = {
-    name_request: param_spec_string({ name: 'name-request' }),
-    creator_request: param_spec_string({ name: 'creator-request' }),
-    excerpt_request: param_spec_string({ name: 'excerpt-request' }),
-    size_request: GObject.ParamSpec.uint64('size-request', '', '', GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, 0, Number.MAX_SAFE_INTEGER, 0),
-  };
-
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url-preview-download.ui`;
-  static [GtkChildren] = [
-    'retry_button',
-  ];
-  static [GtkInternalChildren] = [
-    'addon_name',
-    'creator',
-    'excerpt',
-    'size',
-  ];
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkPreviewDownload',
+      Properties: {
+        name_request: GObject.ParamSpec.string(
+          'name-request', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        creator_request: GObject.ParamSpec.string(
+          'creator-request', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        excerpt_request: GObject.ParamSpec.string(
+          'excerpt-request', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        size_request: GObject.ParamSpec.uint64(
+          'size-request', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          0, Number.MAX_SAFE_INTEGER,
+          0),
+        loading: GObject.ParamSpec.boolean(
+          'loading', '', '',
+          GObject.ParamFlags.READABLE,
+          false),
+      },
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/add-addon-url-preview-download.ui',
+      Children: [
+        'retry_button',
+      ],
+      InternalChildren: [
+        'addon_name',
+        'creator',
+        'excerpt',
+        'size',
+        'download_button',
+      ],
+    }, this);
   }
-
-  _addon_name!: Gtk.Label;
-  _creator!: Gtk.Label;
-  _excerpt!: Gtk.Label;
-  _size!: Gtk.Label;
 
   name_request!: string;
   creator_request!: string;
   excerpt_request!: string;
   size_request!: number;
+
+  _loading!: boolean;
+  get loading() {
+    return this._loading;
+  }
+  _set_loading(val: boolean) {
+    if (this._loading === val) return;
+    this._loading = val;
+    this.notify('loading');
+  }
+
   retry_button!: Gtk.Button;
+
+  _addon_name!: Gtk.Label;
+  _creator!: Gtk.Label;
+  _excerpt!: Gtk.Label;
+  _size!: Gtk.Label;
+  _download_button!: SpinningButton;
+
+  _options: {
+    test_prop?: number;
+  } = {};
+  _session: string | null = null;
+  _set_session(val: string) {
+    this._session = val;
+  }
 
   constructor(params = {}) {
     super(params);
@@ -77,44 +107,137 @@ export class PreviewDownload extends Gtk.Box {
         return [true, bytes2humanreadable(from)];
       },
       null as unknown as GObject.TClosure<any, any>);
+
+    this.connect('notify::loading', this._update_loading.bind(this));
+    this._update_loading();
+
+    this._update_options();
+  }
+
+  _update_download_actionable() {
+    if (this._session === null) throw new Error;
+    const options = vardict_make({
+      test_prop: (() => {
+        const val = this._options.test_prop;
+        if (val === undefined) return null;
+        return GLib.Variant.new_uint64(val);
+      })(),
+    });
+    this._download_button.set_action_target_value(GLib.Variant.new_tuple(
+      [ GLib.Variant.new_string(this._session),
+        options,
+      ]
+    ));
+  }
+
+  _update_options() {
+
+  }
+
+  _update_loading() {
+    this._download_button.is_spinning = this._loading;
   }
 }
 
-export class InputUrl extends Gtk.Box {
-  static [GObject.properties] = {
-    error: param_spec_string({ name: 'error', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, default_value: '' }),
-    error_responded: param_spec_boolean({ name: 'error-responded', flags: GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, default_value: true }),
-  };
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url-input-url.ui`;
-  static [GtkChildren] = [
-    'url_bar',
-    'validate_button',
-  ];
-  static [GtkInternalChildren] = [
-    'msg',
-  ];
+export interface InputUrl {
+  connect(signal: 'notify::loading', callback: (obj: this, pspec: GObject.ParamSpec) => void): number;
+  notify(signal: 'loading'): void;
+  notify(signal: 'error'): void;
+  notify(signal: 'error-responded'): void;
+  /* inherit */
+  connect(signal: string, callback: (obj: this, ...args: any[]) => void): number;
+  emit(signal: string): void;
+}
 
+export class InputUrl extends Gtk.Box {
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkInputUrl',
+      Properties: {
+        error: GObject.ParamSpec.string(
+          'error', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          ''),
+        error_responded: GObject.ParamSpec.boolean(
+          'error-responded', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          true),
+        loading: GObject.ParamSpec.boolean(
+          'loading', '', '',
+          GObject.ParamFlags.READABLE,
+          false),
+      },
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/add-addon-url-input-url.ui',
+      Children: [
+        'url_bar',
+      ],
+      InternalChildren: [
+        'validate_button',
+        'msg',
+      ],
+    }, this);
+  }
+
+  _error!: string;
+  get error() {
+    return this._error;
+  }
+  set error(val: string) {
+    if (this._error === val) return;
+    this._error = val;
+    this.notify('error');
+  }
+
+  _error_responded!: boolean;
+  get error_responded() {
+    return this._error_responded;
+  }
+  set error_responded(val: boolean) {
+    if (this._error_responded === val) return;
+    this._error_responded = val;
+    this.notify('error-responded');
+  }
+
+  _loading!: boolean;
+  get loading() {
+    return this._loading;
+  }
+  _set_loading(val: boolean) {
+    if (this._loading === val) return;
+    this._loading = val;
+    this.notify('loading');
   }
 
   url_bar!: Adw.EntryRow;
-  validate_button!: SpinningButton;
+
+  _validate_button!: SpinningButton;
   _msg!: Gtk.Label;
-  _error!: string;
-  _error_responded!: boolean;
 
   constructor(params = {}) {
     super(params);
+    this._setup_actionables();
+    this._setup_error_state();
+    this._setup_loading();
+  }
+
+  _setup_loading() {
+    this.connect('notify::loading', this._update_loading.bind(this));
+    this._update_loading();
+  }
+
+  _update_loading() {
+    this._validate_button.is_spinning = this._loading;
+  }
+
+  _setup_actionables() {
     this.url_bar.bind_property_full(
-      'text', this.validate_button, 'action-target',
+      'text', this._validate_button, 'action-target',
       GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: string | null) => {
         if (from === null) return [true, GLib.Variant.new_string('')];
         return [true, GLib.Variant.new_string(from)];
       },
       null as unknown as GObject.TClosure<any, any>);
-    this._setup_error_state();
   }
 
   _setup_error_state() {
@@ -129,26 +252,6 @@ export class InputUrl extends Gtk.Box {
     this.connect('notify::error', this._update_error_state.bind(this));
   }
 
-  set error(val: string) {
-    if (this._error === val) return;
-    this._error = val;
-    this.notify('error');
-  }
-
-  get error() {
-    return this._error;
-  }
-
-  set error_responded(val: boolean) {
-    if (this._error_responded === val) return;
-    this._error_responded = val;
-    this.notify('error-responded');
-  }
-
-  get error_responded() {
-    return this._error_responded;
-  }
-
   _update_error_state() {
     if (this.error === '') {
       this.url_bar.remove_css_class('error');
@@ -161,9 +264,9 @@ export class InputUrl extends Gtk.Box {
 
   _update_error_responded() {
     if (this.error_responded) {
-      this.validate_button.sensitize();
+      this._validate_button.sensitize();
     } else {
-      this.validate_button.insensitize();
+      this._validate_button.insensitize();
     }
   }
 
@@ -185,22 +288,25 @@ export default interface AddAddonUrl extends AsyncSignalMethods<Signals> {
   connect_signal(signal: 'input-page::setup', cb: (obj: this, input_page: InputUrl) => Promise<boolean>): (obj: this, input_page: InputUrl) => Promise<boolean>;
   connect_signal(signal: 'validate', cb: (obj: this, request_error: (msg: string | undefined) => void, url: string) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
   connect_signal(signal: 'preview-page::setup', cb: (obj: this, url: string, preview_page: PreviewDownload) => Promise<boolean>): (obj: this, url: GLib.Uri) => Promise<boolean>;
+  connect_signal(signal: 'download', cb: (obj: this, request_error: (msg: string | undefined) => void, url: string, config: any) => Promise<boolean>): Function;
   _emit_signal(signal: 'input-page::setup', input_page: InputUrl): Promise<boolean>;
   _emit_signal(signal: 'validate', request_error: (msg: string | undefined) => void, url: string): Promise<boolean>;
   _emit_signal(signal: 'preview-page::setup', url: string, preview_page: PreviewDownload): Promise<boolean>;
+  _emit_signal(signal: 'download', request_error: (msg: string | undefined) => void, url: string, config: any): Promise<boolean>;
 }
 export default class AddAddonUrl extends Adw.Window {
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-url.ui`;
-  static [GtkInternalChildren] = [
-    'view_stack',
-  ];
-  static [GtkChildren] = [
-    'input_url',
-    'preview_download',
-  ];
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkAddAddonUrl',
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/add-addon-url.ui',
+      Children: [
+        'input_url',
+        'preview_download',
+      ],
+      InternalChildren: [
+        'view_stack',
+      ],
+    }, this);
     addAsyncSignalMethods<Signals>(this.prototype);
   }
 
@@ -211,15 +317,6 @@ export default class AddAddonUrl extends Adw.Window {
 
   constructor(params: Adw.Window.ConstructorProperties = {}) {
     super(params);
-    this._setup_actions();
-  }
-
-  vfunc_realize(): void {
-    super.vfunc_realize();
-    this._emit_signal('input-page::setup', this.input_url).catch(error => logError(error));
-  }
-
-  _setup_actions() {
     const actions = new Gio.SimpleActionGroup();
 
     const validate = new Gio.SimpleAction({
@@ -230,7 +327,7 @@ export default class AddAddonUrl extends Adw.Window {
       if (parameter === null) throw new Error;
       const [url] = parameter.get_string();
       if (url === null) throw new Error('Entry text is null');
-      this.on_validate(url);
+      this._on_validate(url);
     });
     actions.add_action(validate);
 
@@ -238,42 +335,88 @@ export default class AddAddonUrl extends Adw.Window {
       name: 'retry',
     });
     retry.connect('activate', () => {
-      this.on_retry();
+      this._on_retry();
     });
     actions.add_action(retry);
 
+    const download = new Gio.SimpleAction({
+      name: 'download',
+      parameter_type: GLib.VariantType.new('(sa{sv})'),
+    });
+    download.connect('activate', (_action, parameter) => {
+      if (parameter === null) throw new Error;
+      const val: unknown = parameter.recursiveUnpack();
+      if (!Array.isArray(val)) throw new Error;
+      if (val.length != 2) throw new Error;
+      if (typeof val[0] != 'string') throw new Error;
+      if (typeof val[1] != 'object') throw new Error;
+      this._on_download(...<[string, object]>val);
+    });
+    actions.add_action(download);
+
     this.insert_action_group('add-addon-url', actions);
+
+    this.connect_signal('preview-page::setup', async (_obj, _url, preview_page) => {
+      preview_page._update_download_actionable();
+      return true;
+    });
   }
 
-  vfunc_constructed(): void {
-    super.vfunc_constructed();
-
+  vfunc_realize(): void {
+    super.vfunc_realize();
+    this._emit_signal('input-page::setup', this.input_url).catch(error => logError(error));
   }
 
-  on_retry() {
+  _on_retry() {
     this._view_stack.set_visible_child_name('input-url');
   }
 
-  on_validate(url: string) {
+  _on_validate(url: string) {
     const on_exit = () => {
-      this.input_url.validate_button.is_spinning = false;
+      this.input_url._set_loading(false);
     };
     (async () => {
-      this.input_url.validate_button.is_spinning = true;
+      this.input_url._set_loading(true);
       this.input_url.resolve_error();
       const request_error = (hint?: string) => {
         this.input_url.set_error(hint || 'An error has occured.');
       };
-      const result = await this._emit_signal('validate', request_error, url);
+      let result = await this._emit_signal('validate', request_error, url);
       if (result === false) {
         on_exit();
         return;
       }
-      await this._emit_signal('preview-page::setup', url, this.preview_download);
+      this.preview_download._set_session(url);
+      result = await this._emit_signal('preview-page::setup', url, this.preview_download);
+      if (result === false) {
+        on_exit();
+        return;
+      }
       this._view_stack.set_visible_child_name('preview-download');
     })().finally(() => {
       on_exit();
     });
+  }
+
+  _on_download(url: string, config: any) {
+    const on_exit = () => {
+      this.preview_download._set_loading(false);
+    };
+    (async () => {
+      this.preview_download._set_loading(true);
+      function request_error(msg?: string) {
+        console.log('request-error:', msg);
+      }
+      const result = await this._emit_signal('download', request_error, url, config);
+      if (!result) {
+        on_exit();
+        return;
+      }
+      this.close();
+    })().catch(logError)
+      .finally(() => {
+        on_exit();
+      });
   }
 }
 
