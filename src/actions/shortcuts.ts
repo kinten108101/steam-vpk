@@ -21,7 +21,7 @@ export default function Shortcuts(
     ['win.add-addon.add-url', ['<Primary>g']],
     ['win.add-addon.add-name', ['<Primary>m']],
     ['win.injector.run', ['<Primary>b']],
-    ['win.profile-bar.toggle-primary-button', ['<Primary>p']],
+    ['win.headerbox.reveal', ['<Primary>p']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });

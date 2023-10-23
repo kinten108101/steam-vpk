@@ -43,7 +43,6 @@ import AddonDetailsPresenter from '../presenters/addon-details-presenter.js';
 import AddonDetails from '../ui/addon-details.js';
 import AddonsPanelDisk from '../ui/addons-panel-disk.js';
 import Repository from '../model/repository.js';
-import ProfileBarActions from '../actions/profile-bar.js';
 import ArchiveStore from '../model/archive-store.js';
 import ArchiveList from '../ui/addon-details/archive-list.js';
 import { ArchiveRow } from '../ui/addon-details/archive-list.js';
@@ -62,6 +61,7 @@ import ArchiveSelectModel from '../model/archive-select.js';
 import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
 import { ShortcutLabel } from '../ui/shortcut-label.js';
 import { SwitchRow } from '../ui/activatable-row.js';
+import ProfileBarSyncHeaderbox from '../presenters/profile-bar-sync-headerbox.js';
 
 GObject.type_ensure(SwitchRow.$gtype);
 GObject.type_ensure(ShortcutLabel.$gtype);
@@ -176,6 +176,11 @@ export default class MainWindow extends Adw.ApplicationWindow {
     this._setup_headerbox();
     this._setup_addons_panel();
     this._setup_addon_interaction();
+
+    ProfileBarSyncHeaderbox({
+      primary_button: this._profile_bar.primary_button,
+      headerbox: this._headerbox,
+    });
   }
 
   get addonlist() {
@@ -381,10 +386,6 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }
 
   _setup_headerbox() {
-    ProfileBarActions({
-      action_map: this,
-      profile_bar: this._profile_bar,
-    });
     HeaderBoxActions({
       action_map: this,
       headerbox: this._headerbox,
