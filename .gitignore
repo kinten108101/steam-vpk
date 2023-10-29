@@ -18,9 +18,3 @@
 # yarn
 /yarn-error.log
 
-# personal
-/docs/.obsidian
-/TODO.md
-
-# personal
-personal-*
