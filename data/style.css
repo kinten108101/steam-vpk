@@ -142,23 +142,33 @@ label.terminal {
   font-weight: bold;
 }
 
-.profile-bar {
+/**
+ * Profile Bar
+ */
+
+profile-bar {
   padding: 0px;
   min-height: 0px;
   border-radius: 8px;
   background: alpha(currentColor, 0.075);
 }
 
-.profile-bar button {
+profile-bar button {
   margin: 0px;
   padding-top: 0px;
   padding-bottom: 0px;
 }
 
-.profile-bar .profile-button {
+profile-bar separator {
+  transition-property: background;
+  transition-duration: 300ms;
 }
 
-.profile-bar .menu-button {
+profile-bar:hover separator,
+profile-bar.active separator {
+  background: transparent;
+  transition-property: background;
+  transition-duration: 300ms;
 }
 
 .boxedlist {

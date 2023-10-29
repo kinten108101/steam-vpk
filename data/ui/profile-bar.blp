@@ -6,11 +6,36 @@ template $StvpkProfileBar : Adw.Bin {
     vexpand: false;
     orientation: vertical;
     maximum-size: 16;
-    styles ['profile-bar']
     Gtk.Box {
       orientation: vertical;
       Gtk.Box {
         halign: fill;
+        Gtk.Button switch_button {
+          vexpand: true;
+          halign: start;
+          hexpand: false;
+          styles ['flat', 'profile-button']
+
+          Gtk.Box {
+            halign: center;
+            orientation: vertical;
+            valign: center;
+
+            Gtk.Image {
+              icon-name: 'pan-up-symbolic';
+              pixel-size: 12;
+            }
+
+            Gtk.Image {
+              icon-name: 'pan-down-symbolic';
+              pixel-size: 12;
+            }
+          }
+        }
+
+        Gtk.Separator {}
+
+
         Gtk.ToggleButton primary_button {
           vexpand: true;
           halign: fill;
@@ -22,22 +47,6 @@ template $StvpkProfileBar : Adw.Bin {
           Gtk.Box {
             halign: fill;
             spacing: 4;
-
-            Gtk.Box {
-              halign: start;
-              orientation: vertical;
-              valign: center;
-
-              Gtk.Image {
-                icon-name: 'pan-up-symbolic';
-                pixel-size: 12;
-              }
-
-              Gtk.Image {
-                icon-name: 'pan-down-symbolic';
-                pixel-size: 12;
-              }
-            }
 
             Gtk.ScrolledWindow {
               hscrollbar-policy: external;

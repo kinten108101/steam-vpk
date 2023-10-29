@@ -2,39 +2,41 @@ import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import {
-  GtkChildren,
-  GtkTemplate,
-  param_spec_boolean,
-  param_spec_object,
-  param_spec_string,
-  registerClass,
-} from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
-
 export class ProfileBar extends Adw.Bin {
-  static [GObject.properties] = {
-    active: param_spec_boolean({ name: 'active' }),
-    primary_button: param_spec_object({ name: 'primary-button', objectType: Gtk.ToggleButton.$gtype }),
-    status_request: param_spec_string({ name: 'status-request', default_value: '' }),
-  };
-
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/profile-bar.ui`;
-
-  static [GtkChildren] = [ 'profile_label', 'primary_button' ];
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkProfileBar',
+      Properties: {
+        primary_button: GObject.ParamSpec.object(
+          'primary-button', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          Gtk.ToggleButton.$gtype),
+        status_request: GObject.ParamSpec.string(
+          'status-request', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          ''),
+      },
+      Template: `resource:///com/github/kinten108101/SteamVPK/ui/profile-bar.ui`,
+      CssName: 'profile-bar',
+      Children: [
+        'profile_label',
+        'switch_button',
+        'primary_button',
+      ],
+    }, this);
   };
+
+  status_request!: string;
 
   profile_label!: Gtk.Label;
+  switch_button!: Gtk.Button;
   primary_button!: Gtk.ToggleButton;
-  status_request!: string;
 
   constructor(params = {}) {
     super(params);
     this._setup_status();
     this._setup_actionable();
+    this._setup_active_style();
   }
 
   _setup_status() {
@@ -55,5 +57,24 @@ export class ProfileBar extends Adw.Bin {
     this.primary_button.connect('clicked', () => {
       this.primary_button.set_active(!this.primary_button.get_active());
     });
+  }
+
+  _setup_active_style() {
+    const buttons: Gtk.ToggleButton[] = [
+      this.primary_button,
+    ];
+
+    buttons.forEach(x => {
+      const update = () => {
+        if (x.active) {
+          this.add_css_class('active');
+        } else {
+          this.remove_css_class('active');
+        }
+      };
+      x.connect('notify::active', update);
+      update();
+    });
+
   }
 }
