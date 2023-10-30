@@ -35,7 +35,6 @@ export class ProfileBar extends Adw.Bin {
   constructor(params = {}) {
     super(params);
     this._setup_status();
-    this._setup_actionable();
     this._setup_active_style();
   }
 
@@ -49,14 +48,6 @@ export class ProfileBar extends Adw.Bin {
         return [true, from === '' ? 'no profile' : from];
       },
       null as unknown as GObject.TClosure);
-  }
-
-  _setup_actionable() {
-    // For some reasons, GtkToggleButton with an action specified will act like a GtkButton aka not toggleable.
-    // This is a workaround
-    this.primary_button.connect('clicked', () => {
-      this.primary_button.set_active(!this.primary_button.get_active());
-    });
   }
 
   _setup_active_style() {
