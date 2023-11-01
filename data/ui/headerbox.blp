@@ -218,7 +218,7 @@ template $StvpkHeaderBox : Gtk.Box {
                             Gtk.Button {
                               styles ['flat', 'compact-button']
                               action-name: 'win.headerbox.detach';
-                              tooltip-text: _('Detach panel');
+                              tooltip-text: _('Detach Panel');
 
                               Gtk.Image {
                                 icon-name: 'pip-in-symbolic';
@@ -285,12 +285,11 @@ template $StvpkHeaderBox : Gtk.Box {
                     Gtk.Box {
                       halign: fill;
                       hexpand: true;
-
                     }
 
                     Gtk.Button {
                       halign: end;
-                      tooltip-text: 'Re-attach window';
+                      tooltip-text: 'Re-attach Panel';
                       styles ['flat', 'compact-button', 'hollow-full']
                       action-name: 'win.headerbox.attach';
 
