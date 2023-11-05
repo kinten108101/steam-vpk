@@ -1,3 +1,31 @@
+label.terminal {
+  font-family: monospace;
+  font-size: smaller;
+}
+
+.launchpad-row .icon {
+  background-color: @blue_3;
+  border-radius: 999px;
+  padding: 8px;
+  margin: 8px;
+}
+
+.launchpad-row .zsubtitle {
+  color: @light_5;
+  font-size: small;
+}
+
+.launchpad-row .zexcerpt {
+  color: @light_5;
+  font-size: small;
+}
+
+.thin-button {
+  padding-bottom: 0;
+  padding-top: 0;
+  font-weight: bold;
+}
+
 .row-content {
   padding-left: 10px;
 }
@@ -12,17 +40,6 @@
  * addon-details
  *
  */
-
-.context-tile {
-  border: 1px solid @card_shade_color;
-  /*  background-color: transparent; */
-  border-radius: 0;
-  padding: 24px 12px 21px 12px;
-  outline-offset: 5px;
-  /*  transition-property: outline, outline-offset, background-image; */
-  border-bottom: none;
-  border-right: none;
-}
 
 .lozenge {
   font-size: 18px;
@@ -52,13 +69,10 @@
 }
 
 .tag {
-border-radius: 99999px;
-padding: 4px 12px;
-font-size: 20px;
-font-weight: bold;
-/*
-text-transform: uppercase;
-*/
+  border-radius: 99999px;
+  padding: 4px 12px;
+  font-size: 20px;
+  font-weight: bold;
 }
 
 .green {
@@ -67,10 +81,6 @@ color: #57e389;
 
 .lighter-green {
 color: lighter(#57e389);
-}
-
-.tile {
-
 }
 
 .addon-details .addon-title {
@@ -98,6 +108,10 @@ preferencesgroup.danger-zone list {
   border: 2px solid #e01b24;
 }
 
+/**
+ * Inject
+ */
+
 .inject-button-3 .blue > button {
   color: @blue_2;
 }
@@ -108,38 +122,6 @@ preferencesgroup.danger-zone list {
 
 .inject-button-3 .red spinner {
   color: @dark_5;
-}
-
-label.terminal {
-  font-family: monospace;
-  font-size: smaller;
-}
-
-.launchpad-row .icon {
-  background-color: @blue_3;
-  border-radius: 999px;
-  padding: 8px;
-  margin: 8px;
-}
-
-.launchpad-row .ztitle {
-
-}
-
-.launchpad-row .zsubtitle {
-  color: @light_5;
-  font-size: small;
-}
-
-.launchpad-row .zexcerpt {
-  color: @light_5;
-  font-size: small;
-}
-
-.thin-button {
-  padding-bottom: 0;
-  padding-top: 0;
-  font-weight: bold;
 }
 
 /**
@@ -237,9 +219,6 @@ headerbox .popped-view {
   color: @light_1;
 }
 
-headerbox .default-view {
-}
-
 headerbox .default-content {
   margin-top: 8px;
 }
@@ -306,7 +285,6 @@ scrolledwindow.noscrollbar scrollbar {
 }
 
 headerbox .panel {
-  /*background-color: @metalcard;*/
   border-radius: 0px 0px 12px 12px;
 }
 
@@ -388,9 +366,6 @@ headerbox .status-box scrolledwindow {
   padding: 0px;
 }
 
-headerbox .build-box {
-}
-
 headerbox .build-box label.title {
   padding-left: 0;
   font-weight: bolder;
@@ -408,6 +383,7 @@ headerbox .build-box label.line {
 themeselector {
   margin: 9px;
 }
+
 themeselector checkbutton {
   padding: 0;
   min-height: 44px;
@@ -417,11 +393,13 @@ themeselector checkbutton {
   border-radius: 9999px;
   box-shadow: inset 0 0 0 1px @borders;
 }
+
 themeselector checkbutton.follow:checked,
 themeselector checkbutton.light:checked,
 themeselector checkbutton.dark:checked {
   box-shadow: inset 0 0 0 2px @theme_selected_bg_color;
 }
+
 themeselector checkbutton.follow {
   background-image: linear-gradient(
     to bottom right,
@@ -429,12 +407,15 @@ themeselector checkbutton.follow {
     #202020 50.01%
   );
 }
+
 themeselector checkbutton.light {
   background-color: #fff;
 }
+
 themeselector checkbutton.dark {
   background-color: #202020;
 }
+
 themeselector checkbutton radio {
   -gtk-icon-source: none;
   border: none;
@@ -445,6 +426,7 @@ themeselector checkbutton radio {
   transform: translate(27px, 14px);
   padding: 2px;
 }
+
 checkbutton.theme-selector radio:checked {
   -gtk-icon-source: -gtk-icontheme("object-select-symbolic");
   background-color: @theme_selected_bg_color;
