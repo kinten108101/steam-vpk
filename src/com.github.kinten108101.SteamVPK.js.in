@@ -1,5 +1,6 @@
 #!@GJS@ -m
 
+import { setConsoleLogDomain } from "console";
 import GLib from 'gi://GLib';
 
 globalThis.config = {
@@ -32,6 +33,8 @@ imports.package.init({
   prefix: '@PREFIX@',
   libdir: '@LIBDIR@',
 });
+
+setConsoleLogDomain('steam-vpk');
 
 const getMain = new GLib.MainLoop(null, false);
 import('resource:///com/github/kinten108101/SteamVPK/js/main.js')
