@@ -1,15 +1,17 @@
+import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { APP_FULLNAME } from '../utils/const.js';
 import { globalThis } from '../utils/ts-helper.js';
 
 export default function AboutWindow(
-{ parent_window,
+{ gsettings,
+  parent_window,
 }:
-{ parent_window?: Gtk.Window;
+{ gsettings: Gio.Settings;
+  parent_window?: Gtk.Window;
 }) {
   const window = new Adw.AboutWindow({
-    application_icon: 'addon-box',
     application_name: APP_FULLNAME,
     license_type: Gtk.License.GPL_3_0,
     version: (globalThis as unknown as globalThis).config.version,
@@ -22,6 +24,12 @@ export default function AboutWindow(
 All data is provided by the Add-on Box daemon.`,
     debug_info: String((globalThis as unknown as globalThis).config),
   });
+
+  function on_enable_devel_style_changed() {
+    window.set_application_icon(gsettings.get_boolean('enable-devel-style') ? 'addon-box-devel' : 'addon-box');
+  }
+  gsettings.connect('changed::enable-devel-style', on_enable_devel_style_changed);
+  on_enable_devel_style_changed();
 
   function present() {
     window.present();

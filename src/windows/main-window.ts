@@ -309,6 +309,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
     const showAbout = new Gio.SimpleAction({ name: 'show-about' });
     showAbout.connect('activate', () => {
       AboutWindow({
+        gsettings: this.gsettings,
         parent_window: this,
       }).present();
     });

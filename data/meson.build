@@ -82,10 +82,7 @@ data_resource = gnome.compile_resources(
   install_dir: get_option('datadir') / 'com.github.kinten108101.SteamVPK',
 )
 
-install_data(
-  meson.project_source_root() / 'data' / 'resources' / 'logo' / 'com.github.kinten108101.SteamVPK.svg',
-  install_dir: get_option('datadir') / 'icons' / 'hicolor' / 'scalable' / 'apps'
-)
+subdir('resources/logo')
 
 install_data(
   meson.project_source_root() / 'data' / 'com.github.kinten108101.SteamVPK.desktop',

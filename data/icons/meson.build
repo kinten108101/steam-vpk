@@ -1,5 +1,6 @@
 icons = [
   'addon-box.svg',
+  'addon-box-devel.svg',
   'arrow2-up-symbolic.svg',
   'background-app-sleepyface-symbolic.svg',
   'build-alt-symbolic.svg',
