@@ -1,4 +1,3 @@
-import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
@@ -36,7 +35,7 @@ export default function DownloadPagePresenter(
       })();
       widget.description = item.description;
       widget.use_state = item.use_state;
-      widget.id_gvariant = GLib.Variant.new_string(item.id);
+      widget.id = item.id;
       widget.enable_text_markup = download_page.enable_text_markup;
 
       return widget;

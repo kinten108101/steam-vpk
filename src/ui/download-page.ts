@@ -101,6 +101,7 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
   subtitle!: string | null;
   description!: string | null;
   use_state!: UseStates | null;
+  id!: string | null;
   id_gvariant!: GLib.Variant | null;
   enable_text_markup!: boolean;
 

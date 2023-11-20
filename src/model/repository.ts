@@ -125,6 +125,11 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
     });
   }
 
+  append(item: RepositoryItem) {
+    this.exists.set(item.id, item);
+    super.append(item);
+  }
+
   refill(items: RepositoryItem[]) {
     const deletables: Map<string, RepositoryItem> = new Map(this.exists);
     items.forEach(x => {
