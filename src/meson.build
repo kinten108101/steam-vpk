@@ -1,4 +1,5 @@
 script = [
+  'actions/debug/addonlist.js',
   'actions/debug/repository.ts',
   'actions/add-addon.ts',
   'actions/addon-details.ts',

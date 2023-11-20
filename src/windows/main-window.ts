@@ -62,6 +62,7 @@ import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
 import { ShortcutLabel } from '../ui/shortcut-label.js';
 import { SwitchRow } from '../ui/activatable-row.js';
 import ProfileBarSyncHeaderbox from '../presenters/profile-bar-sync-headerbox.js';
+import AddonlistActions from '../actions/debug/addonlist.js';
 
 GObject.type_ensure(SwitchRow.$gtype);
 GObject.type_ensure(ShortcutLabel.$gtype);
@@ -164,6 +165,13 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
+
+    Object.values(AddonlistActions({
+      store: this._addonlist,
+    })).forEach(x => {
+      this.add_action(x);
+    });
+
     this._setup_style();
     this._setup_group();
     this._setup_notification();

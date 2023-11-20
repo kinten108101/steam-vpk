@@ -23,6 +23,7 @@ export default function Shortcuts(
     ['win.add-addon.add-name', ['<Primary>m']],
     ['win.injector.run', ['<Primary>b']],
     ['win.headerbox.reveal', ['<Primary>p']],
+    ['win.addonlist.insert', ['<Primary>u']],
   ]).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });
