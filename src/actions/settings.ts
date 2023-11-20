@@ -6,8 +6,6 @@ import FileDialog from '../dialogs/file-dialog.js';
 import AddonBoxClient from '../backend/client.js';
 import NotificationModel from '../model/notification.js';
 
-Gio._promisify(Gtk.FileDialog.prototype, 'select_folder', 'select_folder_finish');
-
 export default function SettingsActions(
 { parent_window,
   main_window,

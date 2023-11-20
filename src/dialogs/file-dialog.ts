@@ -2,9 +2,6 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
 
-Gio._promisify(Gtk.FileDialog.prototype, 'save', 'save_finish');
-Gio._promisify(Gtk.FileDialog.prototype, 'open', 'open_finish');
-Gio._promisify(Gtk.FileDialog.prototype, 'select_folder', 'select_folder_finish');
 export default class FileDialog extends Gtk.FileDialog {
   static {
     GObject.registerClass({

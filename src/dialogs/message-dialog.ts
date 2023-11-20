@@ -91,7 +91,6 @@ export const MessageDialog = {
   }
 }
 
-Gio._promisify(Adw.MessageDialog.prototype, 'choose', 'choose_finish');
 export class MessageDialogWrap {
   dialog: Adw.MessageDialog
   constructor(param: { dialog: Adw.MessageDialog }) {

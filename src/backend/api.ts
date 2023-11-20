@@ -12,8 +12,6 @@ import { get_formatted_unique_name_str } from '../steam-vpk-utils/portals.js';
 export const SERVER_NAME = 'com.github.kinten108101.SteamVPK.Server';
 export const SERVER_PATH = '/com/github/kinten108101/SteamVPK/Server';
 
-Gio._promisify(Gio.DBus.session, 'call', 'call_finish');
-
 export type BackendServices = ReturnType<typeof BackendPortal>;
 
 export function BackendPortal(
