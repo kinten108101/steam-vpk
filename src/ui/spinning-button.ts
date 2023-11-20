@@ -1,18 +1,19 @@
 import Gtk from 'gi://Gtk';
 import GObject from 'gi://GObject';
-import * as Utils from '../steam-vpk-utils/utils.js';
 
 export default class SpinningButton extends Gtk.Button {
   static {
-    Utils.registerClass({
+    GObject.registerClass({
       Properties: {
-        'is-spinning': GObject.ParamSpec.boolean(
-          'is-spinning', 'is-spinning', 'is-spinning',
-          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT, false),
-        'sensitive-requests': GObject.ParamSpec.uint64(
+        is_spinning: GObject.ParamSpec.boolean(
+          'is-spinning', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          false),
+        sensitive_requests: GObject.ParamSpec.uint64(
           'sensitive-requests', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
-          0, Number.MAX_SAFE_INTEGER, 0),
+          0, Number.MAX_SAFE_INTEGER,
+          0),
       },
     }, this)
   }

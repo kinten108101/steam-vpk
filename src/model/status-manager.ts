@@ -1,9 +1,5 @@
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
-import {
-  param_spec_string,
-  registerClass,
-} from '../steam-vpk-utils/utils.js';
 
 export interface Status extends GObject.Object {
   connect(signal: 'clear', callback: ($obj: this) => void): number;
@@ -20,10 +16,14 @@ export class Status extends GObject.Object {
   };
 
   static {
-    registerClass({
+    GObject.registerClass({
       Properties: {
-        id: param_spec_string({ name: 'id' }),
-        date: GObject.ParamSpec.jsobject('date', '', '',
+        id: GObject.ParamSpec.string(
+          'id', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        date: GObject.ParamSpec.jsobject(
+          'date', '', '',
           GObject.ParamFlags.READWRITE),
       },
       Signals: {
@@ -41,13 +41,19 @@ export class Status extends GObject.Object {
 }
 
 export class ErrorStatus extends Status {
-  static [GObject.properties] = {
-    msg: param_spec_string({ name: 'msg' }),
-    short: param_spec_string({ name: 'short' }),
-  };
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      Properties: {
+        msg: GObject.ParamSpec.string(
+          'msg', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        short: GObject.ParamSpec.string(
+          'short', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+      },
+    }, this);
   }
 
   short!: string;
@@ -66,16 +72,22 @@ export namespace BuildStatus {
 
 export class BuildStatus extends Status {
   static {
-    registerClass({
+    GObject.registerClass({
       Properties: {
-        status: param_spec_string({ name: 'status' }),
-        elapsed: GObject.ParamSpec.uint64('elapsed', '', '',
+        status: GObject.ParamSpec.string(
+          'status', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        elapsed: GObject.ParamSpec.uint64(
+          'elapsed', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           0, Number.MAX_SAFE_INTEGER, 0),
-        time_unit: GObject.ParamSpec.string('time-unit', '', '',
+        time_unit: GObject.ParamSpec.string(
+          'time-unit', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           <BuildStatus.TimeUnit>'second'),
-        finished: GObject.ParamSpec.boolean('finished', '', '',
+        finished: GObject.ParamSpec.boolean(
+          'finished', '', '',
           GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
           false),
       },
@@ -88,10 +100,9 @@ export class BuildStatus extends Status {
   finished!: boolean;
 }
 
-export default class StatusManager
-extends Gio.ListStore<Status> {
+export default class StatusManager extends Gio.ListStore<Status> {
   static {
-    registerClass({}, this);
+    GObject.registerClass({}, this);
   }
 
   idmap: Map<string, Status> = new Map;

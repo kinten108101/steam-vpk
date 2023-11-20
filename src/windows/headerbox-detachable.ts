@@ -1,14 +1,14 @@
+import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
-import { GtkTemplate, registerClass } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
 import { HeaderboxAttachControls } from '../actions/headerbox.js';
 
 export default class HeaderboxDetachable extends Adw.Window {
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/headerbox-detachable.ui`;
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkHeaderboxDetachable',
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/headerbox-detachable.ui',
+    }, this);
   }
 
   constructor(params = {}) {

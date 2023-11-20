@@ -5,16 +5,21 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import TypedBuilder from '../utils/typed-builder.js';
 import * as Consts from '../utils/const.js';
-import { g_param_default, registerClass } from '../steam-vpk-utils/utils.js';
 
 class DebugWindowActionRowItem extends GObject.Object {
-  static [GObject.properties] = {
-    'group-name': GObject.ParamSpec.string('group-name', 'group-name', 'group-name', g_param_default, null),
-    action: GObject.ParamSpec.object('action', 'action', 'action', g_param_default, Gio.Action.$gtype),
-  };
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      Properties: {
+        group_name: GObject.ParamSpec.string(
+          'group-name', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          null),
+        action: GObject.ParamSpec.object(
+          'action', '', '',
+          GObject.ParamFlags.READWRITE | GObject.ParamFlags.CONSTRUCT,
+          Gio.Action.$gtype),
+      },
+    }, this);
   }
 
   action!: Gio.Action;

@@ -4,8 +4,6 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
-import { GtkInternalChildren, GtkTemplate, registerClass } from '../steam-vpk-utils/utils.js';
-import { APP_RDNN } from '../utils/const.js';
 
 type Signals = 'setup';
 
@@ -14,14 +12,15 @@ export default interface AddAddonName extends AsyncSignalMethods<Signals> {
   _emit_signal(signal: 'setup'): Promise<boolean>;
 }
 export default class AddAddonName extends Adw.Window {
-  static [GtkTemplate] = `resource://${APP_RDNN}/ui/add-addon-name.ui`;
-  static [GtkInternalChildren] = [
-    'name_bar',
-    'scan_button',
-  ];
-
   static {
-    registerClass({}, this);
+    GObject.registerClass({
+      GTypeName: 'StvpkAddAddonName',
+      Template: 'resource:///com/github/kinten108101/SteamVPK/ui/add-addon-name.ui',
+      InternalChildren: [
+        'name_bar',
+        'scan_button',
+      ],
+    }, this);
     addAsyncSignalMethods(this.prototype);
   }
 

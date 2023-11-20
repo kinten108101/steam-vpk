@@ -1,10 +1,9 @@
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
-import * as Utils from '../steam-vpk-utils/utils.js';
 
 export default class TypedBuilder extends Gtk.Builder {
   static {
-    Utils.registerClass({}, this);
+    GObject.registerClass({}, this);
   }
 
   constructor(param: Gtk.Builder.ConstructorProperties = {}) {
