@@ -15,6 +15,7 @@ import AddonBoxClient from './backend/client.js';
 import Repository from './model/repository.js';
 import AddonsProxy from './backend/addons-proxy.js';
 import { globalThis } from './utils/ts-helper.js';
+import RepositoryActions from './actions/debug/repository.js';
 
 let application!: Gtk.Application;
 
@@ -43,6 +44,13 @@ export default function Application() {
   AddonsProxy({
     model: repository,
     client,
+  });
+  Object.values(
+    RepositoryActions({
+      store: repository,
+    })
+  ).forEach(x => {
+    application.add_action(x);
   });
 
   application.connect('notify::is-registered', () => {

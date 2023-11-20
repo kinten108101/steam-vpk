@@ -1,4 +1,5 @@
 script = [
+  'actions/debug/repository.ts',
   'actions/add-addon.ts',
   'actions/addon-details.ts',
   'actions/addon-storage-controls.ts',
@@ -65,6 +66,7 @@ script = [
   'ui/themeselector.ts',
   'utils/action-builder.ts',
   'utils/async-signals.ts',
+  'utils/base64.js',
   'utils/const.ts',
   'utils/files.ts',
   'utils/gtk.ts',

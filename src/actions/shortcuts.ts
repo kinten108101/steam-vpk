@@ -11,6 +11,7 @@ export default function Shortcuts(
   [
     ['app.quit', ['<Primary>q']],
     ['app.new-window', ['<Primary>n']],
+    ['app.repository.insert', ['<Primary>j']],
     ['win.reload-addons', ['<Primary>r']],
     ['win.back', ['<Alt>Left']],
     ['win.forward', ['<Alt>Right']],

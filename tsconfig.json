@@ -29,6 +29,7 @@
     "node_modules/@girs/adw-1/adw-1.d.ts",
     "node_modules/@girs/gjs/gjs.d.ts",
     "node_modules/@girs/gjs/dom.d.ts",
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.js"
   ]
 }
