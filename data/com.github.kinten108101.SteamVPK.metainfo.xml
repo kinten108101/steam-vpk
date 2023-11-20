@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<component type="desktop">
+  <id>com.github.kinten108101.SteamVPK</id>
+  <launchable type="desktop-id">com.github.kinten108101.SteamVPK.desktop</launchable>
+  <name translatable="no">Steam VPK</name>
+  <developer_name translatable="no">Kinten Le</developer_name>
+  <update_contact>kinten108101@protonmail.com</update_contact>
+  <metadata_license>CC0-1.0</metadata_license>
+  <project_license>GPL-3.0</project_license>
+  <summary>Add-on manager for Left 4 Dead 2</summary>
+  <translation type="gettext">com.github.kinten108101.SteamVPK</translation>
+  <description>
+    <p>Steam VPK is an add-on manager for Left 4 Dead 2.</p>
+    <p>All data is provided by the Add-on Box daemon.</p>
+  </description>
+  <url type="homepage">https://github.com/kinten108101/steam-vpk</url>
+  <url type="bugtracker">https://github.com/kinten108101/steam-vpk/issues</url>
+  <url type="vcs-browser">https://github.com/kinten108101/steam-vpk</url>
+  <screenshots>
+    <screenshot type="default">
+      <image>https://raw.githubusercontent.com/kinten108101/steam-vpk/main/data/resources/screenshots/windows-v1.png</image>
+    </screenshot>
+  </screenshots>
+  <content_rating type="oars-1.1" />
+  <kudos>
+    <kudo>HiDpiIcon</kudo>
+    <kudo>HighContrast</kudo>
+    <kudo>ModernToolkit</kudo>
+  </kudos>
+  <requires>
+    <display_length compare="ge">360</display_length>
+  </requires>
+  <recommends>
+    <control>keyboard</control>
+    <control>pointing</control>
+    <control>touch</control>
+  </recommends>
+</component>

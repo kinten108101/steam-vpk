@@ -84,6 +84,13 @@ data_resource = gnome.compile_resources(
 
 subdir('resources/logo')
 
+configure_file(
+  input: 'com.github.kinten108101.SteamVPK.metainfo.xml',
+  output: 'com.github.kinten108101.SteamVPK.metainfo.xml',
+  copy: true,
+  install_dir: get_option('datadir') / 'metainfo'
+)
+
 install_data(
   meson.project_source_root() / 'data' / 'com.github.kinten108101.SteamVPK.desktop',
   install_dir: get_option('datadir') / 'applications'
