@@ -130,6 +130,13 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
     super.append(item);
   }
 
+  remove(index: number) {
+    const item = this.get_item(index) as RepositoryItem | null;
+    if (item === null) throw new Error;
+    super.remove(index);
+    this.exists.delete(item.id);
+  }
+
   refill(items: RepositoryItem[]) {
     const deletables: Map<string, RepositoryItem> = new Map(this.exists);
     items.forEach(x => {
@@ -139,7 +146,6 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
       } else {
         // append
         this.append(x);
-        this.exists.set(x.id, x);
         console.debug('repository:', `Added new list item \"${x.id}\"`);
       }
     });
@@ -150,7 +156,6 @@ export default class Repository extends Gio.ListStore<RepositoryItem> {
         return;
       }
       this.remove(idx);
-      this.exists.delete(x.id);
       console.debug('repository:', `Removed list item \"${x.id}\"`);
     });
   }
