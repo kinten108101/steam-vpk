@@ -4,6 +4,7 @@ import GObject from 'gi://GObject';
 export default class SpinningButton extends Gtk.Button {
   static {
     GObject.registerClass({
+      GTypeName: 'StvpkSpinningButton',
       Properties: {
         is_spinning: GObject.ParamSpec.boolean(
           'is-spinning', '', '',

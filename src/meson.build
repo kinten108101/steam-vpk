@@ -81,6 +81,7 @@ script = [
   'windows/headerbox-detachable.ts',
   'windows/main-window.ts',
   'application.ts',
+  'gtype.js',
   'main.ts',
   'promisify.js',
 ]
