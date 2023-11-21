@@ -448,3 +448,19 @@ checkbutton.theme-selector radio:checked {
 .invisible-text label {
   opacity: 0;
 }
+
+/**
+ * Icon with badge
+ */
+
+badge {
+  margin-top: -8px;
+  margin-right: -8px;
+  padding-left: 6px;
+  padding-right: 6px;
+  font-size: x-small;
+  color: @light_1;
+  font-weight: bolder;
+  background-color: @blue_3;
+  border-radius: 99em;
+}

@@ -57,6 +57,7 @@ script = [
   'ui/download-page.ts',
   'ui/field-row.ts',
   'ui/headerbox.ts',
+  'ui/icon-with-badge.js',
   'ui/inject-button-set.ts',
   'ui/launchpad.ts',
   'ui/preferences-window.ts',

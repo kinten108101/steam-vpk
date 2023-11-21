@@ -1,4 +1,5 @@
 import GObject from 'gi://GObject';
+import IconWithBadge from "./ui/icon-with-badge.js";
 import { SwitchRow } from './ui/activatable-row.js';
 import { ShortcutLabel } from './ui/shortcut-label.js';
 import { ActionRow, PreferencesRow } from './ui/sensitizable-widgets.js';
@@ -19,6 +20,7 @@ import SpinningButton from './ui/spinning-button.js';
 import AddAddonUrl, { InputUrl, PreviewDownload } from './dialogs/add-addon-url.js';
 import AddAddonName from './dialogs/add-addon-name.js';
 
+GObject.type_ensure(IconWithBadge.$gtype);
 GObject.type_ensure(SwitchRow.$gtype);
 GObject.type_ensure(ShortcutLabel.$gtype);
 GObject.type_ensure(PreferencesRow.$gtype);

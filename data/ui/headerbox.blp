@@ -144,6 +144,7 @@ template $StvpkHeaderBox : Gtk.Box {
                     Gtk.Box toolbar_layer {
                       vexpand: false;
                       valign: end;
+                      height-request: 56;
                       halign: fill;
 
                       Gtk.Revealer {
@@ -158,6 +159,8 @@ template $StvpkHeaderBox : Gtk.Box {
                               margin-end: 4;
                               hexpand: true;
                               vscrollbar-policy: never;
+                              valign: end;
+                              height-request: 48;
 
                               Gtk.Box {
                                 spacing: 4;
@@ -219,10 +222,13 @@ template $StvpkHeaderBox : Gtk.Box {
                               styles ['flat', 'compact-button']
                               action-name: 'win.headerbox.detach';
                               tooltip-text: _('Detach Panel');
+                              valign: end;
+                              height-request: 48;
 
-                              Gtk.Image {
+                              $StvpkIconWithBadge {
                                 icon-name: 'pip-in-symbolic';
                                 pixel-size: 24;
+                                show-badge: false;
                               }
                             }
                           };
