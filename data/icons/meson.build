@@ -1,4 +1,5 @@
 icons = [
+  'about-symbolic.svg',
   'addon-box.svg',
   'addon-box-devel.svg',
   'arrow2-up-symbolic.svg',

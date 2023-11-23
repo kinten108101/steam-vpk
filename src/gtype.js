@@ -18,3 +18,5 @@ import './ui/headerbox/build.js';
 import './ui/spinning-button.js';
 import './dialogs/add-addon-url.js';
 import './dialogs/add-addon-name.js';
+import './ui/store-page/install-button.js';
+import './ui/store-page.js';

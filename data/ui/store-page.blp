@@ -1,0 +1,213 @@
+using Gtk 4.0;
+using Adw 1;
+
+template $StvpkStorePage : Gtk.Box {
+  orientation: vertical;
+
+  Adw.HeaderBar {
+    title-widget:
+      Adw.WindowTitle {
+        title: 'Store'; // placeholder
+      };
+
+    [start]
+    Gtk.Button {
+      icon-name: 'left-large-symbolic';
+      action-name: 'win.back';
+    }
+  }
+
+  Adw.Banner {
+    revealed: true;
+    title: 'Remote Content is disabled'; // placeholder
+    button-label: 'Load';
+  }
+
+  Gtk.ScrolledWindow {
+    vexpand: true;
+
+    Adw.Clamp {
+      maximum-size: 600;
+
+      Gtk.Box {
+        margin-top: 16;
+        margin-bottom: 16;
+        orientation: vertical;
+        spacing: 16;
+
+        Gtk.Box {
+          Gtk.Box {
+            halign: fill;
+            hexpand: true;
+
+            orientation: vertical;
+
+            Gtk.Label page_title {
+              label: 'User Themes'; // placeholder
+              xalign: 0;
+
+              styles ['title-1']
+            }
+
+            Gtk.Label page_subtitle {
+              label: 'fmuellner'; // placeholder
+              xalign: 0;
+
+              styles ['dim-label']
+            }
+          }
+
+          Gtk.Box {
+            halign: end;
+            orientation: vertical;
+
+            $StvpkInstallButton install_button {}
+          }
+        }
+
+        Gtk.Box description_group {
+          orientation: vertical;
+
+          Gtk.Label {
+            label: _('Description');
+            xalign: 0;
+            styles ['heading']
+          }
+
+          Gtk.Label page_description {
+            margin-top: 6;
+            label: 'Load shell themes from user directory.\nWarning: this add-on must be installed separately from mrFunreal\'s Add-on Pack. I won\'t resolve any cross-compability issue.\nSupport me on Patron: <a href=\"https://www.patreon.com/Hitman47101\">https://www.patreon.com/Hitman47101</a>'; // placeholder
+            use-markup: true;
+            wrap: true;
+            wrap-mode: word_char;
+            selectable: true;
+            xalign: 0;
+            styles ['multiline', 'body']
+          }
+
+          Gtk.Button {
+            margin-top: 16;
+            halign: center;
+            label: 'More';
+            styles ['pill']
+          }
+        }
+
+        Gtk.Box addon-controls {
+          homogeneous: true;
+          spacing: 0;
+          styles ["card"]
+
+          Gtk.Button {
+            styles ["flat", "context-tile"]
+
+            Gtk.Box {
+              orientation: vertical;
+              spacing: 8;
+
+              Gtk.Box lozenge {
+                halign: center;
+                valign: center;
+                styles ["lozenge", "grey"]
+
+                Gtk.Label {
+                  use-markup: true;
+                  label: '132.0 <span size=\'small\'>MB</span>';
+                }
+              }
+
+              Gtk.Label {
+                label: _('Estimated Size');
+                justify: center;
+                wrap: true;
+                halign: center;
+                styles ["heading"]
+              }
+
+              Gtk.Label {
+                visible: true;
+                label: _('Including metatext and archive and other');
+                wrap: true;
+                justify: center;
+                lines: 3;
+                ellipsize: end;
+                styles ["caption"]
+              }
+            }
+          }
+
+
+
+          Gtk.Button {
+            styles ["flat", "context-tile"]
+
+            Gtk.Box {
+              orientation: vertical;
+              spacing: 8;
+
+              Gtk.Box {
+                halign: center;
+                valign: center;
+                styles ["lozenge", "grey"]
+
+                Gtk.Label {
+                  use-markup: true;
+                  label: '11 / 12 / 2022';
+                  styles ["circular"]
+                }
+              }
+
+              Gtk.Label {
+                label: _('Last Update');
+                wrap: true;
+                halign: center;
+                styles ["heading"]
+              }
+
+
+            }
+          }
+
+          Gtk.Button {
+            styles ["flat", "context-tile"]
+
+            Gtk.Box {
+              orientation: vertical;
+              spacing: 8;
+
+              Gtk.Box {
+                halign: center;
+                valign: center;
+                styles ["lozenge", "grey"]
+
+                Gtk.Label {
+                  use-markup: true;
+                  label: 'Alex MVP et al';
+                }
+              }
+
+              Gtk.Label {
+                label: _('Creators');
+                wrap: true;
+                halign: center;
+                styles ["heading"]
+              }
+
+              Gtk.Label {
+                visible: true;
+                label: _('Alex MVP, mav, and someone');
+                wrap: true;
+                justify: center;
+                lines: 3;
+                ellipsize: end;
+                styles ["caption"]
+              }
+            }
+          }
+        }
+
+
+      }
+    }
+  }
+}

@@ -135,6 +135,22 @@ template $StvpkAddonDetails : Gtk.Box {
               };
           } // preferences row
 
+          Adw.ActionRow {
+            title: 'View in Workshop';
+            action-name: 'win.store.show';
+            action-target: bind template.id-gvariant;
+            activatable-widget: workshop_offline_button;
+
+            [suffix]
+            Gtk.Button workshop_offline_button {
+              icon-name: 'about-symbolic';
+              action-name: 'win.store.show';
+              action-target: bind template.id-gvariant;
+              valign: center;
+              styles ['flat']
+            }
+          }
+
           Adw.ExpanderRow {
             title: _('Advanced');
 
@@ -170,7 +186,6 @@ template $StvpkAddonDetails : Gtk.Box {
                 styles ['flat']
               }
             }
-
           }
 
           $StvpkActionRow visit_workshop_row {

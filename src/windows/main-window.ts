@@ -48,6 +48,9 @@ import ArchiveSelectModel from '../model/archive-select.js';
 import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
 import ProfileBarSyncHeaderbox from '../presenters/profile-bar-sync-headerbox.js';
 import AddonlistActions from '../actions/debug/addonlist.js';
+import UseStorePageNavigation from '../actions/navigate-to-store-page.js';
+import UseStoreDetails from '../presenters/store-details.js';
+import StorePage from '../ui/store-page.js';
 import Folder from '../presenters/folder.js';
 
 export default class MainWindow extends Adw.ApplicationWindow {
@@ -93,6 +96,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
         'launchpad_page',
         'addon_details',
         'addons_panel_disk',
+        'store_page',
       ],
     }, this);
   }
@@ -118,6 +122,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
   _launchpad_page!: LaunchpadPage;
   _addon_details!: AddonDetails;
   _addons_panel_disk!: AddonsPanelDisk;
+  _store_page!: StorePage;
 
   folder: Folder = new Folder;
 
@@ -133,6 +138,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
       'addons-page',
       'addon-details-page',
       'addons-panel-disk-page',
+      'store-page',
     ].forEach(x => {
       this.folder.add_handler(x,
         (_current, _target, target_view) => {
@@ -148,6 +154,20 @@ export default class MainWindow extends Adw.ApplicationWindow {
     })).forEach(x => {
       this.add_action(x);
     });
+
+    const [present] = UseStoreDetails({
+      store_page: this._store_page,
+    });
+    Object.values(UseStorePageNavigation({
+      present,
+      model: this.repository,
+      navigate: (id: string) => {
+        this.folder.set_visible_child_name(`store-page/${id}`);
+      },
+    })).forEach(x => {
+      this.add_action(x);
+    });
+
 
     this._setup_style();
     this._setup_group();

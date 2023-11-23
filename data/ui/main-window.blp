@@ -233,6 +233,11 @@ template $StvpkMainWindow : Adw.ApplicationWindow {
         name: 'addons-panel-disk-page';
         child: $StvpkAddonsPanelDisk addons_panel_disk {};
       }
+
+      Adw.LeafletPage {
+        name: 'store-page';
+        child: $StvpkStorePage store_page {};
+      }
     }
   }
 }

@@ -30,6 +30,7 @@ interface = [
   'ui/preferences-window.blp',
   'ui/profile-bar.blp',
   'ui/spinning-button.blp',
+  'ui/store-page.blp',
   'ui/themeselector.blp',
 ]
 
