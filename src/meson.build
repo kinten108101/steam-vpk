@@ -32,6 +32,7 @@ script = [
   'presenters/settings/text-markup.ts',
   'presenters/addon-details-presenter.ts',
   'presenters/download-page-presenter.ts',
+  'presenters/folder.js',
   'presenters/inject-button-set-presenter.ts',
   'presenters/inject-console-presenter.ts',
   'presenters/launchpad-page-presenter.ts',

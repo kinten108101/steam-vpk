@@ -1,7 +1,6 @@
 import Gio from 'gi://Gio';
 import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
-import Adw from 'gi://Adw';
 
 export type DiskModal = {
   present(parent_window: Gtk.Window): Promise<number>;
@@ -11,18 +10,18 @@ export type DiskModal = {
 export function
 AddonsPanelDiskActions(
 { action_map,
-  leaflet,
+  on_navigate,
   addons_dir,
   main_window,
 }:
 { action_map: Gio.ActionMap;
-  leaflet: Adw.Leaflet;
+  on_navigate: () => void;
   addons_dir?: Gio.File;
   main_window?: Gtk.Window;
 }) {
   const manage = new Gio.SimpleAction({ name: 'addons-panel-disk.manage' });
   manage.connect('activate', () => {
-    leaflet.set_visible_child_name('addons-panel-disk-page');
+    on_navigate();
   });
   action_map.add_action(manage);
 

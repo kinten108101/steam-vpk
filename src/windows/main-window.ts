@@ -48,6 +48,7 @@ import ArchiveSelectModel from '../model/archive-select.js';
 import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
 import ProfileBarSyncHeaderbox from '../presenters/profile-bar-sync-headerbox.js';
 import AddonlistActions from '../actions/debug/addonlist.js';
+import Folder from '../presenters/folder.js';
 
 export default class MainWindow extends Adw.ApplicationWindow {
   static {
@@ -118,6 +119,8 @@ export default class MainWindow extends Adw.ApplicationWindow {
   _addon_details!: AddonDetails;
   _addons_panel_disk!: AddonsPanelDisk;
 
+  folder: Folder = new Folder;
+
   constructor(params: {
     application: Gtk.Application;
     client: AddonBoxClient;
@@ -125,6 +128,20 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
+
+    [
+      'addons-page',
+      'addon-details-page',
+      'addons-panel-disk-page',
+    ].forEach(x => {
+      this.folder.add_handler(x,
+        (_current, _target, target_view) => {
+          this._primary_leaflet.set_visible_child_name(target_view);
+          return true;
+        });
+    });
+
+    this.folder.set_visible_child_name('addons-page');
 
     Object.values(AddonlistActions({
       store: this._addonlist,
@@ -283,20 +300,15 @@ export default class MainWindow extends Adw.ApplicationWindow {
     });
     this.add_action(showAbout);
 
-    let back_from: string | null = null;
     const back = new Gio.SimpleAction({ name: 'back' });
     back.connect('activate', () => {
-      const _back_from = this._primary_leaflet.get_visible_child_name();
-      if (_back_from === 'addons-page') return;
-      this._primary_leaflet.set_visible_child_name('addons-page');
-      back_from = _back_from;
+      this.folder.navigate_backward();
     });
     this.add_action(back);
 
     const forward = new Gio.SimpleAction({ name: 'forward' });
     forward.connect('activate', () => {
-      if (back_from === null) return;
-      this._primary_leaflet.set_visible_child_name(back_from);
+      this.folder.navigate_forward();
     });
     this.add_action(forward);
 
@@ -344,8 +356,10 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _setup_addons_panel() {
     AddonsPanelDiskActions({
-      leaflet: this._primary_leaflet,
       action_map: this,
+      on_navigate: () => {
+        this.folder.set_visible_child_name('addons-panel-disk-page');
+      },
     });
     UsagePresenter({
       client: this.client,
@@ -414,7 +428,9 @@ export default class MainWindow extends Adw.ApplicationWindow {
       action_map: this,
       parent_window: this,
       repository: this.repository,
-      stack: this._primary_leaflet,
+      on_navigate: (id: string) => {
+        this.folder.set_visible_child_name(`addon-details-page/${id}`);
+      },
       addon_details_select_model: this._addon_details_select_model,
       archive_select_model: this._archive_select_model,
     });

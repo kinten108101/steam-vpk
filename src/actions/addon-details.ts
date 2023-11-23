@@ -16,7 +16,7 @@ AddonDetailsActions(
   action_map,
   parent_window,
   repository,
-  stack,
+  on_navigate,
   addon_details_select_model,
   archive_select_model,
 }:
@@ -24,9 +24,7 @@ AddonDetailsActions(
   action_map: Gio.ActionMap;
   parent_window?: Gtk.Window;
   repository: Repository;
-  stack: {
-    set_visible_child_name(name: string): void;
-  };
+  on_navigate: (id: string) => void;
   addon_details_select_model: AddonDetailsSelectModel;
   archive_select_model: ArchiveSelectModel;
 }) {
@@ -43,7 +41,7 @@ AddonDetailsActions(
       if (item === undefined) throw new Error;
       addon_details_select_model.item = item;
       archive_select_model.item = item;
-      stack.set_visible_child_name('addon-details-page');
+      on_navigate(item.id);
     })().catch(error => logError(error));
   });
   action_map.add_action(seeDetails);
