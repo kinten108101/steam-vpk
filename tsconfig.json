@@ -3,6 +3,7 @@
     "paths": {
         "gi://Gtk": ["node_modules/@girs/gtk-4.0/gtk-4.0.d.ts"],
         "gi://Gdk": ["node_modules/@girs/gdk-4.0/gdk-4.0.d.ts"],
+        // force lsp to show error when use absolute path which gjs doesn't support
         "src/*": ["fds/sfdsf/*"]
     },
     "lib": [
