@@ -3,10 +3,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
 
-import {
-  APP_FULLNAME,
-  APP_ID,
-} from './utils/const.js';
+import { APP_FULLNAME, APP_ID, } from './utils/const.js';
 import Shortcuts from './actions/shortcuts.js';
 import MainWindow from './windows/main-window.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
@@ -14,11 +11,14 @@ import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
 import Repository from './model/repository.js';
 import AddonsProxy from './backend/addons-proxy.js';
-import { globalThis } from './utils/ts-helper.js';
 import RepositoryActions from './actions/debug/repository.js';
 
-let application!: Gtk.Application;
+/**
+ * @type {Gtk.Application | undefined}
+ */
+let application;
 
+/** @returns {Gtk.Application} */
 export function getApplication() {
   if (application === undefined) {
     application = Application();
@@ -30,7 +30,7 @@ export default function Application() {
   const application = new Adw.Application({
     application_id: APP_ID,
   });
-  const buildtype = (globalThis as unknown as globalThis).config.buildtype;
+  const buildtype = globalThis.config.buildtype;
   if (buildtype === 'debug')
     GLib.log_set_debug_enabled(true);
 
@@ -45,18 +45,17 @@ export default function Application() {
     model: repository,
     client,
   });
-  Object.values(
-    RepositoryActions({
-      store: repository,
-    })
-  ).forEach(x => {
+  Object.values(RepositoryActions({
+    store: repository,
+  })).forEach(x => {
     application.add_action(x);
   });
 
   application.connect('notify::is-registered', () => {
     if (application.is_registered) {
       const connection = application.get_dbus_connection();
-      if (connection === null) throw new Error
+      if (connection === null)
+        throw new Error;
       ListenPortalResponses({
         connection,
       }).start();
@@ -85,15 +84,19 @@ export default function Application() {
       parameter_type: GLib.VariantType.new('b'),
     });
     devel.connect('activate', (_action, parameter) => {
-      if (parameter === null) throw new Error;
+      if (parameter === null)
+        throw new Error;
       const active = parameter.get_boolean();
       if (active === true) {
         application.get_windows().forEach(x => {
-          if (x instanceof Gtk.ApplicationWindow) x.add_css_class('devel');
+          if (x instanceof Gtk.ApplicationWindow)
+            x.add_css_class('devel');
         });
-      } else {
+      }
+      else {
         application.get_windows().forEach(x => {
-          if (x instanceof Gtk.ApplicationWindow) x.remove_css_class('devel');
+          if (x instanceof Gtk.ApplicationWindow)
+            x.remove_css_class('devel');
         });
       }
     });
@@ -102,7 +105,7 @@ export default function Application() {
     application.add_action(settings.create_action('color-scheme'));
     const style_manager = Adw.StyleManager.get_default();
     const update_theme = () => {
-      style_manager.set_color_scheme(settings.get_int('color-scheme') as Adw.ColorScheme);
+      style_manager.set_color_scheme(settings.get_int('color-scheme'));
     };
     settings.connect('changed::color-scheme', update_theme);
     update_theme();
@@ -130,5 +133,3 @@ export default function Application() {
 
   return application;
 }
-
-

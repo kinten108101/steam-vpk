@@ -2,27 +2,26 @@ import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 import { APP_FULLNAME } from '../utils/const.js';
-import { globalThis } from '../utils/ts-helper.js';
 
-export default function AboutWindow(
-{ gsettings,
-  parent_window,
-}:
-{ gsettings: Gio.Settings;
-  parent_window?: Gtk.Window;
-}) {
+/**
+ * @param {{
+ *   gsettings: Gio.Settings;
+ *   parent_window?: Gtk.Window;
+ * }} params
+ */
+export default function AboutWindow({ gsettings, parent_window, }) {
   const window = new Adw.AboutWindow({
     application_name: APP_FULLNAME,
     license_type: Gtk.License.GPL_3_0,
-    version: (globalThis as unknown as globalThis).config.version,
+    version: globalThis.config.version,
     issue_url: 'https://github.com/kinten108101/steam-vpk/issues',
-    developers: [ 'Kinten Le <kinten108101@protonmail.com>' ],
+    developers: ['Kinten Le <kinten108101@protonmail.com>'],
     transient_for: parent_window || null,
     website: 'https://github.com/kinten108101/steam-vpk',
     comments: `Add-on manager for Left 4 Dead 2.
 
 All data is provided by the Add-on Box daemon.`,
-    debug_info: String((globalThis as unknown as globalThis).config),
+    debug_info: globalThis.config.toString(),
   });
 
   function on_enable_devel_style_changed() {
@@ -41,7 +40,7 @@ All data is provided by the Add-on Box daemon.`,
     build() {
       return window;
     }
-  }
+  };
 
   return builder;
 }

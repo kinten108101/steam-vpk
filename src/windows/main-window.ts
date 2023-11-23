@@ -41,7 +41,6 @@ import ProfileProxy from '../backend/profile-proxy.js';
 import LaunchpadPagePresenter from '../presenters/launchpad-page-presenter.js';
 import TextMarkupPresenter from '../presenters/text-markup-presenter.js';
 import SettingsTextMarkupPresenter from '../presenters/settings/text-markup.js';
-import { globalThis } from '../utils/ts-helper.js';
 import NotificationModel from '../model/notification.js';
 import NotificationPresenter from '../presenters/notification.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
@@ -174,7 +173,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _update_style() {
     const val = this.gsettings.get_boolean('enable-devel-style');
-    const buildtype = (globalThis as unknown as globalThis).config.buildtype;
+    const buildtype = globalThis.config.buildtype;
     if (val && (buildtype === 'debug' || buildtype === 'debugoptimized'))
       this.add_css_class('devel');
     else

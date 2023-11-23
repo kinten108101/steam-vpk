@@ -68,18 +68,18 @@ script = [
   'ui/themeselector.ts',
   'utils/async-signals.ts',
   'utils/base64.js',
-  'utils/const.ts',
-  'utils/files.ts',
-  'utils/gtk.ts',
-  'utils/markup.ts',
+  'utils/const.js',
+  'utils/files.js',
+  'utils/gtk.js',
+  'utils/markup.js',
   'utils/toast-builder.ts',
   'utils/use-semaphore.ts',
   'utils/window-promiser.ts',
-  'windows/about.ts',
+  'windows/about.js',
   'windows/debug-window.ts',
   'windows/headerbox-detachable.ts',
   'windows/main-window.ts',
-  'application.ts',
+  'application.js',
   'gtype.js',
   'main.js',
   'promisify.js',
@@ -128,7 +128,7 @@ src_resource = gnome.compile_resources(
 )
 
 steam_vpk_launcher = configure_file(
-  input: 'com.github.kinten108101.SteamVPK.js.in',
+  input: 'com.github.kinten108101.SteamVPK.js',
   output: 'com.github.kinten108101.SteamVPK.js',
   configuration: {
     'GJS': gjs_console,
