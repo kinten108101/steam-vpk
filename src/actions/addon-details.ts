@@ -5,7 +5,6 @@ import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
-import { Toast } from '../utils/toast-builder.js';
 import { TOAST_TIMEOUT_SHORT } from '../utils/gtk.js';
 import Repository from '../model/repository.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
@@ -74,11 +73,10 @@ AddonDetailsActions(
       val.init(GObject.TYPE_STRING);
       val.set_string(str);
       display.get_clipboard().set_content(Gdk.ContentProvider.new_for_value(val));
-      toaster?.add_toast(
-        Toast.builder()
-        .title('Copied to clipboard')
-        .timeout(TOAST_TIMEOUT_SHORT)
-        .build());
+      toaster?.add_toast(new Adw.Toast({
+        title: 'Copied to clipboard',
+        timeout: TOAST_TIMEOUT_SHORT,
+      }));
     })().catch(error => logError(error));
   });
   action_map.add_action(copy_string);
