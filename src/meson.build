@@ -74,7 +74,6 @@ script = [
   'utils/markup.js',
   'utils/toast-builder.ts',
   'utils/use-semaphore.ts',
-  'utils/window-promiser.ts',
   'windows/about.js',
   'windows/debug-window.ts',
   'windows/headerbox-detachable.ts',
