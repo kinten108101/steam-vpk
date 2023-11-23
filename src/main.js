@@ -6,7 +6,10 @@ import './promisify.js';
 import './gtype.js';
 import { getApplication } from './application.js';
 
-export function main(argv: string[] | null): number {
+/**
+ * @param {string[] | null} argv
+ */
+export function main(argv) {
   const app = getApplication();
   return app.run(argv);
 }

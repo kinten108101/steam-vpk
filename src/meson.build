@@ -83,7 +83,7 @@ script = [
   'windows/main-window.ts',
   'application.ts',
   'gtype.js',
-  'main.ts',
+  'main.js',
   'promisify.js',
 ]
 script_files = files(script)
