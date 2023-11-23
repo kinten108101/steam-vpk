@@ -41,7 +41,7 @@ AddonDetailsActions(
       const [id] = parameter.get_string();
       if (id === null) throw new Error;
       const item = repository.get(id);
-      if (item === undefined) return;
+      if (item === undefined) throw new Error;
       addon_details_select_model.item = item;
       archive_select_model.item = item;
       stack.set_visible_child_name('addon-details-page');
