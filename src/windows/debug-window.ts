@@ -3,8 +3,34 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import TypedBuilder from '../utils/typed-builder.js';
 import * as Consts from '../utils/const.js';
+
+/**
+ * @deprecated
+ */
+class TypedBuilder extends Gtk.Builder {
+  static {
+    GObject.registerClass({}, this);
+  }
+
+  constructor(param: Gtk.Builder.ConstructorProperties = {}) {
+    super(param);
+  }
+
+  /**
+   * Get the object named `name`.
+   *
+   * A wrapper over {@link Gtk.Builder.get_object} that supports generics.
+   * @param name name of object to get
+   * @returns the object named `name`
+   * @throws a JS Error if object named `name` is not found
+   */
+  get_typed_object<T extends GObject.Object>(name: string): T {
+    const obj = this.get_object(name);
+    if (obj === null) throw new Error(`Bad XML, \"${name}\" not found.`);
+    return obj as T;
+  }
+}
 
 class DebugWindowActionRowItem extends GObject.Object {
   static {

@@ -74,7 +74,6 @@ script = [
   'utils/gtk.ts',
   'utils/markup.ts',
   'utils/toast-builder.ts',
-  'utils/typed-builder.ts',
   'utils/use-semaphore.ts',
   'utils/window-promiser.ts',
   'windows/about.ts',
