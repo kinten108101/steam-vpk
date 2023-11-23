@@ -66,7 +66,6 @@ script = [
   'ui/shortcut-label.ts',
   'ui/spinning-button.ts',
   'ui/themeselector.ts',
-  'utils/action-builder.ts',
   'utils/async-signals.ts',
   'utils/base64.js',
   'utils/const.ts',
