@@ -52,6 +52,7 @@ import UseStorePageNavigation from '../actions/navigate-to-store-page.js';
 import UseStoreDetails from '../presenters/store-details.js';
 import StorePage from '../ui/store-page.js';
 import Folder from '../presenters/folder.js';
+import SwipeTracker from '../ui/swipe-tracker.js';
 
 export default class MainWindow extends Adw.ApplicationWindow {
   static {
@@ -89,6 +90,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
         'primary_leaflet',
         'primary_view_stack',
         'primary_menu_popover',
+        'headerbar',
         'profile_bar',
         'headerbox',
         'inject_button_set',
@@ -115,6 +117,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
   _primary_leaflet!: Adw.Leaflet;
   _primary_view_stack!: Adw.ViewStack;
   _primary_menu_popover!: Gtk.PopoverMenu;
+  _headerbar!: Adw.HeaderBar;
   _profile_bar!: ProfileBar;
   _headerbox!: HeaderBox;
   _inject_button_set!: InjectButtonSet;
@@ -125,6 +128,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
   _store_page!: StorePage;
 
   folder: Folder = new Folder;
+  swipe_tracker: SwipeTracker;
 
   constructor(params: {
     application: Gtk.Application;
@@ -133,6 +137,14 @@ export default class MainWindow extends Adw.ApplicationWindow {
     repository: Repository;
   }) {
     super(params as any);
+
+    this.swipe_tracker = new SwipeTracker({
+      swipeable: this._headerbar,
+    });
+    this.swipe_tracker.connect('update-swipe', (_object, delta) => {
+      if (delta > 1) this._headerbox.reveal_child = true;
+      else if (delta < -1) this._headerbox.reveal_child = false;
+    });
 
     [
       'addons-page',

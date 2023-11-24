@@ -70,6 +70,7 @@ script = [
   'ui/shortcut-label.ts',
   'ui/spinning-button.ts',
   'ui/store-page.js',
+  'ui/swipe-tracker.js',
   'ui/themeselector.ts',
   'utils/async-signals.ts',
   'utils/base64.js',
