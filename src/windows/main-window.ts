@@ -46,13 +46,14 @@ import NotificationPresenter from '../presenters/notification.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
 import ArchiveSelectModel from '../model/archive-select.js';
 import SettingsDevelStylePresenter from '../presenters/settings/devel-style.js';
-import ProfileBarSyncHeaderbox from '../presenters/profile-bar-sync-headerbox.js';
 import AddonlistActions from '../actions/debug/addonlist.js';
 import UseStorePageNavigation from '../actions/navigate-to-store-page.js';
 import UseStoreDetails from '../presenters/store-details.js';
 import StorePage from '../ui/store-page.js';
 import Folder from '../presenters/folder.js';
-import SwipeTracker from '../ui/swipe-tracker.js';
+import UseHeaderboxInteraction from '../presenters/headerbox-interaction.js';
+import { SwipeTracker } from '../main.js';
+import CustomSwipeTracker from '../ui/swipe-tracker.js';
 
 export default class MainWindow extends Adw.ApplicationWindow {
   static {
@@ -138,12 +139,8 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }) {
     super(params as any);
 
-    this.swipe_tracker = new SwipeTracker({
+    this.swipe_tracker = new CustomSwipeTracker({
       swipeable: this._headerbar,
-    });
-    this.swipe_tracker.connect('update-swipe', (_object, delta) => {
-      if (delta > 1) this._headerbox.reveal_child = true;
-      else if (delta < -1) this._headerbox.reveal_child = false;
     });
 
     [
@@ -180,6 +177,11 @@ export default class MainWindow extends Adw.ApplicationWindow {
       this.add_action(x);
     });
 
+    UseHeaderboxInteraction({
+      toggleable: this._profile_bar.primary_button,
+      swipe_tracker: this.swipe_tracker,
+      headerbox: this._headerbox,
+    });
 
     this._setup_style();
     this._setup_group();
@@ -193,11 +195,6 @@ export default class MainWindow extends Adw.ApplicationWindow {
     this._setup_headerbox();
     this._setup_addons_panel();
     this._setup_addon_interaction();
-
-    ProfileBarSyncHeaderbox({
-      primary_button: this._profile_bar.primary_button,
-      headerbox: this._headerbox,
-    });
   }
 
   get addonlist() {

@@ -6,6 +6,16 @@ import './promisify.js';
 import './gtype.js';
 import { getApplication } from './application.js';
 
+
+/**
+ * @typedef SwipeTracker
+ * @property {{
+ *   (signal: 'begin-swipe', callback: (object: SwipeTracker) => void): number;
+ *   (signal: 'update-swipe', callback: (object: SwipeTracker, delta: number) => void): number;
+ *   (signal: string, callback: (object: SwipeTracker, ...args: any[]) => void): number;
+ * }} connect
+ */
+
 /**
  * @param {string[] | null} argv
  */
