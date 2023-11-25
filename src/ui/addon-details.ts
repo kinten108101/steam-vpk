@@ -250,8 +250,6 @@ export default class AddonDetails extends Gtk.Box {
       prev_steamid_nonnull = val;
       if (!val) this._steamid_row.make_invisible();
       else this._steamid_row.make_visible();
-      console.debug('steamid_nonnull:', val);
-      console.debug('requests:', this._steamid_row._invisible_requests);
     };
     this.connect('notify::steamid', update_steamid);
     update_steamid();
