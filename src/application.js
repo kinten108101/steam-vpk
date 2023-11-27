@@ -7,7 +7,6 @@ import { APP_FULLNAME, APP_ID, } from './utils/const.js';
 import Shortcuts from './actions/shortcuts.js';
 import MainWindow from './windows/main-window.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
-import DebugWindow from './windows/debug-window.js';
 import AddonBoxClient from './backend/client.js';
 import Repository from './model/repository.js';
 import AddonsProxy from './backend/addons-proxy.js';
@@ -109,10 +108,6 @@ export default function Application() {
     };
     settings.connect('changed::color-scheme', update_theme);
     update_theme();
-
-    DebugWindow({
-      application,
-    });
 
     client.start().catch(error => logError(error));
   });

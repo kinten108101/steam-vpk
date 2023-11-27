@@ -13,8 +13,6 @@ interface = [
   'ui/addons-panel-disk.blp',
   'ui/addons-panel.blp',
   'ui/create-profile.blp',
-  'ui/debug-window.blp',
-  'ui/debug-window-action-row.blp',
   'ui/download-page-row.blp',
   'ui/download-page.blp',
   'ui/field-row.blp',

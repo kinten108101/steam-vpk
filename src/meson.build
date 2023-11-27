@@ -80,7 +80,6 @@ script = [
   'utils/markup.js',
   'utils/use-semaphore.ts',
   'windows/about.js',
-  'windows/debug-window.ts',
   'windows/headerbox-detachable.ts',
   'windows/main-window.ts',
   'application.js',
