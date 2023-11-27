@@ -41,6 +41,17 @@ label.terminal {
  *
  */
 
+.context-tile {
+  border: 1px solid @card_shade_color;
+  /*  background-color: transparent; */
+  border-radius: 0;
+  padding: 24px 12px 21px 12px;
+  outline-offset: 5px;
+  /*  transition-property: outline, outline-offset, background-image; */
+  border-bottom: none;
+  border-right: none;
+}
+
 .lozenge {
   font-size: 18px;
   font-weight: bold;
