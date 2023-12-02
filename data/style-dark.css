@@ -13,18 +13,18 @@
  * Header Box
  */
 
-.popped-view {
+headerbox .popped-view {
   background-color: #000;
 }
 
-.icon.red {
+headerbox .icon.red {
   color: @red_1;
 }
 
-.status-box.red label.title {
+headerbox .status-box.red label.title {
   color: @red_1;
 }
 
-.status-box.red label.description {
+headerbox .status-box.red label.description {
   color: mix(@red_1, @dark_1, 0.3);
 }
