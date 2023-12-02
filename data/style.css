@@ -348,6 +348,10 @@ headerbox .build-box label.line {
   line-height: 1.35em;
 }
 
+headerbox .empty-status {
+  opacity: 0.1;
+}
+
 /**
  * Theme Selector
  *
@@ -409,10 +413,6 @@ checkbutton.theme-selector radio:checked {
 
 #primary-view-switcher {
   margin-top: -2px;
-}
-
-.empty-status {
-  opacity: 0.1;
 }
 
 /**
