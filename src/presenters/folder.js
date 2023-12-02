@@ -150,14 +150,14 @@ export default class Folder extends GObject.Object {
     if (is_valid_u32(this.page_cursor + 1)) {
       const next_page = ( /** @type {Page | null} */ (this.page_stack.get_item(this.page_cursor + 1)));
       if (next_page && next_page.page_name === page_name) {
-        this.page_cursor++;
+        this.navigate_forward(next_page);
         return;
       }
     }
     if (is_valid_u32(this.page_cursor - 1)) {
       const prev_page = ( /** @type {Page | null} */ (this.page_stack.get_item(this.page_cursor - 1)));
       if (prev_page && prev_page.page_name === page_name) {
-        this.page_cursor--;
+        this.navigate_backward(prev_page);
         return;
       }
     }
