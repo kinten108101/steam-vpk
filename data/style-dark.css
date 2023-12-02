@@ -2,7 +2,7 @@
 @define-color metalcard-dark #d8d8d8;
 
 /**
- * inject-button-set
+ * Inject button/area
  */
 
 .inject-button-3 .red spinner {
@@ -10,7 +10,7 @@
 }
 
 /**
- * headerbox
+ * Header Box
  */
 
 .popped-view {

@@ -37,7 +37,7 @@ label.terminal {
 
 /**
  *
- * addon-details
+ * Addon Details / Store Page
  *
  */
 
@@ -120,7 +120,7 @@ preferencesgroup.danger-zone list {
 }
 
 /**
- * Inject
+ * Inject button/area
  */
 
 .inject-button-3 .blue > button {
@@ -165,8 +165,7 @@ profile-bar.active separator {
 }
 
 /**
- * HeaderBox
- * headerbox
+ * Header Box
  */
 
 @define-color metalcard #d8d8d8;
@@ -349,9 +348,12 @@ headerbox .build-box label.line {
   line-height: 1.35em;
 }
 
-/* Adapted from https://gitlab.gnome.org/GNOME/gnome-text-editor/-/blob/cd6e111e3142a80f509684e65c104c8b3a097761/src/style.css */
+/**
+ * Theme Selector
+ *
+ * Adapted from https://gitlab.gnome.org/GNOME/gnome-text-editor/-/blob/cd6e111e3142a80f509684e65c104c8b3a097761/src/style.css
+ */
 
-/* ThemeSelector */
 themeselector {
   margin: 9px;
 }
@@ -414,7 +416,7 @@ checkbutton.theme-selector radio:checked {
 }
 
 /**
- * spinning-button
+ * Spinning Button
  */
 
 .invisible-text label {
