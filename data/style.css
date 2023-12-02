@@ -164,45 +164,6 @@ profile-bar.active separator {
   transition-duration: 300ms;
 }
 
-.boxedlist {
-  background-color: transparent;
-  border-radius: 12px;
-}
-
-.boxedlist .boxedlist-row {
-  border-bottom: 0px;
-  padding-top: 6px;
-  padding-bottom: 6px;
-
-  transition-duration: 200ms;
-  transition-property: background-color;
-  transition-timing-function: ease-in-out;
-}
-
-.boxedlist .boxedlist-row:hover {
-  transition-duration: 200ms;
-  transition-property: background-color;
-  transition-timing-function: ease-in-out;
-}
-
-.boxedlist .boxedlist-row:active {
-  transition-duration: 100ms;
-  transition-property: background-color;
-  transition-timing-function: ease-in-out;
-}
-
-.boxedlist .boxedlist-row:focus:first-child {
-  border-radius: 12px 12px 0px 0px;
-}
-
-.boxedlist .boxedlist-row:focus:last-child {
-  border-radius: 0px 0px 12px 12px;
-}
-
-.boxedlist .boxedlist-row:not(:first-child) {
-  border-top: 1px inset alpha(@light_5, 0.3);
-}
-
 /**
  * HeaderBox
  * headerbox
