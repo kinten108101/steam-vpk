@@ -411,10 +411,6 @@ checkbutton.theme-selector radio:checked {
   color: @theme_selected_fg_color;
 }
 
-#primary-view-switcher {
-  margin-top: -2px;
-}
-
 /**
  * Spinning Button
  */
@@ -437,4 +433,15 @@ badge {
   font-weight: bolder;
   background-color: @blue_3;
   border-radius: 99em;
+}
+
+/**
+ * Other
+ */
+
+/**
+ * We do this here because only CSS supports negative margin.
+ */
+#primary-view-switcher {
+  margin-top: -2px;
 }
