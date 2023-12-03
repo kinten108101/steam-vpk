@@ -1,3 +1,6 @@
+/**
+ * Launchpad
+ */
 
 .launchpad-row .icon {
   background-color: @blue_3;
@@ -16,6 +19,9 @@
   font-size: small;
 }
 
+/**
+ * Download page
+ */
 
 .row-content {
   padding-left: 10px;
