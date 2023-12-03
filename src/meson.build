@@ -78,7 +78,7 @@ script = [
   'utils/markup.js',
   'utils/use-semaphore.ts',
   'windows/about.js',
-  'windows/headerbox-detachable.ts',
+  'windows/headerbox-detachable.js',
   'windows/main-window.ts',
   'application.js',
   'gtype.js',
