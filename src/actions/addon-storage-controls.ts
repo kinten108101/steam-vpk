@@ -2,7 +2,6 @@ import Gtk from 'gi://Gtk';
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
-import { MessageDialog } from '../dialogs/message-dialog.js';
 import AddonBoxClient from '../backend/client.js';
 
 class BuilderPatternError extends Error {
@@ -208,13 +207,15 @@ export default function AddonStorageControls(
       if (parameter === null) throw new Error;
       const [id] = parameter.get_string();
       if (id === null) throw new Error;
-      const msg = MessageDialog.builder()
-        .heading('Disuse this add-on? Current configurations in this profile will be permanently lost.')
-        .body('Add-on can still be reused from the repository.')
-        .response({ id: 'remove.cancel',  label: 'Cancel' })
-        .response({ id: 'remove.proceed', label: 'Proceed', appearance: Adw.ResponseAppearance.DESTRUCTIVE })
-        .transientFor(parent_window || null)
-        .wrap().build();
+      const msg = new Adw.MessageDialog() as ({
+        choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
+      } & Adw.MessageDialog);
+      msg.set_heading('Disuse this add-on? Current configurations in this profile will be permanently lost.');
+      msg.set_body('Add-on can still be reused from the repository.');
+      msg.add_response('remove.cancel', 'Cancel');
+      msg.add_response('remove.proceed', 'Proceed');
+      msg.set_response_appearance('remove.proceed', Adw.ResponseAppearance.DESTRUCTIVE);
+      msg.set_transient_for(parent_window || null);
       const response = await msg.choose_async(null);
       if (response === 'remove.cancel' ) {
         console.log('Action addons.remove dismissed. Quitting...');
@@ -248,15 +249,17 @@ export default function AddonStorageControls(
       if (parameter === null) throw new Error;
       const [id] = parameter.get_string();
       if (id === null) throw new Error;
-      const msg = MessageDialog.builder()
-        .heading('Delete this add-on?')
-        .body('Deleted content is recoverable from trash can.')
-        .response({ id: 'trash.cancel',  label: 'Cancel' })
-        .response({ id: 'trash.proceed', label: 'Proceed', appearance: Adw.ResponseAppearance.DESTRUCTIVE })
-        .closeResponse('trash.cancel')
-        .defaultResponse('trash.proceed')
-        .transientFor(parent_window || null)
-        .wrap().build();
+      const msg = new Adw.MessageDialog() as ({
+        choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
+      } & Adw.MessageDialog);
+      msg.set_heading('Delete this add-on?');
+      msg.set_body('Deleted content is recoverable from trash can.');
+      msg.add_response('trash.cancel', 'Cancel');
+      msg.add_response('trash.proceed', 'Proceed');
+      msg.set_response_appearance('trash.proceed', Adw.ResponseAppearance.DESTRUCTIVE);
+      msg.set_close_response('trash.cancel');
+      msg.set_default_response('trash.proceed');
+      msg.set_transient_for(parent_window || null);
       const response = await msg.choose_async(null)
       switch (response) {
       case 'trash.cancel':
