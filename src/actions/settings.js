@@ -2,37 +2,44 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
-import FileDialog from '../dialogs/file-dialog.js';
 import AddonBoxClient from '../backend/client.js';
 import NotificationModel from '../model/notification.js';
 
+/**
+ * @param {{ parent_window: Gtk.Window;
+ *   main_window: Gtk.ApplicationWindow;
+ *   settings: Gio.Settings;
+ *   client: AddonBoxClient;
+ *   notification_model: NotificationModel;
+ * }} params
+ */
 export default function SettingsActions(
 { parent_window,
   main_window,
   settings,
   client,
   notification_model,
-}:
-{ parent_window: Gtk.Window;
-  main_window: Gtk.ApplicationWindow;
-  settings: Gio.Settings;
-  client: AddonBoxClient;
-  notification_model: NotificationModel;
 }) {
-  const actions: Gio.Action[] = [];
+  /**
+   * @type {Gio.Action[]}
+   */
+  const actions = [];
   const set_game_dir = new Gio.SimpleAction({
     name: 'settings.set-game-dir',
     parameter_type: GLib.VariantType.new('s'),
   });
-  set_game_dir.connect('activate', (_action, parameter: GLib.Variant) => {
+  set_game_dir.connect('activate', (_action, parameter) => {
+    if (!parameter) throw new Error;
     (async () => {
       let gui = true;
-      let path = parameter.recursiveUnpack() as string;
-      if (path === '') gui = true;
+      let [path] = parameter.get_string();
+      if (path === null || (typeof path === 'string' && path === '')) gui = true;
       else gui = false;
 
       if (gui) {
-        const fileDialog = new FileDialog();
+        const fileDialog = /** @type {{
+          select_folder_async: (window: Gtk.Window | null, cancellable: Gio.Cancellable | null) => Promise<Gio.File>;
+        } & Gtk.FileDialog} */ (new Gtk.FileDialog());
         fileDialog.set_title('Select a directory');
         fileDialog.set_filters((() => {
           const filters = new Gio.ListStore({ item_type: Gtk.FileFilter.$gtype });
@@ -41,9 +48,12 @@ export default function SettingsActions(
           return filters;
         })());
         fileDialog.set_accept_label('Select');
-        let file: Gio.File | undefined;
+        /**
+         * @type {Gio.File | undefined}
+         */
+        let file;
         try {
-          file = await fileDialog.select_folder_async(parent_window, null);
+          file = await ((fileDialog)).select_folder_async(parent_window, null);
         } catch (error) {
           if (error instanceof GLib.Error) {
             if (error.matches(Gtk.dialog_error_quark(), Gtk.DialogError.DISMISSED)) { return; }
@@ -62,13 +72,17 @@ export default function SettingsActions(
   });
   actions.push(set_game_dir);
 
-  const rw_handlers: number[] = [];
+  /**
+   * @type {number[]}
+   */
+  const rw_handlers = [];
   const remember_winsize = new Gio.SimpleAction({
     name: 'settings.remember-winsize',
     parameter_type: GLib.VariantType.new('b'),
   });
-  remember_winsize.connect('activate', (_action, parameter: GLib.Variant) => {
-    const val = parameter.recursiveUnpack() as boolean;
+  remember_winsize.connect('activate', (_action, parameter) => {
+    if (!parameter) throw new Error;
+    const val = parameter.get_boolean();
     if (val) {
       settings.set_boolean('remember-winsize', true);
 
@@ -131,7 +145,10 @@ export default function SettingsActions(
   });
   actions.push(enable_devel_style);
 
-  function export2actionMap(action_map: Gio.ActionMap) {
+  /**
+   * @param {Gio.ActionMap} action_map
+   */
+  function export2actionMap(action_map) {
     actions.forEach(x => {
       action_map.add_action(x);
     });

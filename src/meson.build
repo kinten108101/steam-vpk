@@ -9,7 +9,7 @@ script = [
   'actions/headerbox.ts',
   'actions/injection.ts',
   'actions/navigate-to-store-page.js',
-  'actions/settings.ts',
+  'actions/settings.js',
   'actions/shortcuts.ts',
   'actions/stack-controller.ts',
   'actions/status-debug-actions.ts',
