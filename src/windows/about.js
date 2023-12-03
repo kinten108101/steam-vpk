@@ -30,17 +30,5 @@ All data is provided by the Add-on Box daemon.`,
   gsettings.connect('changed::enable-devel-style', on_enable_devel_style_changed);
   on_enable_devel_style_changed();
 
-  function present() {
-    window.present();
-    return builder;
-  }
-
-  const builder = {
-    present,
-    build() {
-      return window;
-    }
-  };
-
-  return builder;
+  return window;
 }
