@@ -20,9 +20,10 @@ export default class HeaderboxDetachable extends Adw.Window {
     const action_map = new Gio.SimpleActionGroup();
     this.insert_action_group('modal', action_map);
 
-    HeaderboxAttachControls({
-      action_map,
+    Object.values(HeaderboxAttachControls({
       detachable: this,
+    })).forEach(x => {
+      action_map.add_action(x);
     });
   }
 }

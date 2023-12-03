@@ -1,3 +1,4 @@
+import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
@@ -22,7 +23,7 @@ import AddonBoxClient from '../backend/client.js';
 import AddAddonAction from '../actions/add-addon.js';
 import AddonDetailsActions from '../actions/addon-details.js';
 import InjectorActions from '../actions/injection.js';
-import HeaderBoxActions, { HeaderboxAttachControls } from '../actions/headerbox.js';
+import { HeaderBoxActions, HeaderboxAttachControls } from '../actions/headerbox.js';
 import SettingsPresenter from '../presenters/settings.js';
 import SettingsActions from '../actions/settings.js';
 import { StatusDebugActions } from '../actions/status-debug-actions.js';
@@ -398,14 +399,22 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }
 
   _setup_headerbox() {
-    HeaderBoxActions({
-      action_map: this,
+    const [, headerbox_box_switch ] = Object.values(HeaderBoxActions({
       headerbox: this._headerbox,
-    }).init_headerbox();
-    HeaderboxAttachControls({
-      action_map: this,
-      detachable: this._headerbox.detachable,
+    })).map(x => {
+        this.add_action(x);
+        return x;
     });
+
+    // Initialize default page
+    headerbox_box_switch?.activate(GLib.Variant.new_string('status_box'));
+
+    Object.values(HeaderboxAttachControls({
+      detachable: this._headerbox.detachable,
+    })).forEach(x => {
+        this.add_action(x);
+    });
+
     StatusDebugActions({
       action_map: this,
       status_manager: this._status_manager,
