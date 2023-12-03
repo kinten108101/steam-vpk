@@ -19,7 +19,6 @@ script = [
   'backend/profile-proxy.ts',
   'dialogs/add-addon-name.ts',
   'dialogs/add-addon-url.ts',
-  'dialogs/file-dialog.ts',
   'dialogs/message-dialog.ts',
   'model/addon-details-select.ts',
   'model/addonlist.ts',
