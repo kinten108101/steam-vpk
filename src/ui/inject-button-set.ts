@@ -1,7 +1,6 @@
 import GObject from 'gi://GObject';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk';
-import { ArrayElement } from '../utils/ts-helper.js';
 
 export default class InjectButtonSet extends Gtk.Box {
   static Buttons = ['inject', 'hold', 'done'] as const;
@@ -34,7 +33,7 @@ export default class InjectButtonSet extends Gtk.Box {
   }
 
   id!: GLib.Variant | null;
-  button_style!: ArrayElement<(typeof InjectButtonSet)['ButtonStyles']>;
+  button_style!: (typeof InjectButtonSet)['ButtonStyles'] extends readonly (infer ElementType)[] ? ElementType : never;
   _buttons!: { [key: string]: Gtk.Button };
   get buttons() {
     return this._buttons;
@@ -107,7 +106,7 @@ export default class InjectButtonSet extends Gtk.Box {
     this.id = GLib.Variant.new_string(val);
   }
 
-  set_state_button(target: ArrayElement<(typeof InjectButtonSet)["Buttons"]>) {
+  set_state_button(target: (typeof InjectButtonSet)['Buttons'] extends readonly (infer ElementType)[] ? ElementType : never) {
     for (const key in this.buttons) {
       const button = this.buttons[key];
       if (button === undefined) throw new Error;
