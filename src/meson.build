@@ -17,7 +17,7 @@ script = [
   'backend/api.ts',
   'backend/client.ts',
   'backend/profile-proxy.ts',
-  'dialogs/add-addon-name.ts',
+  'dialogs/add-addon-name.js',
   'dialogs/add-addon-url.ts',
   'model/addon-details-select.ts',
   'model/addonlist.ts',

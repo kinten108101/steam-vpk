@@ -3,15 +3,9 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { AsyncSignalMethods, addAsyncSignalMethods } from '../utils/async-signals.js';
+import { addAsyncSignalMethods } from '../utils/async-signals.js';
 
-type Signals = 'setup';
-
-export default interface AddAddonName extends AsyncSignalMethods<Signals> {
-  connect_signal(signal: 'setup', callback: ($obj: this) => Promise<boolean>): ($obj: this) => Promise<boolean>;
-  _emit_signal(signal: 'setup'): Promise<boolean>;
-}
-export default class AddAddonName extends Adw.Window {
+export default class AddAddonName extends (/** @type {typeof import("./add-addon-name.js").default} */(Adw.Window)) {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkAddAddonName',
@@ -24,10 +18,22 @@ export default class AddAddonName extends Adw.Window {
     addAsyncSignalMethods(this.prototype);
   }
 
-  _name_bar!: Adw.EntryRow;
-  _scan_button!: Gtk.Button;
+  /**
+   * @type {!Adw.EntryRow}
+   */
+  // @ts-expect-error
+  _name_bar;
 
-  constructor(params: Adw.Window.ConstructorProperties = {}) {
+  /**
+   * @type {!Gtk.Button}
+   */
+  // @ts-expect-error
+  _scan_button;
+
+  /**
+   * @param {Adw.Window.ConstructorProperties} params
+   */
+  constructor(params = {}) {
     super(params);
     this._setup_actionable();
     this._setup_actions();
@@ -35,10 +41,10 @@ export default class AddAddonName extends Adw.Window {
 
   _setup_actionable() {
     this._name_bar.bind_property_full('text', this._scan_button, 'action-target', GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: string | null) => {
+      (_binding, /** @type {string | null} */ from) => {
         if (from === null) return [true, GLib.Variant.new_string('')];
         return [true, GLib.Variant.new_string(from)];
-      }, null as unknown as GObject.TClosure);
+      }, () => {});
   }
 
   vfunc_realize() {
