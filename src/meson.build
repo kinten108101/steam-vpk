@@ -70,7 +70,7 @@ script = [
   'ui/store-page.js',
   'ui/swipe-tracker.js',
   'ui/themeselector.js',
-  'utils/async-signals.ts',
+  'utils/async-signals.js',
   'utils/base64.js',
   'utils/const.js',
   'utils/files.js',
