@@ -1,7 +1,7 @@
 script = [
   'actions/debug/addonlist.js',
   'actions/debug/repository.ts',
-  'actions/add-addon.ts',
+  'actions/add-addon.js',
   'actions/addon-details.ts',
   'actions/addon-storage-controls.ts',
   'actions/addons-panel-actions.ts',

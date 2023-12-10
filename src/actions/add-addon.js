@@ -5,23 +5,29 @@ import AddAddonUrl from '../dialogs/add-addon-url.js';
 import AddAddonName from '../dialogs/add-addon-name.js';
 import AddonBoxClient from '../backend/client.js';
 
+/**
+ * @param {{
+ *   parent_window: Gtk.Window;
+ *   action_map: Gio.ActionMap;
+ *   client: AddonBoxClient;
+ * }} params
+ */
 export default function AddAddonAction(
 { parent_window,
   action_map,
   client,
-}:
-{ parent_window: Gtk.Window;
-  action_map: Gio.ActionMap;
-  client: AddonBoxClient;
 }) {
   const add_from_url = new Gio.SimpleAction({
     name: 'add-addon.add-url',
   });
   add_from_url.connect('activate', () => {
+    /**
+     * @type {Map<string, any>}
+     */
+    const cache = new Map;
     const window = new AddAddonUrl({
       transient_for: parent_window,
     });
-    const cache: Map<string, any> = new Map;
     window.connect_signal('input-page::setup', async (_window, page) => {
       console.log('input-page::setup');
       const display = Gdk.Display.get_default();
@@ -38,7 +44,7 @@ export default function AddAddonAction(
       return true;
     });
     window.connect_signal('validate', async (_window, request_error, url) => {
-      let response: [number, any];
+      let response /** @type {[number, any]} */;
       try {
         response = await client.services.workshop.async_call(
           'GetPublishedFileDetails', url);
@@ -82,8 +88,8 @@ export default function AddAddonAction(
       const data = cache.get(url);
       const gpfd_handle = data['gpfd']['_handle'];
       const gps_handle = data['gps']['_handle'];
-      let status: number;
-      let response: any;
+      let status /** @type {number} */;
+      let response;
       try {
         ([status, response] = await client.services.addons.async_call('CreateFromWorkshop', gpfd_handle, gps_handle, {}));
       } catch (error) {
