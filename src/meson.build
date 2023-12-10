@@ -69,7 +69,7 @@ script = [
   'ui/spinning-button.ts',
   'ui/store-page.js',
   'ui/swipe-tracker.js',
-  'ui/themeselector.ts',
+  'ui/themeselector.js',
   'utils/async-signals.ts',
   'utils/base64.js',
   'utils/const.js',
