@@ -3,7 +3,6 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Adw from 'gi://Adw';
 
-import { APP_FULLNAME, APP_ID, } from './utils/const.js';
 import Shortcuts from './actions/shortcuts.js';
 import MainWindow from './windows/main-window.js';
 import { ListenPortalResponses } from './steam-vpk-utils/portals.js';
@@ -27,17 +26,17 @@ export function getApplication() {
 
 export default function Application() {
   const application = new Adw.Application({
-    application_id: APP_ID,
+    application_id: 'com.github.kinten108101.SteamVPK',
   });
   const buildtype = globalThis.config.buildtype;
   if (buildtype === 'debug')
     GLib.log_set_debug_enabled(true);
 
-  GLib.set_application_name(APP_FULLNAME);
+  GLib.set_application_name('Steam VPK');
 
   const client = new AddonBoxClient();
   const settings = new Gio.Settings({
-    schema_id: APP_ID,
+    schema_id: 'com.github.kinten108101.SteamVPK',
   });
   const repository = new Repository();
   AddonsProxy({

@@ -1,7 +1,6 @@
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_FULLNAME } from '../utils/const.js';
 
 /**
  * @param {{
@@ -11,7 +10,7 @@ import { APP_FULLNAME } from '../utils/const.js';
  */
 export default function AboutWindow({ gsettings, parent_window, }) {
   const window = new Adw.AboutWindow({
-    application_name: APP_FULLNAME,
+    application_name: 'Steam VPK',
     license_type: Gtk.License.GPL_3_0,
     version: globalThis.config.version,
     issue_url: 'https://github.com/kinten108101/steam-vpk/issues',

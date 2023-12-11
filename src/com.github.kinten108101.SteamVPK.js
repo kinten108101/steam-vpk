@@ -6,7 +6,6 @@ import GLib from 'gi://GLib';
 
 /**
  * @type {{
- *   name: string,
  *   version: string,
  *   prefix: string,
  *   libdir: string,
@@ -16,7 +15,6 @@ import GLib from 'gi://GLib';
  * } & { [key:string]: any }}
  */
 globalThis.config = {
-  name: '@APP_ID@',
   version: '@VERSION@',
   prefix: '@PREFIX@',
   libdir: '@LIBDIR@',
@@ -42,7 +40,7 @@ globalThis.config = {
 };
 
 imports.package.init({
-  name: '@APP_ID@',
+  name: 'com.github.kinten108101.SteamVPK',
   version: '@VERSION@',
   prefix: '@PREFIX@',
   libdir: '@LIBDIR@',

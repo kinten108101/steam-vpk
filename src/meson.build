@@ -133,7 +133,6 @@ steam_vpk_launcher = configure_file(
   output: 'com.github.kinten108101.SteamVPK.js',
   configuration: {
     'GJS': gjs_console,
-    'APP_ID': 'com.github.kinten108101.SteamVPK',
     'VERSION': meson.project_version(),
     'PREFIX': get_option('prefix'),
     'LIBDIR': get_option('prefix') / get_option('libdir'),

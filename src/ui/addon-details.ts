@@ -2,7 +2,6 @@ import GLib from 'gi://GLib';
 import GObject from 'gi://GObject';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import { APP_RDNN } from '../utils/const.js';
 import { bytes2humanreadable } from '../utils/files.js';
 import { FieldRow } from './field-row.js';
 import ArchiveList from './addon-details/archive-list.js';
@@ -63,7 +62,7 @@ export default class AddonDetails extends Gtk.Box {
           0, Number.MAX_SAFE_INTEGER,
           0),
       },
-      Template: `resource://${APP_RDNN}/ui/addon-details.ui`,
+      Template: `resource:///com/github/kinten108101/SteamVPK/ui/addon-details.ui`,
       Children: [
         'archive_list',
       ],

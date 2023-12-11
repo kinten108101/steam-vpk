@@ -1,7 +1,6 @@
 import GObject from 'gi://GObject';
 import Adw from 'gi://Adw';
 import Gtk from 'gi://Gtk';
-import { APP_RDNN } from '../utils/const.js';
 import { bytes2humanreadable } from '../utils/files.js';
 import { PreferencesRow } from './sensitizable-widgets.js';
 
@@ -68,7 +67,7 @@ export default class AddonsPanel extends Adw.PreferencesGroup {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkAddonsPanel',
-      Template: `resource://${APP_RDNN}/ui/addons-panel.ui`,
+      Template: `resource:///com/github/kinten108101/SteamVPK/ui/addons-panel.ui`,
       InternalChildren: [
         'panel',
         'real_icon',
