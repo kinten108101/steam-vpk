@@ -19,18 +19,19 @@ export class ProfileBar extends Adw.Bin {
       Template: `resource:///com/github/kinten108101/SteamVPK/ui/profile-bar.ui`,
       CssName: 'profile-bar',
       Children: [
-        'profile_label',
-        'switch_button',
         'primary_button',
+      ],
+      InternalChildren: [
+        'profile_label',
       ],
     }, this);
   };
 
+  primary_button!: Gtk.ToggleButton;
+
   status_request!: string;
 
-  profile_label!: Gtk.Label;
-  switch_button!: Gtk.Button;
-  primary_button!: Gtk.ToggleButton;
+  _profile_label!: Gtk.Label;
 
   constructor(params = {}) {
     super(params);
@@ -39,7 +40,7 @@ export class ProfileBar extends Adw.Bin {
   }
 
   _setup_status() {
-    this.bind_property_full('status_request', this.profile_label, 'label',
+    this.bind_property_full('status_request', this._profile_label, 'label',
       GObject.BindingFlags.SYNC_CREATE,
       (_binding, from: string | null) => {
         if (from === null) {
