@@ -29,15 +29,15 @@ export default function AddAddonAction(
       transient_for: parent_window,
     });
     window.connect_signal('input-page::setup', async (_window, page) => {
-      console.log('input-page::setup');
+      console.debug('input-page::setup');
       const display = Gdk.Display.get_default();
       if (display === null) {
-        console.log('no display');
+        console.debug('no display');
         return false;
       }
       const url = await display.get_clipboard().read_text_async(null);
       if (url === null) {
-        console.log('no value inside gvalue')
+        console.debug('no value inside gvalue')
         return false;
       }
       page.set_url(url);
@@ -63,7 +63,7 @@ export default function AddAddonAction(
           case 2:
             return 'Incorrect Workshop item URL format.';
           default:
-            console.log('Unknown code. Received', data['code']);
+            console.debug('Unknown code. Received', data['code']);
             return undefined;
           }
         })();
@@ -114,7 +114,7 @@ export default function AddAddonAction(
         return false;
       }
       response
-      console.log('success');
+      console.debug('success');
       return true;
     });
     window.show();
