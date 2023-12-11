@@ -2,11 +2,6 @@ import Gio from 'gi://Gio';
 import Gdk from 'gi://Gdk';
 import Gtk from 'gi://Gtk';
 
-export type DiskModal = {
-  present(parent_window: Gtk.Window): Promise<number>;
-  close(): void;
-}
-
 export function
 AddonsPanelDiskActions(
 { action_map,
