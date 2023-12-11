@@ -15,5 +15,9 @@ export class FieldRow extends ActionRow {
     }, this);
   }
 
-  value!: string;
+  /**
+   * @type {!string}
+   */
+  // @ts-expect-error
+  value;
 }

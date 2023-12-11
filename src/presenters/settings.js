@@ -2,22 +2,32 @@ import Gio from 'gi://Gio';
 import AddonBoxClient from '../backend/client.js';
 import PreferencesWindow from '../ui/preferences-window.js';
 
+/**
+ * @param {{
+ *   preferences_window: PreferencesWindow;
+ *   client: AddonBoxClient;
+ *   gsettings: Gio.Settings;
+ * }} params
+ */
 export default function SettingsPresenter(
 { preferences_window,
   client,
   gsettings,
-}:
-{ preferences_window: PreferencesWindow;
-  client: AddonBoxClient;
-  gsettings: Gio.Settings;
 }) {
-  client.services.settings.subscribe('notify::GameDirectory', (dir: string) => {
-    preferences_window.set_game_dir_path(dir);
-  });
+  client.services.settings.subscribe(
+    'notify::GameDirectory',
+    /**
+     * @param {string} dir
+     */
+    dir => {
+      preferences_window.set_game_dir_path(dir);
+    });
+
   (async () => {
-    let dir: string | null;
+    /** @type {string | null} */
+    let dir;
     try {
-      dir = await client.services.settings.property_get<string>('GameDirectory');
+      dir = await client.services.settings.property_get('GameDirectory');
     } catch (error) {
       logError(error);
       dir = null;

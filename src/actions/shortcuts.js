@@ -1,14 +1,16 @@
-import Gtk from 'gi://Gtk';
+import Gtk from "gi://Gtk";
 
+/**
+ * @param {{
+ *   application: Gtk.Application;
+ * }} params
+ */
 export default function Shortcuts(
 { application,
-
-}:
-{ application: Gtk.Application;
-
 }) {
-  (<[string, string[]][]>
-  [
+  (
+    /** @type {[string, string[]][]} */
+  ([
     ['app.quit', ['<Primary>q']],
     ['app.new-window', ['<Primary>n']],
     ['app.repository.insert', ['<Primary>j']],
@@ -24,7 +26,7 @@ export default function Shortcuts(
     ['win.injector.run', ['<Primary>b']],
     ['win.headerbox.reveal', ['<Primary>p']],
     ['win.addonlist.insert', ['<Primary>u']],
-  ]).forEach(([action, accels]) => {
+  ])).forEach(([action, accels]) => {
     application.set_accels_for_action(action, accels);
   });
 }

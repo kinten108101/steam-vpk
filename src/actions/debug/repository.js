@@ -2,10 +2,13 @@ import Gio from 'gi://Gio';
 import { RepositoryItem } from '../../model/repository.js';
 import { btoa } from '../../utils/base64.js';
 
+/**
+ * @param {{
+ *   store: Gio.ListStore;
+ * }} params
+ */
 export default function RepositoryActions(
 { store,
-}:
-{ store: Gio.ListStore;
 }) {
   const insert = new Gio.SimpleAction({
     name: 'repository.insert',

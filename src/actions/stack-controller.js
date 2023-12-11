@@ -1,12 +1,15 @@
 import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 
+/**
+ * @param {{
+ *   stack?: Adw.ViewStack;
+ *   action_map: Gio.ActionMap;
+ * }} params
+ */
 export default function StackController(
 { stack,
   action_map,
-}:
-{ stack?: Adw.ViewStack;
-  action_map: Gio.ActionMap;
 }) {
   if (!stack) return;
   const model = stack.get_pages();

@@ -10,6 +10,17 @@ import Repository from '../model/repository.js';
 import AddonDetailsSelectModel from '../model/addon-details-select.js';
 import ArchiveSelectModel from '../model/archive-select.js';
 
+/**
+ * @param {{
+ *   toaster?: Adw.ToastOverlay;
+ *   action_map: Gio.ActionMap;
+ *   parent_window?: Gtk.Window;
+ *   repository: Repository;
+ *   on_navigate: (id: string) => void;
+ *   addon_details_select_model: AddonDetailsSelectModel;
+ *   archive_select_model: ArchiveSelectModel;
+ * }} params
+ */
 export default function
 AddonDetailsActions(
 { toaster,
@@ -19,14 +30,6 @@ AddonDetailsActions(
   on_navigate,
   addon_details_select_model,
   archive_select_model,
-}:
-{ toaster?: Adw.ToastOverlay;
-  action_map: Gio.ActionMap;
-  parent_window?: Gtk.Window;
-  repository: Repository;
-  on_navigate: (id: string) => void;
-  addon_details_select_model: AddonDetailsSelectModel;
-  archive_select_model: ArchiveSelectModel;
 }) {
   const seeDetails = new Gio.SimpleAction({
     name: 'addon-details.see-details',

@@ -4,14 +4,17 @@ import Gio from 'gi://Gio';
 import Adw from 'gi://Adw';
 import AddonBoxClient from '../backend/client.js';
 
+/**
+ * @param {{
+ *   action_map: Gio.ActionMap;
+ *   parent_window?: Gtk.Window;
+ *   client: AddonBoxClient;
+ * }} params
+ */
 export default function AddonStorageControls(
 { action_map,
   parent_window,
   client,
-}:
-{ action_map: Gio.ActionMap;
-  parent_window?: Gtk.Window;
-  client: AddonBoxClient;
 }) {
   const enableAddon = new Gio.SimpleAction({
     name: 'addons.enabled',
@@ -55,6 +58,7 @@ export default function AddonStorageControls(
 
   const moveDown = new Gio.SimpleAction({
     name: 'addons.move-down',
+    parameter_type: GLib.VariantType.new('s'),
   });
   moveDown.connect('activate', (_action, parameter) => {
     if (parameter === null) throw new Error;
@@ -65,15 +69,21 @@ export default function AddonStorageControls(
 
   const remove = new Gio.SimpleAction({
     name: 'addons.remove',
+    parameter_type: GLib.VariantType.new('s'),
   });
   remove.connect('activate', (_action, parameter) => {
     (async () => {
       if (parameter === null) throw new Error;
       const [id] = parameter.get_string();
       if (id === null) throw new Error;
-      const msg = new Adw.MessageDialog() as ({
-        choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
-      } & Adw.MessageDialog);
+      const msg = (
+      /**
+       * @type {{
+       *   choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
+       * } & Adw.MessageDialog}
+       */
+        (new Adw.MessageDialog())
+      );
       msg.set_heading('Disuse this add-on? Current configurations in this profile will be permanently lost.');
       msg.set_body('Add-on can still be reused from the repository.');
       msg.add_response('remove.cancel', 'Cancel');
@@ -97,7 +107,7 @@ export default function AddonStorageControls(
   });
   activate.connect('activate', (_action, parameter) => {
     if (!(parameter instanceof GLib.Variant)) throw new Error(`Expect a GVariant, got ${parameter}`);
-    const [id, active] = parameter.deepUnpack() as Array<any>;
+    const [id, active] = ( /** @type {any[]} */ (parameter.deepUnpack()));
     if (typeof id !== 'string' || typeof active !== 'boolean') {
       throw new Error(`Expected (sb), got ${id} and ${active}`);
     }
@@ -106,15 +116,21 @@ export default function AddonStorageControls(
 
   const trash = new Gio.SimpleAction({
     name: 'addons.trash',
+    parameter_type: GLib.VariantType.new('s'),
   });
   trash.connect('activate', (_action, parameter) => {
     (async () => {
         if (parameter === null) throw new Error;
         const [id] = parameter.get_string();
         if (id === null) throw new Error;
-        const msg = new Adw.MessageDialog() as ({
-          choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
-        } & Adw.MessageDialog);
+        const msg = (
+        /**
+         * @type {{
+         *   choose_async: (cancellable: Gio.Cancellable | null) => Promise<string>;
+         * } & Adw.MessageDialog}
+         */
+          (new Adw.MessageDialog())
+        );
         msg.set_heading('Delete this add-on?');
         msg.set_body('Deleted content is recoverable from trash can.');
         msg.add_response('trash.cancel', 'Cancel');

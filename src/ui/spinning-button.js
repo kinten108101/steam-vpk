@@ -18,17 +18,35 @@ export default class SpinningButton extends Gtk.Button {
       },
     }, this)
   }
-  private spinner: Gtk.Spinner;
 
-  is_spinning!: boolean;
-  _prev_is_spinning: boolean;
-  sensitive_requests!: number;
+  /**
+   * @type {!boolean}
+   */
+  // @ts-expect-error
+  is_spinning;
+
+  /**
+   * @type {!number}
+   */
+  // @ts-expect-error
+  sensitive_requests;
+
+  /**
+   * @type {!Gtk.Spinner}
+   */
+  spinner;
+
+  /**
+   * @type {boolean}
+   */
+  _prev_is_spinning;
 
   constructor(params = {}) {
     super({
       ...params,
     });
     this.spinner = new Gtk.Spinner({ spinning: true });
+    // @ts-expect-error
     this._prev_is_spinning = this.is_spinning;
     this._update_spinning();
     this.connect('notify::is-spinning', this._update_spinning.bind(this));

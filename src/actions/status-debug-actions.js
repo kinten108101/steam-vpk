@@ -2,19 +2,25 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import StatusManager from '../model/status-manager.js';
 
+/**
+ * @param {{
+ *   action_map: Gio.ActionMap;
+ *   status_manager: StatusManager;
+ * }} params
+ */
 export function StatusDebugActions(
 { action_map,
   status_manager,
-}:
-{ action_map: Gio.ActionMap;
-  status_manager: StatusManager;
 }) {
   const make_error = new Gio.SimpleAction({
     name: 'status.error',
     parameter_type: GLib.VariantType.new('s'),
   });
   make_error.connect('activate', (_action, parameter) => {
-    const msg = parameter?.recursiveUnpack() as string;
+    /**
+     * @type {string | undefined}
+     */
+    const msg = parameter?.recursiveUnpack();
     if (msg === undefined) throw new Error;
     status_manager.add_error({
       short: 'Untitled',

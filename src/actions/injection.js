@@ -2,14 +2,17 @@ import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 import AddonBoxClient from '../backend/client.js';
 
+/**
+ * @param {{
+ *   action_map: Gio.ActionMap;
+ *   client: AddonBoxClient;
+ *   gsettings: Gio.Settings;
+ * }} params
+ */
 export default function InjectorActions(
 { action_map,
   client,
   gsettings,
-}:
-{ action_map: Gio.ActionMap;
-  client: AddonBoxClient;
-  gsettings: Gio.Settings;
 }) {
   const run = new Gio.SimpleAction({
     name: 'injector.run',
@@ -78,7 +81,7 @@ export default function InjectorActions(
     action.set_state(value);
   });
   function update_enable_start_game() {
-    let val: GLib.Variant;
+    let val;
     try {
       val = gsettings.get_value('injector-enable-start-game');
     } catch (error) {

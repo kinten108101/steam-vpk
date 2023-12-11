@@ -16,8 +16,17 @@ export class ShortcutLabel extends Adw.Bin {
     }, this);
   }
 
-  action_name!: string | null;
-  child!: Gtk.ShortcutLabel;
+  /**
+   * @type {string | null}
+   */
+  // @ts-expect-error
+  action_name;
+
+  /**
+   * @type {!Gtk.ShortcutLabel}
+   */
+  // @ts-expect-error
+  child;
 
   constructor(params = {}) {
     const child = new Gtk.ShortcutLabel;

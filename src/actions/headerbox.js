@@ -1,12 +1,15 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
-import HeaderBox, { BoxPages } from '../ui/headerbox.js';
+import HeaderBox from '../ui/headerbox.js';
 import HeaderboxDetachable from '../windows/headerbox-detachable.js';
 
+/**
+ * @param {{
+ *   headerbox: HeaderBox;
+ * }} params
+ */
 export function HeaderBoxActions(
-{   headerbox,
-}:
-{ headerbox: HeaderBox;
+{ headerbox,
 }) {
   let next_reveal = false;
   const headerbox_reveal = new Gio.SimpleAction({
@@ -21,8 +24,12 @@ export function HeaderBoxActions(
     name: "headerbox.box-switch",
     parameter_type: GLib.VariantType.new("s"),
   });
-  headerbox_box_switch.connect("activate", (_action, parameter: GLib.Variant) => {
-    const box_name = parameter.deepUnpack() as BoxPages;
+  headerbox_box_switch.connect("activate", (_action, parameter) => {
+    if (!parameter) throw new Error;
+    /**
+     * @type {import('../ui/headerbox.js').BoxPages}
+     */
+    const box_name = parameter.deepUnpack();
     headerbox.current_page = box_name;
   });
 
@@ -32,10 +39,13 @@ export function HeaderBoxActions(
   };
 }
 
+/**
+ * @param {{
+ *   detachable: HeaderboxDetachable;
+ * }} params
+ */
 export function HeaderboxAttachControls(
 { detachable,
-}:
-{ detachable: HeaderboxDetachable;
 }) {
   const headerbox_detach = new Gio.SimpleAction({
     name: "headerbox.detach",

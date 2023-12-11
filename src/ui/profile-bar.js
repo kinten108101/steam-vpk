@@ -27,11 +27,23 @@ export class ProfileBar extends Adw.Bin {
     }, this);
   };
 
-  primary_button!: Gtk.ToggleButton;
+  /**
+   * @type {!Gtk.ToggleButton}
+   */
+  // @ts-expect-error
+  primary_button;
 
-  status_request!: string;
+  /**
+   * @type {!string}
+   */
+  // @ts-expect-error
+  status_request;
 
-  _profile_label!: Gtk.Label;
+  /**
+   * @type {!Gtk.Label}
+   */
+  // @ts-expect-error
+  _profile_label;
 
   constructor(params = {}) {
     super(params);
@@ -42,21 +54,21 @@ export class ProfileBar extends Adw.Bin {
   _setup_status() {
     this.bind_property_full('status_request', this._profile_label, 'label',
       GObject.BindingFlags.SYNC_CREATE,
-      (_binding, from: string | null) => {
+      /**
+       * @param {string | null} from
+       */
+      (_binding, from) => {
         if (from === null) {
           return [false, ''];
         }
         return [true, from === '' ? 'no profile' : from];
-      },
-      null as unknown as GObject.TClosure);
+      }, () => {});
   }
 
   _setup_active_style() {
-    const buttons: Gtk.ToggleButton[] = [
+    [
       this.primary_button,
-    ];
-
-    buttons.forEach(x => {
+    ].forEach(x => {
       const update = () => {
         if (x.active) {
           this.add_css_class('active');
@@ -67,6 +79,5 @@ export class ProfileBar extends Adw.Bin {
       x.connect('notify::active', update);
       update();
     });
-
   }
 }

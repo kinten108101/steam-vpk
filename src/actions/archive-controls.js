@@ -1,11 +1,13 @@
 import GLib from 'gi://GLib';
 import Gio from 'gi://Gio';
 
-export default function ArchiveActions({
-  action_map,
-}:
-{
-  action_map: Gio.ActionMap;
+/**
+ * @param {{
+ *   action_map: Gio.ActionMap;
+ * }} params
+ */
+export default function ArchiveActions(
+{ action_map,
 }) {
   const install_archive = new Gio.SimpleAction({
     name: 'archive.install-archive',
