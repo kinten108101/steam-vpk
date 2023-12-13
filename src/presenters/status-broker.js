@@ -33,6 +33,14 @@ export class HeaderboxFactory {
   // @ts-expect-error
   disconnectAll;
 
+  /**
+   * @type {{
+   *   (signal: 'bind', item: Status): void;
+   *   (signal: 'unbind', item: Status | null): void;
+   *   (signal: 'empty'): void;
+   *   (signal: 'nonempty', item: Status): void;
+   * }}
+   */
   // @ts-expect-error
   emit;
 
