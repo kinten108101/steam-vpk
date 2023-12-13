@@ -40,9 +40,9 @@ export class HeaderboxFactory {
   signalHandlerIsConnected;
 
   /**
-   * @type {Status | null | undefined}
+   * @type {Status | null}
    */
-  current = undefined;
+  current = null;
 
   /**
    * @type {Gio.ListStore<Status> | undefined}
