@@ -9,6 +9,7 @@ export interface Status extends GObject.Object {
   emit(signal: 'clear'): void;
   emit(signal: 'notify'): void;
 }
+
 export class Status extends GObject.Object {
   static last_id = -1;
 
@@ -68,8 +69,6 @@ export class ErrorStatus extends Status {
   }
 }
 
-StatusKlasses.push(ErrorStatus);
-
 export namespace BuildStatus {
   export type TimeUnit = 'second' | 'milisecond';
 }
@@ -104,7 +103,12 @@ export class BuildStatus extends Status {
   finished!: boolean;
 }
 
+/**
+ * Subclasses first, base classes later. This is so that instanceof guards work properly
+ */
+StatusKlasses.push(ErrorStatus);
 StatusKlasses.push(BuildStatus);
+StatusKlasses.push(Status);
 
 export default class StatusManager extends Gio.ListStore<Status> {
   static {

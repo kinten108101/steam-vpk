@@ -1,15 +1,18 @@
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 
+/**
+ * @param {{
+ *   gsettings: Gio.Settings;
+ *   enable_text_markup: Gtk.Switch;
+ * }} params
+ */
 export default function SettingsTextMarkupPresenter(
 { gsettings,
   enable_text_markup,
-}:
-{ gsettings: Gio.Settings;
-  enable_text_markup: Gtk.Switch;
 }) {
   function update_text_markup() {
-    let val: boolean;
+    let val;
     try {
       val = gsettings.get_boolean('enable-text-markup');
     } catch (error) {

@@ -2,20 +2,26 @@ import Gio from 'gi://Gio';
 import InjectButtonSet from '../../ui/inject-button-set.js';
 import PreferencesWindowInjectButtonStylesView from '../../ui/preferences-window/inject-button-styles-view.js';
 
-export default function SettingsInjectButtonStylesPresenter(
-{ inject_button_styles_view,
+/**
+ * @param {{
+ *   inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
+ *   gsettings: Gio.Settings;
+ * }} params
+ */
+export default function SettingsInjectButtonStylesPresenter({
+  inject_button_styles_view,
   gsettings,
-}:
-{ inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
-  gsettings: Gio.Settings;
 }) {
   const model = inject_button_styles_view.get_model();
-  model.splice(0, 0, InjectButtonSet.ButtonStyles as unknown as string[]);
+  model.splice(0, 0, /** @type {string[]} */ ( /** @type {unknown} */ (InjectButtonSet.ButtonStyles)));
 
   function get_prev_val_gsettings() {
-    let prev_style: InjectButtonSet['button_style'];
+    /** @type {InjectButtonSet['button_style']} */
+    let prev_style;
     try {
-      prev_style = gsettings.get_string('inject-button-style') as InjectButtonSet['button_style'];
+      const val = gsettings.get_string('inject-button-style');
+      if (val === null) throw new Error;
+      prev_style = /** @type {InjectButtonSet['button_style']} */ (val);
     } catch (error) {
       logError(error);
       prev_style = 'minimal';
@@ -25,7 +31,7 @@ export default function SettingsInjectButtonStylesPresenter(
 
   function get_current_enum() {
     const idx = inject_button_styles_view.get_selected();
-    const val = inject_button_styles_view.get_model().get_string(idx) as InjectButtonSet['button_style'] | null;
+    const val = /** @type {InjectButtonSet['button_style'] | null} */ (inject_button_styles_view.get_model().get_string(idx));
     return val;
   }
 
@@ -36,7 +42,7 @@ export default function SettingsInjectButtonStylesPresenter(
     if (val === null) return;
     gsettings.set_string('inject-button-style', val);
   })
-  gsettings.connect('changed', (_obj, key: string | null) => {
+  gsettings.connect('changed', (_obj, /** @type {string | null} */ key) => {
     if (key === 'inject-button-style') {
       const val = get_current_enum();
       if (val === null) return;

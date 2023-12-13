@@ -1,17 +1,20 @@
 import Gio from 'gi://Gio';
 
-export default function SettingsDevelStylePresenter(
-{ gsettings,
+/**
+ * @param {{
+ *  gsettings: Gio.Settings;
+ *  enable_switch: {
+ *    get_active(): boolean;
+ *    set_active(val: boolean): void;
+ *  };
+ * }} params
+ */
+export default function SettingsDevelStylePresenter({
+  gsettings,
   enable_switch,
-}:
-{ gsettings: Gio.Settings;
-  enable_switch: {
-    get_active(): boolean;
-    set_active(val: boolean): void;
-  };
 }) {
   function update_enable_devel_style() {
-    let val: boolean;
+    let val;
     try {
       val = gsettings.get_boolean('enable-devel-style');
     } catch (error) {
