@@ -1,6 +1,8 @@
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 
+export const StatusKlasses: any[] = [];
+
 export interface Status extends GObject.Object {
   connect(signal: 'clear', callback: ($obj: this) => void): number;
   connect(signal: 'notify', callback: ($obj: this, psepc: GObject.ParamSpec) => void): number;
@@ -66,6 +68,8 @@ export class ErrorStatus extends Status {
   }
 }
 
+StatusKlasses.push(ErrorStatus);
+
 export namespace BuildStatus {
   export type TimeUnit = 'second' | 'milisecond';
 }
@@ -99,6 +103,8 @@ export class BuildStatus extends Status {
   time_unit!: BuildStatus.TimeUnit;
   finished!: boolean;
 }
+
+StatusKlasses.push(BuildStatus);
 
 export default class StatusManager extends Gio.ListStore<Status> {
   static {

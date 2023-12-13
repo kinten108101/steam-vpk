@@ -1,6 +1,6 @@
 import Gio from 'gi://Gio';
 import GObject from 'gi://GObject';
-import StatusManager, { BuildStatus, ErrorStatus, Status } from "../model/status-manager.js";
+import StatusManager, { BuildStatus, ErrorStatus, Status, StatusKlasses } from "../model/status-manager.js";
 import { ProfileBar } from '../ui/profile-bar.js';
 import HeaderBox from '../ui/headerbox.js';
 
@@ -77,8 +77,6 @@ export class HeaderboxFactory {
     this.emit('bind', this.current);
   }
 }
-
-const StatusKlasses = [ErrorStatus, BuildStatus];
 
 /**
  * @param {{
