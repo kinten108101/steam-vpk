@@ -50,7 +50,6 @@ script = [
   'ui/addon-details/archive-list.ts',
   'ui/headerbox/build.ts',
   'ui/headerbox/console.ts',
-  'ui/preferences-window/inject-button-styles-view.ts',
   'ui/store-page/install-button.js',
   'ui/activatable-row.ts',
   'ui/addon-details.ts',

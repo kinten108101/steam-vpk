@@ -3,27 +3,20 @@ import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
-import PreferencesWindowInjectButtonStylesView from './preferences-window/inject-button-styles-view.js';
 import { SwitchRow } from './activatable-row.js';
 
 export default class PreferencesWindow extends Adw.PreferencesWindow {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkPreferencesWindow',
-      Properties: {
-        inject_button_styles_view: GObject.ParamSpec.object(
-          'inject-button-styles-view', '', '',
-          GObject.ParamFlags.READABLE,
-          PreferencesWindowInjectButtonStylesView.$gtype),
-      },
       Template: 'resource:///com/github/kinten108101/SteamVPK/ui/preferences-window.ui',
       Children: [
         'enable_remember_winsize',
         'enable_text_markup',
         'enable_devel_style',
+        'inject_button_styles',
       ],
       InternalChildren: [
-        'inject_button_styles',
         'clear_game_dir',
         'game-dir-path',
       ],
@@ -33,20 +26,13 @@ export default class PreferencesWindow extends Adw.PreferencesWindow {
   enable_remember_winsize!: SwitchRow;
   enable_text_markup!: SwitchRow;
   enable_devel_style!: SwitchRow;
-  _inject_button_styles_view: PreferencesWindowInjectButtonStylesView;
-  get inject_button_styles_view() {
-    return this._inject_button_styles_view;
-  }
+  inject_button_styles!: Adw.ComboRow;
 
-  _inject_button_styles!: Adw.ComboRow;
   _clear_game_dir!: Gtk.Button;
   _game_dir_path!: Gtk.Label;
 
   constructor(params = {}) {
     super(params);
-    this._inject_button_styles_view = new PreferencesWindowInjectButtonStylesView({
-      dropdown: this._inject_button_styles,
-    });
     this._setup_actionables();
   }
 
