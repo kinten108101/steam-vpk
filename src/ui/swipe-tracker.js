@@ -3,8 +3,14 @@ import Gtk from 'gi://Gtk';
 import Adw from 'gi://Adw';
 
 /**
+ * @typedef {import("../main").SwipeTracker} SwipeTracker
+ */
+
+/**
  * Custom swipe gesture tracker. Will use {@link Adw.SwipeTracker}
  * once I know how to use it
+ *
+ * @implements {SwipeTracker}
  */
 export default class CustomSwipeTracker extends GObject.Object {
   static {
