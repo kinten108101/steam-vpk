@@ -130,7 +130,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
   _store_page!: StorePage;
 
   folder: Folder = new Folder;
-  swipe_tracker: SwipeTracker;
+  _headerbar_swipe_tracker: SwipeTracker;
 
   constructor(params: {
     application: Gtk.Application;
@@ -140,7 +140,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
   }) {
     super(params as any);
 
-    this.swipe_tracker = new CustomSwipeTracker({
+    this._headerbar_swipe_tracker = new CustomSwipeTracker({
       swipeable: this._headerbar,
     });
 
@@ -180,7 +180,7 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
     UseHeaderboxInteraction({
       toggleable: this._profile_bar.primary_button,
-      swipe_tracker: this.swipe_tracker,
+      swipe_tracker: this._headerbar_swipe_tracker,
       headerbox: this._headerbox,
     });
 
