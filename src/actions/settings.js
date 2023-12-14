@@ -20,10 +20,6 @@ export default function SettingsActions(
   client,
   notification_model,
 }) {
-  /**
-   * @type {Gio.Action[]}
-   */
-  const actions = [];
   const set_game_dir = new Gio.SimpleAction({
     name: 'settings.set-game-dir',
     parameter_type: GLib.VariantType.new('s'),
@@ -70,7 +66,6 @@ export default function SettingsActions(
       }
     })().catch(error => logError(error));
   });
-  actions.push(set_game_dir);
 
   /**
    * @type {number[]}
@@ -111,7 +106,6 @@ export default function SettingsActions(
     }
   });
   remember_winsize.activate(GLib.Variant.new_boolean(settings.get_boolean('remember-winsize')));
-  actions.push(remember_winsize);
 
   const clear_game_dir = new Gio.SimpleAction({
     name: 'settings.clear-game-dir',
@@ -121,7 +115,6 @@ export default function SettingsActions(
       await client.services.settings.property_set('GameDirectory', GLib.Variant.new_string(''));
     })().catch(error => logError(error));
   });
-  actions.push(clear_game_dir);
 
   const enable_text_markup = new Gio.SimpleAction({
     name: 'settings.enable-text-markup',
@@ -132,7 +125,6 @@ export default function SettingsActions(
     if (typeof val !== 'boolean') throw new Error;
     settings.set_boolean('enable-text-markup', val);
   });
-  actions.push(enable_text_markup);
 
   const enable_devel_style = new Gio.SimpleAction({
     name: 'settings.enable-devel-style',
@@ -143,21 +135,12 @@ export default function SettingsActions(
     if (typeof val !== 'boolean') throw new Error;
     settings.set_boolean('enable-devel-style', val);
   });
-  actions.push(enable_devel_style);
 
-  /**
-   * @param {Gio.ActionMap} action_map
-   */
-  function export2actionMap(action_map) {
-    actions.forEach(x => {
-      action_map.add_action(x);
-    });
-    return services;
-  }
-
-  const services = {
-    export2actionMap,
-  }
-
-  return services;
+  return {
+    set_game_dir,
+    remember_winsize,
+    clear_game_dir,
+    enable_text_markup,
+    enable_devel_style,
+  };
 }

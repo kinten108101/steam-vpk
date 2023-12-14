@@ -276,13 +276,15 @@ export default class MainWindow extends Adw.ApplicationWindow {
 
   _setup_actions() {
     const group = new Gio.SimpleActionGroup();
-    SettingsActions({
+    Object.values(SettingsActions({
       parent_window: this,
       main_window: this,
       settings: this.gsettings,
       client: this.client,
       notification_model: this._notification_model,
-    }).export2actionMap(group);
+    })).forEach(x => {
+      group.add_action(x);
+    });
 
     const showPreferences = new Gio.SimpleAction({
       name: 'show-preferences',
