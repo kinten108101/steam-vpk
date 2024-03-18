@@ -68,7 +68,7 @@ template $StvpkMainWindow : Adw.ApplicationWindow {
 
                         [center]
                         Adw.Clamp {
-                          maximum-size: 100;
+                          maximum-size: 300;
 
                           Gtk.Box {
                             margin-top: 4;
@@ -79,9 +79,10 @@ template $StvpkMainWindow : Adw.ApplicationWindow {
                             hexpand: true;
                             halign: fill;
                             valign: start;
+                            spacing: 3;
 
                             Gtk.Box {
-                              spacing: 8;
+                              spacing: 6;
 
                               $StvpkProfileBar profile_bar {
                                 valign: center;
@@ -172,7 +173,6 @@ template $StvpkMainWindow : Adw.ApplicationWindow {
                       sensitive: false;
                       orientation: vertical;
                       margin-top: 8;
-                      margin-bottom: 8;
                       spacing: 16;
 
                       Gtk.Box {

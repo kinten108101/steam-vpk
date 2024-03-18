@@ -14,8 +14,9 @@ template $StvpkHeaderBox : Gtk.Box {
         vexpand: true;
         child:
           Adw.ViewStack frame_stack {
-            margin-top: 4;
-            margin-bottom: 6;
+            margin-top: 3;
+            margin-bottom: 3;
+
             Adw.ViewStackPage {
               name: 'default_view';
               child:
@@ -173,12 +174,14 @@ template $StvpkHeaderBox : Gtk.Box {
                                   Gtk.Label {
                                     label: 'Myleft4dead1';
                                     styles ['profile-label']
+                                    valign: center;
                                   }
                                 }
 
                                 Gtk.Button {
                                   visible: true;
                                   styles ['flat', 'compact-button']
+                                  valign: center;
 
                                   Gtk.Box {
                                     spacing: 4;
@@ -213,22 +216,29 @@ template $StvpkHeaderBox : Gtk.Box {
                                       styles ['compact-button']
                                       label: _('Clear');
                                       action-name: 'win.status.pop';
+                                      valign: center;
                                     }
                                   };
                               }
                             }
 
-                            Gtk.Button {
-                              styles ['flat', 'compact-button']
-                              action-name: 'win.headerbox.detach';
-                              tooltip-text: _('Detach Panel');
-                              valign: end;
+                            Gtk.Box {
                               height-request: 48;
+                              valign: end;
 
-                              $StvpkIconWithBadge {
-                                icon-name: 'pip-in-symbolic';
-                                pixel-size: 24;
-                                show-badge: false;
+                              Gtk.Button {
+                                styles ['flat', 'compact-button']
+                                action-name: 'win.headerbox.detach';
+                                tooltip-text: _('Detach Panel');
+                                valign: center;
+
+                                $StvpkIconWithBadge {
+                                  icon-name: 'pip-in-symbolic';
+                                  pixel-size: 24;
+                                  show-badge: false;
+                                  margin-top: 4;
+                                  margin-bottom: 4;
+                                }
                               }
                             }
                           };
@@ -287,24 +297,36 @@ template $StvpkHeaderBox : Gtk.Box {
                   Gtk.Box {
                     valign: end;
                     halign: end;
+                    orientation: vertical;
 
                     Gtk.Box {
-                      halign: fill;
-                      hexpand: true;
+                      valign: fill;
+                      vexpand: true;
+                      height-request: 48;
+
+                      Gtk.Box {
+                        halign: fill;
+                        hexpand: true;
+                      }
+
+                      Gtk.Button {
+                        halign: end;
+                        tooltip-text: 'Re-attach Panel';
+                        styles ['flat', 'compact-button', 'hollow-full']
+                        action-name: 'win.headerbox.attach';
+                        valign: center;
+
+                        Gtk.Image {
+                          icon-name: 'pip-out-symbolic';
+                          pixel-size: 24;
+                          margin-top: 4;
+                          margin-bottom: 4;
+                        }
+                      }
                     }
 
-                    Gtk.Button {
-                      halign: end;
-                      tooltip-text: 'Re-attach Panel';
-                      styles ['flat', 'compact-button', 'hollow-full']
-                      action-name: 'win.headerbox.attach';
-
-                      Gtk.Image {
-                        icon-name: 'pip-out-symbolic';
-                        pixel-size: 24;
-                        margin-top: 4;
-                        margin-bottom: 4;
-                      }
+                    Gtk.Box {
+                      valign: end;
                     }
                   }
                 };

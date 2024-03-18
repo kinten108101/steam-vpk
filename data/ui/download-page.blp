@@ -1,25 +1,41 @@
 using Gtk 4.0;
 using Adw 1;
 
-template $StvpkDownloadPage : Adw.PreferencesPage {
-  $StvpkAddonsPanel panel {}
+template $StvpkDownloadPage : Gtk.Box {
+  Gtk.ScrolledWindow {
+    hexpand: true;
+    vexpand: true;
 
-  Adw.PreferencesGroup local_group {
-    title: _('Manually Installed');
+    Adw.Clamp {
+      maximum-size: 400;
 
-    Gtk.ListBox local_addons {
-      selection-mode: none;
-      styles ['boxed-list']
-    }
+      Gtk.Box {
+        margin-top: 24;
+        margin-bottom: 24;
+        spacing: 24;
+        orientation: vertical;
 
-  }
+        $StvpkAddonsPanel panel {}
 
-  Adw.PreferencesGroup remote_group {
-    title: _('From Workshop');
+        Adw.PreferencesGroup local_group {
+          title: _('Manually Installed');
 
-    Gtk.ListBox remote_addons {
-      selection-mode: none;
-      styles ['boxed-list']
+          Gtk.ListBox local_addons {
+            selection-mode: none;
+            styles ['boxed-list']
+          }
+
+        }
+
+        Adw.PreferencesGroup remote_group {
+          title: _('From Workshop');
+
+          Gtk.ListBox remote_addons {
+            selection-mode: none;
+            styles ['boxed-list']
+          }
+        }
+      }
     }
   }
 }

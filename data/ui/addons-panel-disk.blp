@@ -18,30 +18,44 @@ template $StvpkAddonsPanelDisk : Gtk.Box {
     }
   }
 
-  Adw.PreferencesPage {
-    Adw.PreferencesGroup {
-      $StvpkFieldRow used_row {
-        title: _('Disk Space Occupied');
-        value: '10.1 GB'; // placeholder
-      }
+  Gtk.ScrolledWindow {
+    hexpand: true;
+    vexpand: true;
 
-      $StvpkFieldRow free_row {
-        title: _('Disk Space Left');
-        value: '7.8 GB'; // placeholder
-      }
+    Adw.Clamp {
+      maximum-size: 400;
 
-      Adw.ActionRow {
-        title: _('Open in Explorer');
-        activatable-widget: step-out;
+      Gtk.Box {
+        orientation: vertical;
+        margin-top: 24;
+        margin-bottom: 24;
+        spacing: 24;
 
-        [suffix]
-        Gtk.Button step-out {
-          action-name: "win.addons-panel-disk.explore";
-          valign: center;
-          styles ['flat', 'dim-label']
+        Adw.PreferencesGroup {
+          $StvpkFieldRow used_row {
+            title: _('Disk Space Occupied');
+            value: '10.1 GB'; // placeholder
+          }
 
-          Gtk.Image {
-            icon-name: 'step-out-symbolic';
+          $StvpkFieldRow free_row {
+            title: _('Disk Space Left');
+            value: '7.8 GB'; // placeholder
+          }
+
+          Adw.ActionRow {
+            title: _('Open in Explorer');
+            activatable-widget: step-out;
+
+            [suffix]
+            Gtk.Button step-out {
+              action-name: "win.addons-panel-disk.explore";
+              valign: center;
+              styles ['flat', 'dim-label']
+
+              Gtk.Image {
+                icon-name: 'step-out-symbolic';
+              }
+            }
           }
         }
       }

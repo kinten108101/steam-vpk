@@ -154,7 +154,7 @@ export class DownloadPageRow extends Gtk.ListBoxRow {
   }
 }
 
-export class DownloadPage extends Adw.PreferencesPage {
+export class DownloadPage extends Gtk.Box {
   static {
     GObject.registerClass({
       GTypeName: 'StvpkDownloadPage',

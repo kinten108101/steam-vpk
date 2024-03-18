@@ -165,7 +165,7 @@ profile-bar.active separator {
  * Header Box
  */
 
-@define-color metalcard #d8d8d8;
+@define-color metalcard #EBEBEB;
 @define-color metalcard-dark #4a4a4a;
 
 headerbox .headerbox-card {
@@ -175,7 +175,7 @@ headerbox .headerbox-card {
   padding-bottom: 4px;
   padding-left: 12px;
   padding-right: 12px;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 
 headerbox .profile-label {
@@ -447,9 +447,3 @@ label.terminal {
   font-size: smaller;
 }
 
-/**
- * We do this here because only CSS supports negative margin.
- */
-#primary-view-switcher {
-  margin-top: -2px;
-}

@@ -8,14 +8,28 @@ template $StvpkLaunchpadPage : Adw.Bin {
     Adw.ViewStackPage {
       name: 'main';
       child:
-        Adw.PreferencesPage {
-          Adw.PreferencesGroup {
-            title: _('Add-ons to Link');
-            description: _('Only add-ons listed below are available for linking');
+        Gtk.ScrolledWindow {
+          hexpand: true;
+          vexpand: true;
 
-            Gtk.ListBox addonlist_box {
-              selection-mode: none;
-              styles ['boxed-list']
+          Adw.Clamp {
+            maximum-size: 400;
+
+            Gtk.Box {
+              orientation: vertical;
+              margin-top: 24;
+              margin-bottom: 24;
+              spacing: 24;
+
+              Adw.PreferencesGroup {
+                title: _('Add-ons to Link');
+                description: _('Only add-ons listed below are available for linking');
+
+                Gtk.ListBox addonlist_box {
+                  selection-mode: none;
+                  styles ['boxed-list']
+                }
+              }
             }
           }
         };
@@ -24,39 +38,43 @@ template $StvpkLaunchpadPage : Adw.Bin {
     Adw.ViewStackPage {
       name: 'empty';
       child:
-        Adw.StatusPage {
-          title: _('Create an Add-on');
-          description: _('Click the "New" button on the top-left corner, or use one of the following:');
-          child:
-            Gtk.Grid {
-              halign: center;
-              row-spacing: 18;
-              column-spacing: 48;
+        Adw.Clamp {
+          width-request: 500;
 
-              Gtk.Label {
-                layout { row: 0; column: 0; }
-                xalign: 0;
-                label: _('Detect add-on folder');
-              }
+          Adw.StatusPage {
+            title: _('Create an Add-on');
+            description: _('Click the "New" button on the top-left corner, or use one of the following:');
+            child:
+              Gtk.Grid {
+                halign: center;
+                row-spacing: 18;
+                column-spacing: 48;
 
-              $StvpkShortcutLabel {
-                layout { row: 0; column: 1;}
-                halign: end;
-                action-name: 'win.add-addon.add-name';
-              }
+                Gtk.Label {
+                  layout { row: 0; column: 0; }
+                  xalign: 0;
+                  label: _('Detect add-on folder');
+                }
 
-              Gtk.Label {
-                layout { row: 1; column: 0; }
-                xalign: 0;
-                label: _('Import from Workshop');
-              }
+                $StvpkShortcutLabel {
+                  layout { row: 0; column: 1;}
+                  halign: end;
+                  action-name: 'win.add-addon.add-name';
+                }
 
-              $StvpkShortcutLabel {
-                layout { row: 1; column: 1;}
-                halign: end;
-                action-name: 'win.add-addon.add-url';
-              }
-            };
+                Gtk.Label {
+                  layout { row: 1; column: 0; }
+                  xalign: 0;
+                  label: _('Import from Workshop');
+                }
+
+                $StvpkShortcutLabel {
+                  layout { row: 1; column: 1;}
+                  halign: end;
+                  action-name: 'win.add-addon.add-url';
+                }
+              };
+          }
         };
     }
   }
